@@ -33,10 +33,10 @@
         #login-overlay.active { opacity: 1; visibility: visible; }
         .login-container { background: #1e2329; border-radius: 24px; padding: 2rem; width: 100%; max-width: 420px; margin: 1rem; border: 1px solid rgba(252,213,53,0.2); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         .binance-yellow-btn { background-color: #fcd535; color: #181a20; transition: all 0.2s; border-radius: 12px; padding: 12px; font-weight: bold; width: 100%; cursor: pointer; border: none; }
-        .binance-yellow-btn:hover { background-color: #f0c51d; transform: translateY(-1px); }
+        .binance-yellow-btn:hover { background-color: #f0c51d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(252,213,53,0.3); }
         .binance-yellow-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .input-bg { background-color: #2b2f36; border: 1px solid transparent; transition: border-color 0.2s; border-radius: 12px; }
-        .input-bg:focus-within { border-color: #fcd535; }
+        .input-bg { background-color: #2b2f36; border: 1px solid #3b424d; transition: all 0.2s; border-radius: 12px; }
+        .input-bg:focus-within { border-color: #fcd535; box-shadow: 0 0 0 2px rgba(252,213,53,0.2); }
         .input-bg input { background: transparent; width: 100%; outline: none; color: #eaecef; padding: 12px; }
         #main-site { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; opacity: 0; color: white; transition: opacity 1s ease-in; pointer-events: none; overflow-y: auto; z-index: 9997; }
         .show-dashboard #main-site { opacity: 1; pointer-events: all; }
@@ -122,38 +122,37 @@
         .profile-popup .logout-btn { width: 100%; margin-top: 16px; padding: 10px; background: #f6465d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .profile-popup .logout-btn:hover { background: #d83a4f; }
         .profile-popup .close-profile { float: right; cursor: pointer; color: #848e9c; }
-        .google-signup-container { background: white; border-radius: 16px; padding: 32px 32px 36px 32px; width: 100%; max-width: 460px; margin: 0 auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; text-align: center; }
+        .google-signup-container { background: #1e2329; border-radius: 24px; padding: 28px; width: 100%; max-width: 460px; margin: 0 auto; border: 1px solid rgba(252,213,53,0.2); }
         .google-logo { text-align: center; margin-bottom: 24px; }
-        .google-logo svg { width: 48px; height: 48px; display: inline-block; }
-        .google-title { font-size: 24px; font-weight: 500; color: #202124; text-align: center; margin: 0 0 8px 0; font-family: 'Google Sans', 'Segoe UI', sans-serif; }
-        .google-subtitle { font-size: 14px; color: #5f6368; text-align: center; margin-bottom: 28px; }
+        .google-title { font-size: 24px; font-weight: 600; color: white; text-align: center; margin: 0 0 8px 0; }
+        .google-subtitle { font-size: 14px; color: #848e9c; text-align: center; margin-bottom: 28px; }
         .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #202124; }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #eaecef; }
         .input-wrapper { position: relative; display: flex; align-items: center; }
-        .input-wrapper i.prefix { position: absolute; left: 14px; color: #5f6368; font-size: 18px; }
-        .input-wrapper input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #dadce0; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; background: white; color: #202124; }
-        .input-wrapper input:focus { border-color: #1a73e8; border-width: 2px; padding: 13px 13px 13px 43px; }
-        .eye-icon { position: absolute; right: 14px; color: #5f6368; cursor: pointer; font-size: 18px; }
-        .pin-box { background-color: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 8px; margin-bottom: 24px; text-align: left; border: 1px solid #e8eaed; }
-        .pin-title { display: flex; align-items: center; font-size: 14px; font-weight: 500; color: #202124; margin-bottom: 4px; }
-        .pin-title i { margin-right: 8px; color: #5f6368; }
-        .pin-box p { font-size: 12px; color: #5f6368; margin: 0 0 16px 0; }
+        .input-wrapper i.prefix { position: absolute; left: 14px; color: #848e9c; font-size: 16px; }
+        .input-wrapper input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #3b424d; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s; background: #2b2f36; color: white; }
+        .input-wrapper input:focus { border-color: #fcd535; box-shadow: 0 0 0 2px rgba(252,213,53,0.2); }
+        .eye-icon { position: absolute; right: 14px; color: #848e9c; cursor: pointer; font-size: 16px; }
+        .pin-box { background: #2b2f36; border-radius: 16px; padding: 20px; margin-top: 8px; margin-bottom: 24px; text-align: left; border: 1px solid #3b424d; }
+        .pin-title { display: flex; align-items: center; font-size: 14px; font-weight: 500; color: #eaecef; margin-bottom: 4px; }
+        .pin-title i { margin-right: 8px; color: #fcd535; }
+        .pin-box p { font-size: 12px; color: #848e9c; margin: 0 0 16px 0; }
         .pin-field { margin-bottom: 16px; }
         .pin-field:last-child { margin-bottom: 0; }
-        .pin-field label { font-size: 12px; font-weight: 500; margin-bottom: 6px; display: block; color: #5f6368; }
+        .pin-field label { font-size: 12px; font-weight: 500; margin-bottom: 6px; display: block; color: #848e9c; }
         .terms-container { display: flex; align-items: flex-start; gap: 12px; margin: 20px 0 24px 0; text-align: left; }
-        .terms-container input { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; }
-        .terms-container label { font-size: 13px; color: #5f6368; line-height: 1.4; cursor: pointer; }
-        .terms-container a { color: #1a73e8; text-decoration: none; }
+        .terms-container input { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: #fcd535; }
+        .terms-container label { font-size: 13px; color: #848e9c; line-height: 1.4; cursor: pointer; }
+        .terms-container a { color: #fcd535; text-decoration: none; }
         .terms-container a:hover { text-decoration: underline; }
-        .btn-submit { width: 100%; background-color: #1a73e8; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
-        .btn-submit:hover { background-color: #1669c1; }
-        .btn-submit:disabled { background-color: #dadce0; cursor: not-allowed; }
-        .footer-text { text-align: center; margin-top: 24px; font-size: 14px; color: #5f6368; }
-        .footer-text a { color: #1a73e8; text-decoration: none; font-weight: 500; }
-        .bottom-security { text-align: center; color: #5f6368; font-size: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e8eaed; }
-        .error-message { color: #d93025; font-size: 12px; margin-top: 4px; display: none; }
-        @media (max-width: 480px) { .google-signup-container { padding: 24px 20px 28px 20px; } .google-title { font-size: 20px; } .input-wrapper input { padding: 12px 12px 12px 40px; font-size: 14px; } .btn-submit { padding: 12px; } }
+        .btn-submit { width: 100%; background: linear-gradient(135deg, #fcd535, #f0b90b); color: #181a20; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(252,213,53,0.3); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .footer-text { text-align: center; margin-top: 24px; font-size: 14px; color: #848e9c; }
+        .footer-text a { color: #fcd535; text-decoration: none; font-weight: 500; }
+        .bottom-security { text-align: center; color: #5f6368; font-size: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #2b3139; }
+        .error-message { color: #f6465d; font-size: 12px; margin-top: 4px; display: none; }
+        @media (max-width: 480px) { .google-signup-container { padding: 24px 20px; } .google-title { font-size: 20px; } .input-wrapper input { padding: 12px 12px 12px 40px; font-size: 14px; } .btn-submit { padding: 12px; } }
         .loading-placeholder { animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .search-result { padding: 12px; border-bottom: 1px solid #2b3139; cursor: pointer; transition: background 0.2s; }
@@ -181,12 +180,12 @@
         .news-item { padding: 12px; border-bottom: 1px solid #2b3139; cursor: pointer; transition: background 0.2s; }
         .news-item:hover { background: #2b3139; }
         .whale-alert { background: rgba(246,70,93,0.1); border-left: 3px solid #f6465d; padding: 10px; margin-bottom: 8px; border-radius: 8px; }
-        .google-btn-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px; background: white; border-radius: 50%; padding: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .google-btn-icon svg { width: 24px; height: 24px; }
-        .code-input-container { display: flex; gap: 12px; margin-top: 16px; }
-        .code-input { background: #2b2f36; border: 1px solid #3b424d; border-radius: 12px; padding: 14px; color: white; font-size: 18px; text-align: center; letter-spacing: 4px; width: 100%; }
-        .resend-link { color: #fcd535; text-align: center; display: block; margin-top: 16px; font-size: 12px; cursor: pointer; }
-        .resend-link:hover { text-decoration: underline; }
+        .google-btn-icon { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; background: white; border-radius: 50%; padding: 4px; }
+        .google-btn-icon svg { width: 18px; height: 18px; }
+        .chart-container { position: relative; width: 100%; height: 380px; background: #0B0E11; border-radius: 12px; overflow: hidden; }
+        .price-axis { position: absolute; right: 8px; top: 8px; bottom: 8px; display: flex; flex-direction: column; justify-content: space-between; text-align: right; font-size: 10px; color: #848e9c; font-family: monospace; z-index: 10; pointer-events: none; }
+        .time-axis { position: absolute; bottom: 8px; left: 60px; right: 40px; display: flex; justify-content: space-between; font-size: 9px; color: #848e9c; font-family: monospace; z-index: 10; pointer-events: none; }
+        canvas { display: block; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -214,85 +213,139 @@
                 <p class="text-gray-400 text-sm mt-1">Access your trading dashboard</p>
             </div>
             
-            <!-- MAGIC LINK LOGIN FORM -->
             <div id="login-form">
                 <div id="step-email">
                     <div class="mb-4">
-                        <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
                         <div class="input-bg rounded-xl p-3 flex items-center">
-                            <i class="fa-regular fa-envelope text-gray-500 mr-3"></i>
-                            <input type="email" id="login-email" placeholder="Enter your email" class="bg-transparent w-full outline-none text-sm text-white">
+                            <i class="fa-regular fa-envelope text-gray-500 mr-3 text-base"></i>
+                            <input type="email" id="login-email" placeholder="Enter your email address" class="bg-transparent w-full outline-none text-sm text-white">
                         </div>
+                        <p class="text-xs text-gray-500 mt-2">We'll send a verification code to this email</p>
                     </div>
                     <div class="flex items-start mb-6">
-                        <input type="checkbox" id="login-agree" class="mt-1 mr-2 accent-yellow-400">
+                        <input type="checkbox" id="login-agree" class="mt-1 mr-2 accent-yellow-400 w-4 h-4">
                         <span class="text-xs text-gray-400">I agree to TrustFunded's Terms of Service and Privacy Notice.</span>
                     </div>
-                    <button onclick="sendMagicLink()" id="send-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-4 transition">Send Magic Link</button>
+                    <button onclick="sendMagicLink()" id="send-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-4 transition flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-paper-plane"></i> Continue
+                    </button>
                 </div>
                 
                 <div id="step-code" style="display: none;">
                     <div class="mb-4">
-                        <label class="block text-sm text-gray-400 mb-2">Enter 6-Digit Code</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Verification Code</label>
                         <div class="input-bg rounded-xl p-3 flex items-center">
-                            <i class="fa-solid fa-key text-gray-500 mr-3"></i>
-                            <input type="text" id="magic-code" maxlength="6" placeholder="Enter code from email" class="bg-transparent w-full outline-none text-sm text-white" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
+                            <i class="fa-solid fa-key text-gray-500 mr-3 text-base"></i>
+                            <input type="text" id="magic-code" maxlength="6" placeholder="Enter 6-digit code" class="bg-transparent w-full outline-none text-sm text-white text-center tracking-wider font-mono" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
                         </div>
+                        <p class="text-xs text-gray-500 mt-2">Check your email for the verification code</p>
                     </div>
-                    <div id="code-error" class="error-message" style="display: none; color: #f6465d; margin-bottom: 12px;">Invalid code. Please try again.</div>
-                    <button onclick="verifyMagicCode()" id="verify-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-3 transition">Verify & Login</button>
-                    <div class="resend-link" onclick="resendCode()">Didn't receive code? Send again</div>
-                    <div class="text-center mt-4">
-                        <span class="text-xs text-gray-500 cursor-pointer" onclick="backToEmail()">← Back to email</span>
+                    <div id="code-error" class="error-message" style="display: none; background: rgba(246,70,93,0.1); border-left: 3px solid #f6465d; padding: 10px; border-radius: 8px; margin-bottom: 16px; font-size: 12px;">
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i> Invalid code. Please try again.
+                    </div>
+                    <button onclick="verifyMagicCode()" id="verify-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-3 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-circle"></i> Verify & Access
+                    </button>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-500 cursor-pointer hover:text-yellow-500 transition" onclick="backToEmail()">← Back to email</span>
+                        <span class="text-xs text-yellow-500 cursor-pointer hover:underline transition" onclick="resendCode()">Resend code</span>
                     </div>
                 </div>
                 
-                <div class="text-center text-gray-500 text-sm my-4">or</div>
-                <button onclick="toggleForms()" class="w-full border border-gray-600 py-3 rounded-xl font-bold hover:bg-gray-800 transition text-white flex items-center justify-center gap-2 bg-[#2b3139]">
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-700"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs">
+                        <span class="bg-[#1e2329] px-4 text-gray-500">or continue with</span>
+                    </div>
+                </div>
+                
+                <button onclick="toggleForms()" class="w-full border border-gray-600 py-3 rounded-xl font-semibold hover:bg-gray-800 transition text-white flex items-center justify-center gap-2 bg-[#2b3139]">
                     <span class="google-btn-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24" height="24">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18">
                             <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
                             <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
                             <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
                             <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
                         </svg>
                     </span>
-                    Sign up with your Google account
+                    Sign up with Google
                 </button>
             </div>
             
             <div id="signup-form" class="hidden">
                 <div class="google-signup-container">
                     <div class="google-logo">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
-                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
-                            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
-                            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
-                        </svg>
+                        <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 48 48">
+                                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="google-title">Sign up with Gmail account now</div>
-                    <div class="google-subtitle">Continue to Binance securely with your Google account</div>
+                    <div class="google-title">Create your account</div>
+                    <div class="google-subtitle">Get started with Binance today</div>
                     
-                    <div class="input-group"><label>Email Address</label><div class="input-wrapper"><i class="fa-regular fa-envelope prefix"></i><input type="email" id="signup-email" placeholder="Enter your email" required></div></div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope prefix"></i>
+                            <input type="email" id="signup-email" placeholder="Enter your email" required>
+                        </div>
+                    </div>
                     
-                    <div class="input-group"><label>Password</label><div class="input-wrapper"><i class="fa-solid fa-lock prefix"></i><input type="password" id="signup-password" placeholder="Enter your password" required><i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-password', this)"></i></div></div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock prefix"></i>
+                            <input type="password" id="signup-password" placeholder="Create a password" required>
+                            <i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-password', this)"></i>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
+                    </div>
 
                     <div class="pin-box">
-                        <div class="pin-title"><i class="fa-solid fa-shield-halved"></i> Withdrawal PIN (6 digits)</div>
-                        <p>This PIN will be used to authorize withdrawals.</p>
-                        <div class="pin-field"><label>Create PIN</label><div class="input-wrapper"><i class="fa-solid fa-table-cells prefix"></i><input type="password" id="signup-pin" maxlength="6" placeholder="Enter 6-digit PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"><i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-pin', this)"></i></div></div>
-                        <div class="pin-field"><label>Confirm PIN</label><div class="input-wrapper"><i class="fa-solid fa-table-cells prefix"></i><input type="password" id="signup-confirm-pin" maxlength="6" placeholder="Re-enter PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"><i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-confirm-pin', this)"></i></div></div>
+                        <div class="pin-title">
+                            <i class="fa-solid fa-shield-halved"></i> Withdrawal PIN (6 digits)
+                        </div>
+                        <p>This PIN will be used to authorize withdrawals for added security.</p>
+                        <div class="pin-field">
+                            <label>Create PIN</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-table-cells prefix"></i>
+                                <input type="password" id="signup-pin" maxlength="6" placeholder="Enter 6-digit PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
+                                <i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-pin', this)"></i>
+                            </div>
+                        </div>
+                        <div class="pin-field">
+                            <label>Confirm PIN</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-table-cells prefix"></i>
+                                <input type="password" id="signup-confirm-pin" maxlength="6" placeholder="Re-enter PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
+                                <i class="fa-regular fa-eye eye-icon" onclick="togglePasswordField('signup-confirm-pin', this)"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div id="pin-error" class="error-message">PINs don't match</div>
+                    <div id="pin-error" class="error-message" style="display: none;">PINs don't match</div>
 
-                    <div class="terms-container"><input type="checkbox" id="signup-agree" checked><label>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+                    <div class="terms-container">
+                        <input type="checkbox" id="signup-agree" checked>
+                        <label>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                    </div>
 
                     <button onclick="handleSignup()" id="signup-btn" class="btn-submit">Create Account</button>
                     
-                    <div class="footer-text">Already have an account? <a href="javascript:void(0)" onclick="toggleForms()">Sign in</a></div>
+                    <div class="footer-text">
+                        Already have an account? <a href="javascript:void(0)" onclick="toggleForms()">Sign in</a>
+                    </div>
                 </div>
-                <div class="bottom-security"><i class="fa-solid fa-circle-check"></i> Secured by Google OAuth • Protected by Binance</div>
+                <div class="bottom-security">
+                    <i class="fa-solid fa-circle-check"></i> Secured by Google OAuth • Protected by Binance
+                </div>
             </div>
         </div>
     </div>
@@ -383,18 +436,157 @@
             </main>
             
             <main id="view-trade" class="view-section px-4">
-                <div class="flex justify-between items-center mb-2"><h2 class="text-xl font-black">Spot Trading</h2><div class="flex gap-1"><span class="timeframe-btn" data-tf="1m" onclick="setTimeframe('1m')">1m</span><span class="timeframe-btn" data-tf="5m" onclick="setTimeframe('5m')">5m</span><span class="timeframe-btn" data-tf="15m" onclick="setTimeframe('15m')">15m</span><span class="timeframe-btn active" data-tf="1h" onclick="setTimeframe('1h')">1h</span><span class="timeframe-btn" data-tf="4h" onclick="setTimeframe('4h')">4h</span><span class="timeframe-btn" data-tf="1d" onclick="setTimeframe('1d')">1d</span></div></div>
-                <div class="bg-[#1e2329] rounded-xl p-3 mb-4"><canvas id="candlestickChart" height="200" width="100%"></canvas></div>
-                <div class="grid grid-cols-2 gap-3 mb-4"><div class="bg-[#1e2329] p-3 rounded-lg"><span class="text-gray-400 text-xs">24h Change</span><div class="text-white font-bold" id="trade-24h-change">+2.34%</div></div><div class="bg-[#1e2329] p-3 rounded-lg"><span class="text-gray-400 text-xs">24h Volume</span><div class="text-white font-bold" id="trade-24h-volume">$1.2B</div></div><div class="bg-[#1e2329] p-3 rounded-lg"><span class="text-gray-400 text-xs">24h High</span><div class="text-white font-bold" id="trade-24h-high">$71,234</div></div><div class="bg-[#1e2329] p-3 rounded-lg"><span class="text-gray-400 text-xs">24h Low</span><div class="text-white font-bold" id="trade-24h-low">$69,890</div></div></div>
-                <div class="bg-[#1e2329] p-4 rounded-xl mb-4"><div class="text-3xl font-bold text-white" id="trade-current-price">$70,509.00</div><div class="text-sm" id="trade-price-change">+2.34%</div></div>
-                <div class="flex gap-2 mb-4 border-b border-gray-800"><div class="tab-button active" data-tab="buy" onclick="switchTradeTab('buy')">Buy</div><div class="tab-button" data-tab="sell" onclick="switchTradeTab('sell')">Sell</div><div class="tab-button" data-tab="limit" onclick="switchTradeTab('limit')">Limit</div></div>
-                <div id="trade-order-form"><div class="mb-3"><label class="text-gray-400 text-sm">Amount (USDT)</label><input type="number" id="trade-amount" placeholder="0.00" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700"></div><div class="mb-3"><label class="text-gray-400 text-sm">Price (USDT)</label><input type="number" id="trade-price" placeholder="0.00" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700"></div><div class="mb-3"><label class="text-gray-400 text-sm">Stop Loss (USDT)</label><input type="number" id="stop-loss" placeholder="Optional" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700"></div><div class="mb-3"><label class="text-gray-400 text-sm">Take Profit (USDT)</label><input type="number" id="take-profit" placeholder="Optional" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700"></div><div class="mb-4"><label class="text-gray-400 text-sm">Total</label><div class="text-white font-bold mt-1" id="trade-total">0.00 USDT</div></div><button id="trade-action-btn" class="w-full py-3 rounded-xl font-bold text-white bg-green-500">Buy BTC</button></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">Order Book</h3><div class="grid grid-cols-2 gap-2"><div><div class="text-green-500 text-xs mb-1">Bids</div><div id="order-book-bids"></div></div><div><div class="text-red-500 text-xs mb-1">Asks</div><div id="order-book-asks"></div></div></div></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">Recent Trades</h3><div id="recent-trades-list" class="space-y-1 max-h-40 overflow-y-auto"></div></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">Open Orders</h3><div id="open-orders-list" class="text-gray-400 text-sm">No open orders</div></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">Price Alerts</h3><div class="flex gap-2"><input type="number" id="alert-price" placeholder="Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1"><button onclick="setPriceAlert()" class="bg-binance-yellow text-black px-4 rounded-lg">Set Alert</button></div><div id="active-alerts" class="mt-2 text-sm"></div></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">DCA (Auto-Invest)</h3><div class="grid grid-cols-2 gap-2"><input type="number" id="dca-amount" placeholder="Amount" class="bg-[#2b3139] rounded-lg p-2 text-white"><select id="dca-interval" class="bg-[#2b3139] rounded-lg p-2 text-white"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select><button onclick="startDCA()" class="bg-binance-yellow text-black px-4 py-2 rounded-lg col-span-2">Start DCA</button></div><div id="dca-status" class="mt-2 text-sm text-gray-400"></div></div>
-                <div class="mt-4"><h3 class="text-white font-bold mb-2">Grid Trading Bot</h3><div class="grid-bot-config"><div class="flex gap-2 mb-2"><input type="number" id="grid-lower" placeholder="Lower Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1"><input type="number" id="grid-upper" placeholder="Upper Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1"></div><div class="flex gap-2 mb-2"><input type="number" id="grid-grids" placeholder="Grids (5-50)" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1"><input type="number" id="grid-amount" placeholder="Amount per Grid" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1"></div><button onclick="startGridBot()" class="bg-binance-yellow text-black px-4 py-2 rounded-lg w-full">Start Grid Bot</button><div id="grid-status" class="mt-2 text-sm text-gray-400"></div></div></div>
+                <!-- Professional Trading Header with Buy/Sell -->
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex gap-2">
+                        <div class="bg-red-500/10 border border-red-500 rounded-lg px-4 py-2">
+                            <div class="text-red-500 text-xs font-bold">SELL</div>
+                            <div class="text-red-500 text-xl font-black" id="sell-price">2082.89</div>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500 rounded-lg px-4 py-2">
+                            <div class="text-green-500 text-xs font-bold">BUY</div>
+                            <div class="text-green-500 text-xl font-black" id="buy-price">2084.29</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-white font-bold text-lg" id="trade-symbol">ETHUSDM</div>
+                        <div class="text-yellow-500 text-xs">▼ M15</div>
+                    </div>
+                </div>
+                
+                <div class="text-gray-400 text-xs mb-3">Ethereum vs US Dollar</div>
+                
+                <!-- Professional Candlestick Chart -->
+                <div class="bg-[#0B0E11] rounded-xl p-2 mb-4 relative" style="height: 380px;">
+                    <canvas id="professionalChart" style="width:100%; height:100%;"></canvas>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-[#1e2329] p-3 rounded-lg">
+                        <div class="text-gray-400 text-xs">24h Change</div>
+                        <div class="text-green-500 font-bold" id="trade-24h-change">+2.34%</div>
+                    </div>
+                    <div class="bg-[#1e2329] p-3 rounded-lg">
+                        <div class="text-gray-400 text-xs">24h Volume</div>
+                        <div class="text-white font-bold" id="trade-24h-volume">$1.2B</div>
+                    </div>
+                    <div class="bg-[#1e2329] p-3 rounded-lg">
+                        <div class="text-gray-400 text-xs">24h High</div>
+                        <div class="text-white font-bold" id="trade-24h-high">$71,234</div>
+                    </div>
+                    <div class="bg-[#1e2329] p-3 rounded-lg">
+                        <div class="text-gray-400 text-xs">24h Low</div>
+                        <div class="text-white font-bold" id="trade-24h-low">$69,890</div>
+                    </div>
+                </div>
+                
+                <!-- Current Price -->
+                <div class="bg-[#1e2329] p-4 rounded-xl mb-4">
+                    <div class="text-3xl font-bold text-white" id="trade-current-price">$70,509.00</div>
+                    <div class="text-sm" id="trade-price-change">+2.34%</div>
+                </div>
+                
+                <!-- Trading Tabs -->
+                <div class="flex gap-2 mb-4 border-b border-gray-800">
+                    <div class="tab-button active" data-tab="buy" onclick="switchTradeTab('buy')">Buy</div>
+                    <div class="tab-button" data-tab="sell" onclick="switchTradeTab('sell')">Sell</div>
+                    <div class="tab-button" data-tab="limit" onclick="switchTradeTab('limit')">Limit</div>
+                </div>
+                
+                <!-- Trade Form -->
+                <div id="trade-order-form">
+                    <div class="mb-3">
+                        <label class="text-gray-400 text-sm">Amount (USDT)</label>
+                        <input type="number" id="trade-amount" placeholder="0.00" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700">
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-gray-400 text-sm">Price (USDT)</label>
+                        <input type="number" id="trade-price" placeholder="0.00" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700">
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-gray-400 text-sm">Stop Loss (USDT)</label>
+                        <input type="number" id="stop-loss" placeholder="Optional" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700">
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-gray-400 text-sm">Take Profit (USDT)</label>
+                        <input type="number" id="take-profit" placeholder="Optional" class="w-full bg-[#2b3139] rounded-lg p-3 text-white mt-1 border border-gray-700">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-gray-400 text-sm">Total</label>
+                        <div class="text-white font-bold mt-1" id="trade-total">0.00 USDT</div>
+                    </div>
+                    <button id="trade-action-btn" class="w-full py-3 rounded-xl font-bold text-white bg-green-500">Buy BTC</button>
+                </div>
+                
+                <!-- Order Book -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">Order Book</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <div class="text-green-500 text-xs mb-1">Bids</div>
+                            <div id="order-book-bids"></div>
+                        </div>
+                        <div>
+                            <div class="text-red-500 text-xs mb-1">Asks</div>
+                            <div id="order-book-asks"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Trades -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">Recent Trades</h3>
+                    <div id="recent-trades-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
+                </div>
+                
+                <!-- Open Orders -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">Open Orders</h3>
+                    <div id="open-orders-list" class="text-gray-400 text-sm">No open orders</div>
+                </div>
+                
+                <!-- Price Alerts -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">Price Alerts</h3>
+                    <div class="flex gap-2">
+                        <input type="number" id="alert-price" placeholder="Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1">
+                        <button onclick="setPriceAlert()" class="bg-binance-yellow text-black px-4 rounded-lg">Set Alert</button>
+                    </div>
+                    <div id="active-alerts" class="mt-2 text-sm"></div>
+                </div>
+                
+                <!-- DCA -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">DCA (Auto-Invest)</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" id="dca-amount" placeholder="Amount" class="bg-[#2b3139] rounded-lg p-2 text-white">
+                        <select id="dca-interval" class="bg-[#2b3139] rounded-lg p-2 text-white">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                        <button onclick="startDCA()" class="bg-binance-yellow text-black px-4 py-2 rounded-lg col-span-2">Start DCA</button>
+                    </div>
+                    <div id="dca-status" class="mt-2 text-sm text-gray-400"></div>
+                </div>
+                
+                <!-- Grid Trading Bot -->
+                <div class="mt-4">
+                    <h3 class="text-white font-bold mb-2">Grid Trading Bot</h3>
+                    <div class="grid-bot-config">
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="grid-lower" placeholder="Lower Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1">
+                            <input type="number" id="grid-upper" placeholder="Upper Price" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="grid-grids" placeholder="Grids (5-50)" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1">
+                            <input type="number" id="grid-amount" placeholder="Amount per Grid" class="bg-[#2b3139] rounded-lg p-2 text-white flex-1">
+                        </div>
+                        <button onclick="startGridBot()" class="bg-binance-yellow text-black px-4 py-2 rounded-lg w-full">Start Grid Bot</button>
+                        <div id="grid-status" class="mt-2 text-sm text-gray-400"></div>
+                    </div>
+                </div>
             </main>
             
             <main id="view-futures" class="view-section px-4">
@@ -437,7 +629,7 @@
     <div id="page-loading-overlay" class="page-loading-overlay" style="display: none;"><div class="page-loading-spinner"></div><p class="text-white mt-4">Loading...</p></div>
 
     <script>
-        // Initialize EmailJS
+        // Initialize EmailJS with your credentials
         emailjs.init("hZRpyfGu_UV6nvL9S");
         
         lucide.createIcons();
@@ -445,7 +637,7 @@
         let currentUserEmail = null;
         let currentBalance = 0;
         let notifications = [];
-        let btcPrice = 67500;
+        let btcPrice = 2084.29;
         let balanceCheckInterval = null;
         let inactivityTimer = null;
         let minimizeTimer = null;
@@ -465,7 +657,35 @@
         let portfolioChart = null;
         let allocationChart = null;
         let candlestickChart = null;
+        let professionalChart = null;
         let portfolioData = [1000, 1050, 1020, 1080, 1120, 1180, 1250];
+        
+        // Professional candlestick data
+        let chartData = [
+            { time: "14:00", open: 2106.67, high: 2117.27, low: 2101.37, close: 2106.67 },
+            { time: "14:01", open: 2106.67, high: 2111.97, low: 2096.07, close: 2096.07 },
+            { time: "14:02", open: 2096.07, high: 2101.37, low: 2090.77, close: 2090.77 },
+            { time: "14:03", open: 2090.77, high: 2096.07, low: 2085.47, close: 2085.47 },
+            { time: "14:04", open: 2085.47, high: 2090.77, low: 2082.89, close: 2082.89 },
+            { time: "14:05", open: 2082.89, high: 2085.47, low: 2082.89, close: 2084.29 },
+            { time: "14:06", open: 2084.29, high: 2090.77, low: 2082.89, close: 2088.33 },
+            { time: "14:07", open: 2088.33, high: 2096.07, low: 2085.47, close: 2092.86 },
+            { time: "14:08", open: 2092.86, high: 2101.37, low: 2090.77, close: 2096.07 },
+            { time: "14:09", open: 2096.07, high: 2106.67, low: 2096.07, close: 2101.37 },
+            { time: "14:10", open: 2101.37, high: 2111.97, low: 2101.37, close: 2106.67 },
+            { time: "14:11", open: 2106.67, high: 2117.27, low: 2106.67, close: 2111.97 },
+            { time: "14:12", open: 2111.97, high: 2122.57, low: 2111.97, close: 2117.27 },
+            { time: "14:13", open: 2117.27, high: 2127.87, low: 2117.27, close: 2122.57 },
+            { time: "14:14", open: 2122.57, high: 2133.17, low: 2122.57, close: 2127.87 },
+            { time: "14:15", open: 2127.87, high: 2138.47, low: 2127.87, close: 2133.17 },
+            { time: "14:16", open: 2133.17, high: 2143.77, low: 2133.17, close: 2138.47 },
+            { time: "14:17", open: 2138.47, high: 2149.07, low: 2138.47, close: 2143.77 },
+            { time: "14:18", open: 2143.77, high: 2154.37, low: 2143.77, close: 2149.07 },
+            { time: "14:19", open: 2149.07, high: 2159.67, low: 2149.07, close: 2154.37 },
+            { time: "14:20", open: 2154.37, high: 2164.97, low: 2154.37, close: 2159.67 },
+            { time: "14:21", open: 2159.67, high: 2164.97, low: 2154.37, close: 2159.67 },
+            { time: "14:22", open: 2159.67, high: 2164.97, low: 2154.37, close: 2154.37 }
+        ];
         
         // Magic link variables
         let pendingEmail = null;
@@ -513,6 +733,116 @@
         const symbols = ['BTC', 'ETH', 'BNB', 'SOL', 'XRP', 'ADA', 'AVAX', 'DOT', 'LINK', 'TRX', 'MATIC', 'NEAR', 'UNI', 'LTC', 'ICP', 'FIL', 'ARB', 'ATOM', 'OP', 'VET', 'RENDER', 'IMX', 'KAS', 'TIA', 'STX', 'INJ', 'GRT', 'THETA', 'LDO', 'ALGO', 'AR', 'FET', 'AGLD', 'SYS', 'YGG', 'ILV', 'FIDA', 'RAD', 'RARE', 'LAZIO', 'ADX', 'ACM', 'ANKR', 'ASR', 'ATA', 'ATM', 'AUDIO', 'AVA', 'AXS', 'BNT'];
         const names = ['Bitcoin', 'Ethereum', 'BNB', 'Solana', 'Ripple', 'Cardano', 'Avalanche', 'Polkadot', 'Chainlink', 'TRON', 'Polygon', 'Near Protocol', 'Uniswap', 'Litecoin', 'Internet Computer', 'Filecoin', 'Arbitrum', 'Cosmos', 'Optimism', 'VeChain', 'Render', 'Immutable', 'Kaspa', 'Celestia', 'Stacks', 'Injective', 'The Graph', 'Theta', 'Lido DAO', 'Algorand', 'Arweave', 'Artificial Super...', 'Adventure Gold', 'Syscoin', 'Yield Guild Games', 'Illuvium', 'Bonfida', 'Radworks', 'SuperRare', 'Lazio Fan Token', 'AdEx', 'AC Milan Fan Token', 'Ankr', 'AS Roma Fan Token', 'Automata', 'Atletico Madrid', 'Audius', 'AVA', 'Axie Infinity', 'Bancor'];
 
+        // ============ PROFESSIONAL CHART FUNCTION ============
+        function initProfessionalChart() {
+            const canvas = document.getElementById('professionalChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.parentElement.clientWidth;
+            const height = 380;
+            canvas.width = width;
+            canvas.height = height;
+            
+            drawCandlestickChart(ctx, width, height, chartData);
+        }
+        
+        function drawCandlestickChart(ctx, width, height, data) {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Calculate price range
+            let minPrice = Math.min(...data.map(d => d.low));
+            let maxPrice = Math.max(...data.map(d => d.high));
+            const padding = (maxPrice - minPrice) * 0.1;
+            minPrice -= padding;
+            maxPrice += padding;
+            
+            const priceRange = maxPrice - minPrice;
+            const candleWidth = (width - 60) / data.length * 0.7;
+            const spacing = (width - 60) / data.length;
+            
+            // Draw grid lines and price labels
+            ctx.font = '10px monospace';
+            ctx.fillStyle = '#848e9c';
+            ctx.textAlign = 'right';
+            
+            // Draw price levels (matching your image: 2164.97 down to 2082.89)
+            const priceLevels = [2164.97, 2159.67, 2154.37, 2149.07, 2143.77, 2138.47, 2133.17, 2127.87, 2122.57, 2117.27, 2111.97, 2106.67, 2101.37, 2096.07, 2090.77, 2085.47, 2084.29, 2082.89];
+            
+            priceLevels.forEach(price => {
+                if (price >= minPrice && price <= maxPrice) {
+                    const y = height - 20 - ((price - minPrice) / priceRange) * (height - 60);
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#2b3139';
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(40, y);
+                    ctx.lineTo(width - 20, y);
+                    ctx.stroke();
+                    ctx.fillStyle = '#848e9c';
+                    ctx.fillText(price.toFixed(2), 35, y + 3);
+                }
+            });
+            
+            // Draw candlesticks
+            for (let i = 0; i < data.length; i++) {
+                const candle = data[i];
+                const x = 50 + i * spacing;
+                const openY = height - 20 - ((candle.open - minPrice) / priceRange) * (height - 60);
+                const closeY = height - 20 - ((candle.close - minPrice) / priceRange) * (height - 60);
+                const highY = height - 20 - ((candle.high - minPrice) / priceRange) * (height - 60);
+                const lowY = height - 20 - ((candle.low - minPrice) / priceRange) * (height - 60);
+                
+                const isGreen = candle.close >= candle.open;
+                ctx.fillStyle = isGreen ? '#0ecb81' : '#f6465d';
+                ctx.strokeStyle = isGreen ? '#0ecb81' : '#f6465d';
+                
+                // Draw wick
+                ctx.beginPath();
+                ctx.moveTo(x + candleWidth/2, highY);
+                ctx.lineTo(x + candleWidth/2, lowY);
+                ctx.stroke();
+                
+                // Draw body
+                const bodyTop = Math.min(openY, closeY);
+                const bodyHeight = Math.abs(closeY - openY);
+                ctx.fillRect(x, bodyTop, candleWidth, Math.max(1, bodyHeight));
+                
+                // Draw time label for every 5 candles
+                if (i % 5 === 0 || i === data.length - 1) {
+                    ctx.fillStyle = '#848e9c';
+                    ctx.font = '9px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(candle.time, x + candleWidth/2, height - 5);
+                }
+            }
+            
+            // Draw time axis label at the end
+            ctx.fillStyle = '#848e9c';
+            ctx.font = '9px monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText('14:22', width - 25, height - 5);
+        }
+        
+        function updateProfessionalChart() {
+            const canvas = document.getElementById('professionalChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.parentElement.clientWidth;
+            const height = 380;
+            canvas.width = width;
+            canvas.height = height;
+            drawCandlestickChart(ctx, width, height, chartData);
+        }
+        
+        // Update buy/sell prices
+        function updateBuySellPrices() {
+            const lastCandle = chartData[chartData.length - 1];
+            const sellPrice = lastCandle.low;
+            const buyPrice = lastCandle.close;
+            document.getElementById('sell-price').innerText = sellPrice.toFixed(2);
+            document.getElementById('buy-price').innerText = buyPrice.toFixed(2);
+        }
+        
         // ============ MAGIC LINK FUNCTIONS ============
         
         function generateRandomCode() {
@@ -533,24 +863,18 @@
             }
             
             const sendBtn = document.getElementById('send-code-btn');
-            const originalText = sendBtn.innerText;
+            const originalText = sendBtn.innerHTML;
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<span class="loading-spinner"></span>Sending...';
             
             try {
-                // Check if user exists in database
-                const user = await checkUserExists(email);
-                
-                // Generate 6-digit code
                 const code = generateRandomCode();
-                const expiryTime = Date.now() + 10 * 60 * 1000; // 10 minutes
+                const expiryTime = Date.now() + 10 * 60 * 1000;
                 
-                // Store code temporarily
                 pendingEmail = email;
                 pendingCode = code;
                 codeExpiry = expiryTime;
                 
-                // Send email via EmailJS
                 const templateParams = {
                     otp: code,
                     email: email,
@@ -561,7 +885,6 @@
                 
                 if (response.status === 200) {
                     showToast(`Verification code sent to ${email}`, true);
-                    // Show code input step
                     document.getElementById('step-email').style.display = 'none';
                     document.getElementById('step-code').style.display = 'block';
                     document.getElementById('magic-code').value = '';
@@ -618,9 +941,8 @@
                 return;
             }
             
-            // Code is valid - login user
             const verifyBtn = document.getElementById('verify-code-btn');
-            const originalText = verifyBtn.innerText;
+            const originalText = verifyBtn.innerHTML;
             verifyBtn.disabled = true;
             verifyBtn.innerHTML = '<span class="loading-spinner"></span>Verifying...';
             
@@ -632,12 +954,11 @@
                     currentBalance = parseFloat(user.Balance) || 0;
                     notifications = user.Notifications ? JSON.parse(user.Notifications) : [];
                 } else {
-                    // Create new user
                     await addUserToSheet({ 
                         Email: pendingEmail, 
                         Password: "", 
                         Pin: "", 
-                        Balance: 10000, // Demo starting balance
+                        Balance: 10000,
                         Notifications: JSON.stringify([]) 
                     });
                     currentUserEmail = pendingEmail;
@@ -671,7 +992,6 @@
                 document.addEventListener('visibilitychange', handleVisibilityChange);
                 ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => document.addEventListener(event, trackActivity));
                 
-                // Clear pending data
                 pendingEmail = null;
                 pendingCode = null;
                 codeExpiry = null;
@@ -686,6 +1006,8 @@
                     renderEconomicCalendar();
                     renderNewsFeed();
                     renderWhaleAlerts();
+                    initProfessionalChart();
+                    updateBuySellPrices();
                 }, 500);
                 
             } catch (error) {
@@ -798,25 +1120,6 @@
         function setTimeframe(tf) {
             document.querySelectorAll('.timeframe-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.timeframe-btn[data-tf="${tf}"]`).classList.add('active');
-            updateCandlestickChart(tf);
-        }
-        
-        function updateCandlestickChart(timeframe) {
-            const ctx = document.getElementById('candlestickChart')?.getContext('2d');
-            if (!ctx) return;
-            const data = [];
-            const basePrice = btcPrice;
-            for (let i = 0; i < 30; i++) {
-                const open = basePrice * (0.98 + Math.random() * 0.04);
-                const close = open * (0.99 + Math.random() * 0.02);
-                data.push({ x: i, o: open, c: close });
-            }
-            if (candlestickChart) candlestickChart.destroy();
-            candlestickChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: data.map((_, i) => i), datasets: [{ label: 'BTC/USDT', data: data.map(d => d.c), borderColor: '#f0b90b', backgroundColor: 'rgba(240, 185, 11, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
-            });
         }
         
         function renderOrderBook() {
@@ -1548,9 +1851,16 @@
                 document.getElementById('trade-amount').addEventListener('input', updateTradeTotal);
                 document.getElementById('trade-price').addEventListener('input', updateTradeTotal);
                 document.getElementById('trade-action-btn').onclick = placeTrade;
-                updateCandlestickChart('1h');
+                initProfessionalChart();
+                updateBuySellPrices();
             }
             if(viewId === 'futures') { renderFuturesList(); renderLeaderboard(); renderEconomicCalendar(); renderNewsFeed(); renderWhaleAlerts(); }
+            if(viewId === 'wallets') {
+                setTimeout(() => {
+                    initProfessionalChart();
+                    updateBuySellPrices();
+                }, 100);
+            }
             const exBtn = document.getElementById('btn-exchange');
             const waBtn = document.getElementById('btn-wallet');
             if(viewId === 'home') { exBtn.className = "px-5 py-2 text-white bg-[#2b3139] rounded-md shadow-md font-bold"; waBtn.className = "px-5 py-2 text-gray-400 font-bold"; }
@@ -1572,7 +1882,7 @@
                         changeEl.innerText = (pct >= 0 ? '+' : '') + pct + '%';
                         changeEl.className = pct >= 0 ? "success-green text-[10px] font-bold" : "text-red-500 text-[10px] font-bold";
                     }
-                    if (coin.symbol === "BTCUSDT") { btcPrice = parseFloat(coin.lastPrice); updateTradePage(); updateCandlestickChart('1h'); }
+                    if (coin.symbol === "BTCUSDT") { btcPrice = parseFloat(coin.lastPrice); updateTradePage(); }
                 });
             } catch (err) { }
         }
@@ -1624,9 +1934,11 @@
                         renderEconomicCalendar();
                         renderNewsFeed();
                         renderWhaleAlerts();
+                        initProfessionalChart();
+                        updateBuySellPrices();
                         showToast('Welcome back!', true);
                     })
-                    .catch(error => { console.error('Error fetching balance:', error); currentBalance = 0; updateBalanceDisplay(); hasPreviousBalance = false; lastNotifiedBalance = null; lastNotificationTime = 0; lastProcessedTransactionId = null; if (balanceCheckInterval) clearInterval(balanceCheckInterval); balanceCheckInterval = setInterval(checkBalanceUpdate, 5000); resetInactivityTimer(); document.getElementById('login-overlay').classList.remove('active'); document.body.classList.add('show-dashboard'); document.getElementById('loader-wrapper').style.opacity = '0'; document.getElementById('loader-wrapper').style.visibility = 'hidden'; lucide.createIcons(); renderFuturesList(); });
+                    .catch(error => { console.error('Error fetching balance:', error); currentBalance = 0; updateBalanceDisplay(); hasPreviousBalance = false; lastNotifiedBalance = null; lastNotificationTime = 0; lastProcessedTransactionId = null; if (balanceCheckInterval) clearInterval(balanceCheckInterval); balanceCheckInterval = setInterval(checkBalanceUpdate, 5000); resetInactivityTimer(); document.getElementById('login-overlay').classList.remove('active'); document.body.classList.add('show-dashboard'); document.getElementById('loader-wrapper').style.opacity = '0'; document.getElementById('loader-wrapper').style.visibility = 'hidden'; lucide.createIcons(); renderFuturesList(); initProfessionalChart(); updateBuySellPrices(); });
                 return true;
             }
             return false;
@@ -1650,6 +1962,12 @@
             if (e.key === 'b' || e.key === 'B') { showViewWithLoading('trade'); setTimeout(() => switchTradeTab('buy'), 500); }
             if (e.key === 's' || e.key === 'S') { showViewWithLoading('trade'); setTimeout(() => switchTradeTab('sell'), 500); }
             if (e.key === 'c' || e.key === 'C') { showViewWithLoading('futures'); }
+        });
+        
+        window.addEventListener('resize', () => {
+            if (document.getElementById('view-trade').classList.contains('active')) {
+                initProfessionalChart();
+            }
         });
         
         function dragStart(e) { e.dataTransfer.setData('text/plain', e.target.id); }
