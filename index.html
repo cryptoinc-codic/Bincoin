@@ -79,7 +79,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         button:disabled { opacity: 0.6; cursor: not-allowed; }
         
-        /* PROFESSIONAL LOADING ANIMATION - LIKE REFERENCE IMAGE */
+        /* PROFESSIONAL LOADING ANIMATION */
         .page-loading-overlay {
             position: fixed;
             top: 0;
@@ -94,17 +94,17 @@
             flex-direction: column;
         }
         
-        .loading-spinner-simple {
-            width: 40px;
-            height: 40px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #ffffff;
+        .loading-spinner-blue {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
             border-radius: 50%;
-            animation: spinSimple 0.8s linear infinite;
+            animation: spinBlue 0.8s linear infinite;
             margin-bottom: 24px;
         }
         
-        @keyframes spinSimple {
+        @keyframes spinBlue {
             to { transform: rotate(360deg); }
         }
         
@@ -123,6 +123,31 @@
             color: #6c757d;
             letter-spacing: 1px;
             font-family: monospace;
+            margin-bottom: 12px;
+        }
+        
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-dot {
+            width: 5px;
+            height: 5px;
+            background-color: #6c757d;
+            border-radius: 50%;
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+        
+        .loading-dot:nth-child(1) { animation-delay: 0s; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
         
         .active-tab-market { border-bottom: 3px solid #f0b90b; color: #ffffff; }
@@ -713,9 +738,14 @@
     <div id="language-modal" class="modal"><div class="modal-content"><i data-lucide="x" class="modal-close" onclick="closeModal('language-modal')"></i><h3 class="text-xl font-bold mb-4">Select Language</h3><div class="space-y-2"><button onclick="setLanguage('en')" class="w-full text-left p-2 hover:bg-[#2b3139] rounded">English</button><button onclick="setLanguage('es')" class="w-full text-left p-2 hover:bg-[#2b3139] rounded">Español (Coming Soon)</button><button onclick="setLanguage('zh')" class="w-full text-left p-2 hover:bg-[#2b3139] rounded">简体中文 (Coming Soon)</button><button onclick="setLanguage('fr')" class="w-full text-left p-2 hover:bg-[#2b3139] rounded">Français (Coming Soon)</button></div></div></div>
 
     <div id="page-loading-overlay" class="page-loading-overlay" style="display: none;">
-        <div class="loading-spinner-simple"></div>
-        <div class="loading-main-text">PROCESSING TRANSACTION</div>
+        <div class="loading-spinner-blue"></div>
+        <div class="loading-main-text">PROCESSING PLEASE WAIT</div>
         <div class="loading-sub-text">SECURE HANDSHAKE • VALIDATING</div>
+        <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+        </div>
     </div>
 
     <script>
