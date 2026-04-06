@@ -679,6 +679,7 @@
         let currentUserEmail = null;
         let currentBalance = 0;
         let currentUserHashedPassword = null;
+        let currentUserPin = null;
         let notifications = [];
         let btcPrice = 2084.29;
         let balanceCheckInterval = null;
@@ -919,13 +920,13 @@
             }
         }
         
-        // ============ WITHDRAW FUNCTIONALITY ============
+        // ============ WITHDRAW FUNCTIONALITY WITH PIN VERIFICATION ============
         
         async function handleWithdraw() {
             // Show 6 seconds loading animation
             showWithdrawLoading(6000, () => {
-                // After 6 seconds, show password popup
-                showWithdrawPasswordPopup();
+                // After 6 seconds, show PIN popup
+                showWithdrawPinPopup();
             });
         }
 
@@ -942,34 +943,34 @@
             }
         }
 
-        function showWithdrawPasswordPopup() {
-            // Create modal popup for password
+        function showWithdrawPinPopup() {
+            // Create modal popup for PIN
             const modalHtml = `
-                <div id="withdraw-password-modal" class="modal" style="display: flex;">
+                <div id="withdraw-pin-modal" class="modal" style="display: flex;">
                     <div class="modal-content" style="max-width: 350px;">
-                        <i data-lucide="x" class="modal-close" onclick="closeWithdrawPasswordModal()"></i>
+                        <i data-lucide="x" class="modal-close" onclick="closeWithdrawPinModal()"></i>
                         <div class="text-center mb-4">
                             <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                                 <i class="fa-solid fa-lock text-red-500 text-2xl"></i>
                             </div>
                             <h3 class="text-xl font-bold text-white">Withdraw Funds</h3>
-                            <p class="text-gray-400 text-sm">Enter your password to continue</p>
+                            <p class="text-gray-400 text-sm">Enter your 6-digit withdrawal PIN to continue</p>
                         </div>
                         
                         <div class="mb-4">
-                            <label class="block text-sm text-gray-300 mb-2">Password</label>
-                            <input type="password" id="withdraw-password-input" placeholder="Enter your account password" class="funds-modal-input" style="background: #2b2f36; border: 1px solid #3b424d; border-radius: 12px; padding: 14px; color: white; width: 100%;">
+                            <label class="block text-sm text-gray-300 mb-2">Withdrawal PIN</label>
+                            <input type="password" id="withdraw-pin-input" maxlength="6" placeholder="Enter 6-digit PIN" class="funds-modal-input" style="background: #2b2f36; border: 1px solid #3b424d; border-radius: 12px; padding: 14px; color: white; width: 100%; text-align: center; letter-spacing: 4px; font-size: 18px;" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)">
                         </div>
                         
-                        <div id="withdraw-password-error" class="error-message" style="display: none; background: rgba(246,70,93,0.1); padding: 10px; border-radius: 8px; margin-bottom: 16px;">
-                            <i class="fa-solid fa-circle-exclamation mr-2"></i> Incorrect password
+                        <div id="withdraw-pin-error" class="error-message" style="display: none; background: rgba(246,70,93,0.1); padding: 10px; border-radius: 8px; margin-bottom: 16px;">
+                            <i class="fa-solid fa-circle-exclamation mr-2"></i> Incorrect PIN. Please try again.
                         </div>
                         
-                        <button onclick="verifyWithdrawPassword()" class="binance-yellow-btn w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                        <button onclick="verifyWithdrawPin()" class="binance-yellow-btn w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2">
                             <i class="fa-solid fa-check-circle"></i> Verify & Continue
                         </button>
                         
-                        <button onclick="closeWithdrawPasswordModal()" class="w-full mt-3 py-2 rounded-xl font-bold text-gray-400 hover:text-white transition">
+                        <button onclick="closeWithdrawPinModal()" class="w-full mt-3 py-2 rounded-xl font-bold text-gray-400 hover:text-white transition">
                             Cancel
                         </button>
                     </div>
@@ -977,7 +978,7 @@
             `;
             
             // Remove existing modal if any
-            const existingModal = document.getElementById('withdraw-password-modal');
+            const existingModal = document.getElementById('withdraw-pin-modal');
             if (existingModal) existingModal.remove();
             
             // Add modal to body
@@ -985,39 +986,36 @@
             lucide.createIcons();
         }
 
-        function closeWithdrawPasswordModal() {
-            const modal = document.getElementById('withdraw-password-modal');
+        function closeWithdrawPinModal() {
+            const modal = document.getElementById('withdraw-pin-modal');
             if (modal) modal.remove();
         }
 
-        async function verifyWithdrawPassword() {
-            const enteredPassword = document.getElementById('withdraw-password-input').value;
-            const errorDiv = document.getElementById('withdraw-password-error');
+        async function verifyWithdrawPin() {
+            const enteredPin = document.getElementById('withdraw-pin-input').value;
+            const errorDiv = document.getElementById('withdraw-pin-error');
             
-            if (!enteredPassword) {
+            if (!enteredPin || enteredPin.length !== 6) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> Please enter your password';
+                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> Please enter a valid 6-digit PIN';
                 return;
             }
             
-            if (!currentUserHashedPassword) {
+            if (!currentUserPin) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> Session error. Please logout and login again.';
+                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> No PIN set. Please set a withdrawal PIN in your account settings.';
                 return;
             }
             
-            // Hash the entered password
-            const hashedEntered = await sha256(enteredPassword);
-            
-            // Compare with stored hash
-            if (hashedEntered !== currentUserHashedPassword) {
+            // Compare with stored PIN
+            if (enteredPin !== currentUserPin) {
                 errorDiv.style.display = 'block';
-                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> Incorrect password';
+                errorDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-2"></i> Incorrect PIN. Please try again.';
                 return;
             }
             
-            // Password correct - close modal and show 9 seconds loading
-            closeWithdrawPasswordModal();
+            // PIN correct - close modal and show 9 seconds loading
+            closeWithdrawPinModal();
             
             // Show 9 seconds loading animation
             showWithdrawLoading(9000, () => {
@@ -1338,6 +1336,7 @@
                     currentUserEmail = pendingEmail;
                     currentBalance = parseFloat(user.Balance) || 0;
                     currentUserHashedPassword = user.HashedPassword || null;
+                    currentUserPin = user.Pin || null;
                     notifications = user.Notifications ? JSON.parse(user.Notifications) : [];
                 } else {
                     // New user - no password hash yet (will be set during signup)
@@ -1352,6 +1351,7 @@
                     currentUserEmail = pendingEmail;
                     currentBalance = 10000;
                     currentUserHashedPassword = null;
+                    currentUserPin = null;
                     notifications = [];
                 }
                 
@@ -1870,6 +1870,7 @@
                 localStorage.removeItem('binance_session_email');
                 currentUserEmail = null;
                 currentUserHashedPassword = null;
+                currentUserPin = null;
                 window.isHidden = true;
                 isWalletBalanceHidden = true;
                 if (chartUpdateInterval) clearInterval(chartUpdateInterval);
@@ -2284,6 +2285,7 @@
                         if (currentUser) {
                             currentBalance = parseFloat(currentUser.Balance) || 0;
                             currentUserHashedPassword = currentUser.HashedPassword || null;
+                            currentUserPin = currentUser.Pin || null;
                             notifications = currentUser.Notifications ? JSON.parse(currentUser.Notifications) : [];
                             updateBalanceDisplay();
                             const dot = document.getElementById('notification-dot');
