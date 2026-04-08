@@ -454,33 +454,66 @@
 
     function updateHomepageMetrics() {
         if (currentBalance > 0) {
-            document.getElementById('allocation-list').innerHTML = `<div class="allocation-item"><span class="text-[10px]">BTC</span><span class="text-[10px] text-white">60%</span></div><div class="allocation-item"><span class="text-[10px]">ETH</span><span class="text-[10px] text-white">25%</span></div><div class="allocation-item"><span class="text-[10px]">Other</span><span class="text-[10px] text-white">15%</span></div>`;
+            const allocList = document.getElementById('allocation-list');
+            if(allocList) {
+                allocList.innerHTML = `<div class="allocation-item"><span class="text-[10px]">BTC</span><span class="text-[10px] text-white">60%</span></div><div class="allocation-item"><span class="text-[10px]">ETH</span><span class="text-[10px] text-white">25%</span></div><div class="allocation-item"><span class="text-[10px]">Other</span><span class="text-[10px] text-white">15%</span></div>`;
+            }
         } else {
-            document.getElementById('allocation-list').innerHTML = '<div class="allocation-item"><span class="text-[10px]">No assets</span></div>';
+            const allocList = document.getElementById('allocation-list');
+            if(allocList) {
+                allocList.innerHTML = '<div class="allocation-item"><span class="text-[10px]">No assets</span></div>';
+            }
         }
         
         const profitToday = currentBalance * 0.012;
         const profitWeek = currentBalance * 0.058;
         const profitMonth = currentBalance * 0.124;
-        document.getElementById('profit-today').innerHTML = currentBalance > 0 ? `+$${profitToday.toFixed(2)}` : '+$0.00';
-        document.getElementById('profit-week').innerHTML = currentBalance > 0 ? `+$${profitWeek.toFixed(2)}` : '+$0.00';
-        document.getElementById('profit-month').innerHTML = currentBalance > 0 ? `+$${profitMonth.toFixed(2)}` : '+$0.00';
         
-        if (portfolioChart) portfolioChart.destroy();
-        const ctx = document.getElementById('portfolioChart').getContext('2d');
-        portfolioChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Balance', data: [1000, 1050, 1020, 1080, 1120, 1180, 1250], borderColor: '#f0b90b', backgroundColor: 'rgba(240, 185, 11, 0.1)', fill: true, tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2b3139' } } } }
-        });
+        const profitTodayEl = document.getElementById('profit-today');
+        const profitWeekEl = document.getElementById('profit-week');
+        const profitMonthEl = document.getElementById('profit-month');
         
-        if (allocationChart) allocationChart.destroy();
-        const allocCtx = document.getElementById('allocationChart').getContext('2d');
-        allocationChart = new Chart(allocCtx, {
-            type: 'doughnut',
-            data: { labels: ['BTC', 'ETH', 'Other'], datasets: [{ data: [60, 25, 15], backgroundColor: ['#f0b90b', '#0ecb81', '#f6465d'] }] },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
-        });
+        if(profitTodayEl) profitTodayEl.innerHTML = currentBalance > 0 ? `+$${profitToday.toFixed(2)}` : '+$0.00';
+        if(profitWeekEl) profitWeekEl.innerHTML = currentBalance > 0 ? `+$${profitWeek.toFixed(2)}` : '+$0.00';
+        if(profitMonthEl) profitMonthEl.innerHTML = currentBalance > 0 ? `+$${profitMonth.toFixed(2)}` : '+$0.00';
+        
+        const ctx = document.getElementById('portfolioChart');
+        if(ctx) {
+            if (portfolioChart) portfolioChart.destroy();
+            portfolioChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Balance', data: [1000, 1050, 1020, 1080, 1120, 1180, 1250], borderColor: '#f0b90b', backgroundColor: 'rgba(240, 185, 11, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2b3139' } } } }
+            });
+        }
+        
+        const allocCtx = document.getElementById('allocationChart');
+        if(allocCtx) {
+            if (allocationChart) allocationChart.destroy();
+            allocationChart = new Chart(allocCtx, {
+                type: 'doughnut',
+                data: { labels: ['BTC', 'ETH', 'Other'], datasets: [{ data: [60, 25, 15], backgroundColor: ['#f0b90b', '#0ecb81', '#f6465d'] }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+            });
+        }
+        
+        const pnlAmount = document.getElementById('pnl-amount');
+        if(pnlAmount) {
+            const todayPnl = currentBalance * 0.012;
+            const pnlPercent = (todayPnl / currentBalance * 100).toFixed(2);
+            pnlAmount.innerHTML = `+$${todayPnl.toFixed(2)} (+${pnlPercent}%)`;
+        }
+    }
+
+    function populateRecentActivity() {
+        const recentList = document.getElementById('recent-activity-list');
+        if(recentList) {
+            recentList.innerHTML = `
+                <div class="recent-activity-item"><span>BTC/USDT Buy</span><span class="success-green">+$1,250.00</span></div>
+                <div class="recent-activity-item"><span>ETH/USDT Sell</span><span class="text-red-500">-$450.00</span></div>
+                <div class="recent-activity-item"><span>Deposit</span><span class="success-green">+$5,000.00</span></div>
+            `;
+        }
     }
 
     function renderHomedownList() {
@@ -738,6 +771,7 @@
     
     window.addEventListener('load', () => {
         checkSession();
+        populateRecentActivity();
         lucide.createIcons();
         showView('home');
     });
