@@ -471,9 +471,9 @@
                 currentUserPin = null;
             }
             
+            // Only store email in localStorage, balance and pin will be fetched from database by dashboard
             localStorage.setItem('binance_session_email', currentUserEmail);
-            localStorage.setItem('binance_user_balance', currentBalance);
-            localStorage.setItem('binance_user_pin', currentUserPin);
+            
             showToast('Login successful! Redirecting...', true);
             
             setTimeout(() => {
