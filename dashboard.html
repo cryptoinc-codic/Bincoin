@@ -882,69 +882,27 @@
             actionText = 'If you did NOT authorize this transaction, please contact Binance Support immediately.';
         }
         
-        const emailBody = `
-╔══════════════════════════════════════════════════════════════════╗
-║                        B I N A N C E                             ║
-║                    ${alertType} Alert Notification               ║
-╚══════════════════════════════════════════════════════════════════╝
-
-Sender ID: ${senderId}
-
-Dear Valued Customer,
-
-Your Binance account has been successfully ${transactionType === 'CREDIT' ? 'credited' : 'debited'}.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  ${icon} ${alertType} DETAILS
-  ────────────────────────────────────────────────────────────────
-  • Amount ${transactionType === 'CREDIT' ? 'Credited' : 'Debited'}:   ${transactionType === 'CREDIT' ? '+' : '-'}$${amountChangedDollars} USD
-  • Previous Balance:   $${previousBalanceDollars} USD
-  • Current Balance:    $${newBalanceDollars} USD
-  • Date & Time:        ${timestamp}
-  • Transaction ID:     ${transactionId}
-  • Reference Number:   ${referenceNumber}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  ${transactionType === 'CREDIT' ? '✅ FUNDS ARE NOW AVAILABLE' : '⚠️ DIDN\'T REQUEST THIS TRANSACTION?'}
-  ────────────────────────────────────────────────────────────────
-  ${actionText}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  📞 NEED ASSISTANCE?
-  ────────────────────────────────────────────────────────────────
-  • Support Portal:    https://www.binance.com/en/support
-  • Live Chat:         24/7 Available
-  • Emergency Line:    +1 (888) 908-7930
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-This is an automated ${transactionType === 'CREDIT' ? 'credit' : 'debit'} alert. Please do not reply directly to this email.
-
-Best regards,
-Binance Finance Team
-
-© 2026 Binance. All rights reserved.
-        `;
-        
         try {
-            const templateParams = {
+            const response = await emailjs.send('service_mb8a3ro', 'template_h6oqwsk', {
                 to_email: userEmail,
                 subject: subject,
-                message: emailBody
-            };
-            
-            const response = await emailjs.send('service_mb8a3ro', 'template_x0b1jrr', {
-                to_email: userEmail,
-                subject: subject,
-                message: emailBody
+                alertType: alertType,
+                senderId: senderId,
+                transactionAction: transactionType === 'CREDIT' ? 'credited' : 'debited',
+                icon: icon,
+                amountSign: transactionType === 'CREDIT' ? '+' : '-',
+                amount: amountChangedDollars,
+                previousBalance: previousBalanceDollars,
+                newBalance: newBalanceDollars,
+                timestamp: timestamp,
+                transactionId: transactionId,
+                referenceNumber: referenceNumber,
+                actionTitle: transactionType === 'CREDIT' ? '✅ FUNDS ARE NOW AVAILABLE' : '⚠️ DID NOT REQUEST THIS TRANSACTION?',
+                actionText: actionText
             });
             
             if (response.status === 200) {
                 console.log('Balance alert email sent successfully');
-                // Professional toast message for Credit/Debit
                 if (transactionType === 'CREDIT') {
                     showToast('✓ CREDIT ALERT: Funds have been successfully credited to your Binance account. Check your email for full transaction details.', true);
                 } else {
