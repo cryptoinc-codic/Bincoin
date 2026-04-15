@@ -725,7 +725,12 @@
         }
     });
 
-    function formatBalance(amount) { return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    // CHANGED: Convert from cents to dollars (e.g., 1426598 -> $14,265.98)
+    function formatBalance(amount) { 
+        const dollars = amount / 100;
+        return dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    
     function generateAccountId() { return Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString(); }
 
     // Animated number counter
