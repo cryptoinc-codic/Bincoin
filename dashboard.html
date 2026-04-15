@@ -837,11 +837,35 @@
     function renderCurrencies() { const container = document.getElementById('currencyList'); if(!container) return; container.innerHTML = ''; currencies.forEach(c => { container.innerHTML += `<div class="currency-row"><div class="currency-country">${c.country}</div><div class="text-gray-400 text-xs">${c.currency} (${c.code})</div><div class="currency-rate">1 USD = ${c.rate.toLocaleString()} ${c.code}</div></div>`; }); }
     function toggleProfilePopup() { const popup = document.getElementById('profile-popup'); if (popup.classList.contains('active')) popup.classList.remove('active'); else { document.getElementById('profile-email').innerText = currentUserEmail || 'User'; document.getElementById('profile-id').innerText = `Account ID: ${generateAccountId()}`; popup.classList.add('active'); } }
     function closeProfilePopup() { document.getElementById('profile-popup').classList.remove('active'); }
-    function logoutUser() { localStorage.removeItem('binance_session_email'); localStorage.removeItem('binance_user_balance'); window.location.href = 'index.html'; }
+    function logoutUser() { localStorage.removeItem('binance_session_email'); window.location.href = 'index.html'; }
     function toggleTheme() { document.body.classList.toggle('light-mode'); showToast('Theme changed', true); }
     function showView(viewId) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-' + viewId).classList.add('active'); document.querySelectorAll('[id^="nav-"]').forEach(n => { n.classList.remove('nav-item-active'); n.classList.add('text-gray-500'); }); document.getElementById('nav-' + viewId).classList.add('nav-item-active'); lucide.createIcons(); }
     function updatePricesSilently() { fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","BNBUSDT"]').then(res => res.json()).then(data => { if (data && data.length) { data.forEach(coin => { const idPrefix = coin.symbol === "BTCUSDT" ? 'btc' : 'bnb'; const priceEl = document.getElementById(idPrefix + '-price'); const changeEl = document.getElementById(idPrefix + '-change'); if(priceEl) priceEl.innerText = parseFloat(coin.lastPrice).toLocaleString(undefined, { minimumFractionDigits: 2 }); if(changeEl) { const pct = parseFloat(coin.priceChangePercent).toFixed(2); changeEl.innerText = (pct >= 0 ? '+' : '') + pct + '%'; changeEl.className = pct >= 0 ? "success-green text-[10px] font-bold" : "text-red-500 text-[10px] font-bold"; } }); } }).catch(err => console.log('Price update failed', err)); }
-    function checkSession() { const savedEmail = localStorage.getItem('binance_session_email'); const savedBalance = localStorage.getItem('binance_user_balance'); if (savedEmail) { currentUserEmail = savedEmail; currentBalance = parseFloat(savedBalance) || 10000; portfolioData = [currentBalance * 0.9, currentBalance * 0.94, currentBalance * 0.97, currentBalance, currentBalance * 1.01, currentBalance * 1.02, currentBalance]; lastPrice = currentBalance; updateBalanceDisplay(); setProfileLetter(); } else { window.location.href = 'index.html'; } }
+    
+    async function checkSession() { 
+        const savedEmail = localStorage.getItem('binance_session_email'); 
+        if (savedEmail) { 
+            currentUserEmail = savedEmail; 
+            // Fetch balance and PIN from database
+            try {
+                const response = await fetch(`${API_URL}`);
+                const users = await response.json();
+                const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
+                currentBalance = user && user.Balance ? parseFloat(user.Balance) : 10000;
+                currentUserPin = user && user.Pin ? user.Pin : null;
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+                currentBalance = 10000;
+                currentUserPin = null;
+            }
+            portfolioData = [currentBalance * 0.9, currentBalance * 0.94, currentBalance * 0.97, currentBalance, currentBalance * 1.01, currentBalance * 1.02, currentBalance]; 
+            lastPrice = currentBalance; 
+            updateBalanceDisplay(); 
+            setProfileLetter(); 
+        } else { 
+            window.location.href = 'index.html'; 
+        } 
+    }
 
     // DEPOSIT BUTTON: 4-second loading animation then redirect to payment.html
     function startDepositFlow() {
@@ -969,7 +993,7 @@
             const percent = Math.min(100, Math.floor((elapsed / duration) * 100));
             progressFill.style.width = percent + '%';
             
-            // Change text at 5 seconds (6250ms for 80%? Let's do time-based: after 5000ms)
+            // Change text at 5 seconds
             if (elapsed >= 5000 && textSpan.textContent !== 'Connecting...') {
                 textSpan.textContent = 'Connecting...';
             }
