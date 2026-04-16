@@ -248,23 +248,23 @@
                 </div>
             </div>
             
-            <!-- WITHDRAWAL HISTORY SECTION - 20 WITHDRAWALS -->
+            <!-- WITHDRAWAL HISTORY SECTION - FROM DATABASE TRANSACTIONS -->
             <div id="section-withdrawals" class="asset-section" style="display: none;">
                 <div class="section-header">
-                    <span class="section-title">📤 Withdrawal History (20 Records)</span>
+                    <span class="section-title">📤 Transaction History</span>
                     <span class="section-link">Export →</span>
                 </div>
                 <div class="bg-[#1e2329] rounded-2xl overflow-hidden">
-                    <div class="grid grid-cols-4 gap-2 px-3 py-2 bg-[#2b3139] text-gray-400 text-[10px] font-bold uppercase">
+                    <div class="grid grid-cols-3 gap-2 px-3 py-2 bg-[#2b3139] text-gray-400 text-[10px] font-bold uppercase">
                         <span>Date</span>
                         <span>Amount</span>
-                        <span>Method</span>
                         <span>Status</span>
                     </div>
-                    <div id="withdrawals-list"></div>
+                    <div id="transactions-history-list"></div>
                 </div>
                 <div class="mt-3 text-right">
-                    <span class="text-gray-500 text-xs">Total Withdrawals: <span id="total-withdrawals-amount" class="text-red-500 font-bold">$0.00</span></span>
+                    <span class="text-gray-500 text-xs">Total Deposits: <span id="total-deposits-amount" class="text-green-500 font-bold">$0.00</span></span>
+                    <span class="text-gray-500 text-xs ml-4">Total Withdrawals: <span id="total-withdrawals-amount-wallet" class="text-red-500 font-bold">$0.00</span></span>
                 </div>
             </div>
             
@@ -297,8 +297,8 @@
                     <span class="section-title">📊 Quick Stats</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><div class="text-gray-500 text-[10px]">Total Deposits</div><div class="text-white font-bold" id="total-deposits">$67,737.93</div></div>
-                    <div><div class="text-gray-500 text-[10px]">Total Withdrawals</div><div class="text-white font-bold" id="total-withdrawals">$25,860.00</div></div>
+                    <div><div class="text-gray-500 text-[10px]">Total Deposits</div><div class="text-white font-bold" id="total-deposits-stats">$0.00</div></div>
+                    <div><div class="text-gray-500 text-[10px]">Total Withdrawals</div><div class="text-white font-bold" id="total-withdrawals-stats">$0.00</div></div>
                     <div><div class="text-gray-500 text-[10px]">Total Trades</div><div class="text-white font-bold" id="total-trades">47</div></div>
                     <div><div class="text-gray-500 text-[10px]">Win Rate</div><div class="text-green-500 font-bold" id="win-rate">68%</div></div>
                 </div>
@@ -372,12 +372,14 @@
 
 <script>
     const API_URL = "https://api.steinhq.com/v1/storages/69c7136daffba40a626a6ec8/sheet1";
+    const TRANSACTIONS_URL = "https://api.steinhq.com/v1/storages/69c7136daffba40a626a6ec8/Transactions";
     let currentUserEmail = null;
     let currentBalance = 0;
     let currentUserPin = null;
     let btcPrice = 70509;
     let isWalletBalanceHidden = false;
     let portfolioChart = null;
+    let transactionsData = [];
     
     // Assets data - will be updated from balance
     let assets = [
@@ -388,41 +390,11 @@
         { symbol: "USDT", name: "Tether", balance: 0, usdValue: 0, icon: "₮" }
     ];
     
-    // 20 REALISTIC WITHDRAWALS
-    const withdrawals = [
-        { date: "Mar 15, 2026", amount: 1250.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Mar 10, 2026", amount: 500.00, method: "Crypto (BTC)", status: "Completed" },
-        { date: "Mar 5, 2026", amount: 2000.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Feb 28, 2026", amount: 750.00, method: "Credit Card", status: "Completed" },
-        { date: "Feb 20, 2026", amount: 3000.00, method: "Crypto (ETH)", status: "Completed" },
-        { date: "Feb 14, 2026", amount: 150.00, method: "Crypto (USDT)", status: "Completed" },
-        { date: "Feb 8, 2026", amount: 1800.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Feb 1, 2026", amount: 425.00, method: "Crypto (SOL)", status: "Completed" },
-        { date: "Jan 25, 2026", amount: 2500.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Jan 18, 2026", amount: 320.00, method: "Credit Card", status: "Completed" },
-        { date: "Jan 10, 2026", amount: 4200.00, method: "Crypto (BTC)", status: "Completed" },
-        { date: "Jan 5, 2026", amount: 175.00, method: "Crypto (BNB)", status: "Completed" },
-        { date: "Dec 28, 2025", amount: 950.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Dec 20, 2025", amount: 1100.00, method: "Crypto (ETH)", status: "Completed" },
-        { date: "Dec 15, 2025", amount: 300.00, method: "Credit Card", status: "Completed" },
-        { date: "Dec 10, 2025", amount: 2800.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Dec 5, 2025", amount: 620.00, method: "Crypto (SOL)", status: "Completed" },
-        { date: "Nov 28, 2025", amount: 1450.00, method: "Crypto (USDT)", status: "Completed" },
-        { date: "Nov 20, 2025", amount: 890.00, method: "Bank Transfer", status: "Completed" },
-        { date: "Nov 15, 2025", amount: 230.00, method: "Credit Card", status: "Completed" }
-    ];
+    function formatBalance(amount) { 
+        const dollars = amount / 100;
+        return dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
     
-    const totalWithdrawalsAmount = withdrawals.reduce((sum, w) => sum + w.amount, 0);
-    
-    // Transactions data
-    let transactions = [
-        { type: 'Deposit', amount: 50000, date: 'Jan 15, 2026', status: 'Completed' },
-        { type: 'Deposit', amount: 17737.93, date: 'Feb 20, 2026', status: 'Completed' },
-        { type: 'Withdrawal', amount: -1250, date: 'Mar 15, 2026', status: 'Completed' },
-        { type: 'Withdrawal', amount: -500, date: 'Mar 10, 2026', status: 'Completed' },
-        { type: 'Trade', amount: -2500, date: 'Mar 8, 2026', status: 'Completed' }
-    ];
-
     function showToast(msg, isSuccess = true) {
         const toast = document.getElementById('toast-message');
         toast.textContent = msg;
@@ -431,30 +403,83 @@
         setTimeout(() => { toast.style.opacity = '0'; }, 3000);
     }
 
-    function formatBalance(amount) { return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    // Fetch transactions from database
+    async function fetchTransactions() {
+        try {
+            const response = await fetch(`${TRANSACTIONS_URL}?ignore_cache=1`);
+            const data = await response.json();
+            transactionsData = data.filter(row => row.Amount && row.Amount.trim() !== '');
+            renderTransactionsHistory();
+            updateTotalStats();
+        } catch (error) {
+            console.error('Error fetching transactions:', error);
+        }
+    }
+    
+    function renderTransactionsHistory() {
+        const container = document.getElementById('transactions-history-list');
+        if (!container) return;
+        
+        if (transactionsData.length === 0) {
+            container.innerHTML = '<div class="text-center py-8 text-gray-400">No transactions yet</div>';
+            return;
+        }
+        
+        // Reverse to show newest first
+        const reversed = [...transactionsData].reverse();
+        
+        container.innerHTML = reversed.map(tx => {
+            const amount = parseInt(tx.Amount);
+            const amountDollars = formatBalance(Math.abs(amount));
+            const isPositive = amount > 0;
+            const date = new Date().toLocaleDateString(); // Simple date for now
+            return `
+                <div class="withdrawal-item">
+                    <div class="text-white text-xs w-24">${date}</div>
+                    <div class="${isPositive ? 'text-green-500' : 'text-red-500'} font-bold text-sm w-20">${isPositive ? '+' : '-'}$${amountDollars}</div>
+                    <div class="status-completed text-xs">Completed</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function updateTotalStats() {
+        let totalDepositsCents = 0;
+        let totalWithdrawalsCents = 0;
+        
+        transactionsData.forEach(tx => {
+            const amount = parseInt(tx.Amount);
+            if (amount > 0) {
+                totalDepositsCents += amount;
+            } else {
+                totalWithdrawalsCents += Math.abs(amount);
+            }
+        });
+        
+        const totalDeposits = totalDepositsCents / 100;
+        const totalWithdrawals = totalWithdrawalsCents / 100;
+        
+        document.getElementById('total-deposits-amount').innerText = `$${totalDeposits.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('total-withdrawals-amount-wallet').innerText = `$${totalWithdrawals.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('total-deposits-stats').innerText = `$${totalDeposits.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        document.getElementById('total-withdrawals-stats').innerText = `$${totalWithdrawals.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
 
     // UPDATE DISPLAY FROM DATABASE BALANCE
     function updateWalletDisplay() {
-        // Update USDT asset with current balance from database
         const usdtAsset = assets.find(a => a.symbol === 'USDT');
         if (usdtAsset) {
-            usdtAsset.balance = currentBalance;
-            usdtAsset.usdValue = currentBalance;
+            usdtAsset.balance = currentBalance / 100;
+            usdtAsset.usdValue = currentBalance / 100;
         }
         
-        // Calculate BTC equivalent
-        const btcEquivalent = currentBalance / btcPrice;
+        const btcEquivalent = (currentBalance / 100) / btcPrice;
         document.getElementById('wallet-main-val').innerText = btcEquivalent.toFixed(8);
         document.getElementById('wallet-usd-value').innerText = `≈ $${formatBalance(currentBalance)}`;
         document.getElementById('available-balance').innerText = `$${formatBalance(currentBalance)}`;
         
-        // Total Profit (Deposits - Withdrawals)
-        const totalDeposits = 67737.93;
-        const totalProfit = totalDeposits - totalWithdrawalsAmount;
-        document.getElementById('total-profit').innerText = `$${formatBalance(totalProfit)}`;
-        document.getElementById('daily-change').innerText = '+2.34%';
+        document.getElementById('daily-change').innerHTML = '+2.34%';
         
-        // Update portfolio chart
         if (portfolioChart) portfolioChart.destroy();
         const ctx = document.getElementById('portfolioChart').getContext('2d');
         const chartData = assets.filter(a => a.usdValue > 0).map(a => a.usdValue);
@@ -498,33 +523,8 @@
                 </div>
                 <div class="text-right">
                     <div class="text-white font-medium">${!isWalletBalanceHidden ? asset.balance.toFixed(asset.symbol === 'USDT' ? 2 : 4) : '******'} ${asset.symbol}</div>
-                    <div class="text-xs text-gray-500">≈ $${!isWalletBalanceHidden ? formatBalance(asset.usdValue) : '******'}</div>
+                    <div class="text-xs text-gray-500">≈ $${!isWalletBalanceHidden ? formatBalance(asset.usdValue * 100) : '******'}</div>
                 </div>
-            </div>
-        `).join('');
-    }
-
-    function renderWithdrawals() {
-        const container = document.getElementById('withdrawals-list');
-        if (!container) return;
-        container.innerHTML = withdrawals.map(w => `
-            <div class="withdrawal-item">
-                <div class="text-white text-xs w-20">${w.date}</div>
-                <div class="text-red-500 font-bold text-sm w-24">-$${formatBalance(w.amount)}</div>
-                <div class="text-gray-400 text-xs w-28">${w.method}</div>
-                <div class="status-completed text-xs">${w.status}</div>
-            </div>
-        `).join('');
-        document.getElementById('total-withdrawals-amount').innerText = `$${formatBalance(totalWithdrawalsAmount)}`;
-    }
-
-    function renderTransactions() {
-        const container = document.getElementById('transactions-list');
-        if (!container) return;
-        container.innerHTML = transactions.map(tx => `
-            <div class="transaction-item">
-                <div><div class="text-white text-sm font-medium">${tx.type}</div><div class="text-xs text-gray-500">${tx.date}</div></div>
-                <div class="text-right"><div class="${tx.amount >= 0 ? 'text-green-500' : 'text-red-500'} font-bold">${tx.amount >= 0 ? '+' : ''}$${formatBalance(Math.abs(tx.amount))}</div><div class="text-xs text-gray-500">${tx.status}</div></div>
             </div>
         `).join('');
     }
@@ -555,11 +555,10 @@
         } else if (section === 'withdrawals') {
             document.getElementById('section-withdrawals').style.display = 'block';
             document.getElementById('tab-withdrawals').className = 'pb-2 text-white border-b-2 border-yellow-500 font-bold';
-            renderWithdrawals();
+            fetchTransactions();
         } else if (section === 'transactions') {
             document.getElementById('section-transactions').style.display = 'block';
             document.getElementById('tab-transactions').className = 'pb-2 text-white border-b-2 border-yellow-500 font-bold';
-            renderTransactions();
         }
     }
 
@@ -733,7 +732,7 @@
         
         if (!amount || amount <= 0) { errorDiv.style.display = 'block'; errorDiv.innerHTML = 'Please enter a valid amount'; return; }
         if (from === to) { errorDiv.style.display = 'block'; errorDiv.innerHTML = 'Cannot transfer to the same wallet'; return; }
-        if (amount > currentBalance) { errorDiv.style.display = 'block'; errorDiv.innerHTML = 'Insufficient balance'; return; }
+        if (amount > currentBalance / 100) { errorDiv.style.display = 'block'; errorDiv.innerHTML = 'Insufficient balance'; return; }
         
         showToast(`✅ Transferred $${amount.toLocaleString()} from ${from} to ${to}`, true);
         closeModal('transfer-modal');
@@ -759,7 +758,7 @@
         if (!savedEmail) return;
         
         try {
-            const response = await fetch(`${API_URL}`);
+            const response = await fetch(`${API_URL}?ignore_cache=1`);
             const users = await response.json();
             const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
             if (user) {
