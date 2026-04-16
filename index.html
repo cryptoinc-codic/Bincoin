@@ -612,6 +612,14 @@
         setButtonLoading(sendBtn, true, 'Sending...');
         
         try {
+            // Check if email exists in database FIRST
+            const userExists = await checkUserExists(email);
+            if (!userExists) {
+                showToast('Email not registered. Please sign up first.', false);
+                setButtonLoading(sendBtn, false, originalText);
+                return;
+            }
+            
             const code = generateRandomCode();
             const expiryTime = Date.now() + 10 * 60 * 1000;
             pendingEmail = email;
