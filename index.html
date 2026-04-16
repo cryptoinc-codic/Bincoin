@@ -417,6 +417,11 @@
     let pendingCode = null;
     let codeExpiry = null;
 
+    // Generate unique Account ID
+    function generateAccountId() {
+        return Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString();
+    }
+
     // 100 Countries with Flags
     const countries = [
         { flag: "🇺🇸", name: "United States" }, { flag: "🇬🇧", name: "United Kingdom" },
@@ -694,8 +699,27 @@
                 currentBalance = parseFloat(user.Balance) || 0;
                 currentUserHashedPassword = user.HashedPassword || null;
                 currentUserPin = user.Pin || null;
+                
+                // Auto-generate Account ID if missing for existing users
+                if (!user.AccountId || user.AccountId === '') {
+                    const newAccountId = generateAccountId();
+                    await fetch(API_URL, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ Email: pendingEmail, AccountId: newAccountId })
+                    });
+                }
             } else {
-                await addUserToSheet({ Email: pendingEmail, Password: "", HashedPassword: "", Pin: "", Balance: 0, Notifications: JSON.stringify([]) });
+                const newAccountId = generateAccountId();
+                await addUserToSheet({ 
+                    Email: pendingEmail, 
+                    Password: "", 
+                    HashedPassword: "", 
+                    Pin: "", 
+                    Balance: 0, 
+                    Notifications: JSON.stringify([]),
+                    AccountId: newAccountId
+                });
                 currentUserEmail = pendingEmail;
                 currentBalance = 0;
                 currentUserHashedPassword = null;
@@ -745,6 +769,8 @@
             if (existingUser) { showToast('Email already exists', false); return; }
             
             const hashedPassword = await sha256(password);
+            const newAccountId = generateAccountId();
+            
             await addUserToSheet({ 
                 Email: email, 
                 Password: "", 
@@ -753,7 +779,8 @@
                 Balance: 0, 
                 Notifications: JSON.stringify([]),
                 Country: country,
-                Phone: phone
+                Phone: phone,
+                AccountId: newAccountId
             });
             showToast('Account created successfully! Please login.', true);
             toggleForms();
