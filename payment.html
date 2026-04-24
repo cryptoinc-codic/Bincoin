@@ -398,9 +398,9 @@
         .confirm-modal.active { display: flex; }
         .confirm-modal-content {
             background: #ffffff;
-            border-radius: 32px;
-            padding: 32px;
-            max-width: 400px;
+            border-radius: 48px;
+            padding: 40px 32px;
+            max-width: 480px;
             width: 90%;
             text-align: center;
             animation: modalFadeIn 0.3s ease;
@@ -409,17 +409,103 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        .confirm-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
+        .confirm-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
         }
-        .confirm-icon i { font-size: 40px; color: white; }
+        .confirm-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+        .confirm-progress-wrapper {
+            margin-bottom: 24px;
+        }
+        .confirm-progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+        .confirm-progress-bar {
+            background: #e5e9f0;
+            border-radius: 100px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .confirm-progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            width: 40%;
+            height: 100%;
+            border-radius: 100px;
+            transition: width 0.2s ease;
+        }
+        .confirm-status {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .confirm-estimated {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .confirm-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .confirm-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: confirmBounce 1s ease-in-out infinite;
+        }
+        .confirm-dot:nth-child(1) { animation-delay: 0s; }
+        .confirm-dot:nth-child(2) { animation-delay: 0.2s; background: #8b5cf6; }
+        .confirm-dot:nth-child(3) { animation-delay: 0.4s; background: #06b6d4; }
+        @keyframes confirmBounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+        .confirm-button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+        }
+        .confirm-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .confirm-caution {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .confirm-caution i {
+            color: #3b82f6;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -574,7 +660,7 @@
                     <div class="flex items-start gap-3 mb-3"><i class="fas fa-bolt text-emerald-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Average confirmation time: <span class="font-medium text-gray-900">Instant - 10 minutes</span></p></div>
                     <div class="flex items-start gap-3"><i class="fas fa-percent text-purple-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Network fee: <span class="font-medium text-gray-900">0%</span> (paid by SecurePay)</p></div>
                 </div>
-                <button onclick="confirmPayment()" class="btn-primary w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2"><i class="fas fa-check-circle"></i> I have sent the payment</button>
+                <button onclick="showConfirmationModal()" class="btn-primary w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2"><i class="fas fa-check-circle"></i> I have sent the payment</button>
                 <div class="mt-5 text-center"><p class="text-xs text-gray-400 flex items-center justify-center gap-2"><i class="fas fa-shield-alt text-emerald-500"></i><span>Your transaction is protected with bank-grade encryption</span></p><p class="text-[10px] text-gray-400 mt-3">Services provided by Thecorio Ltd, Seychelles (8437417-1)</p></div>
             </div>
 
@@ -586,13 +672,39 @@
         </div>
     </div>
 
+    <!-- CONFIRMATION MODAL - Professional Design -->
     <div id="confirmModal" class="confirm-modal">
         <div class="confirm-modal-content">
-            <div class="confirm-icon"><i class="fas fa-check"></i></div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Payment Confirmed!</h3>
-            <p class="text-gray-500 text-sm mb-4">Your deposit is being processed.</p>
-            <div id="confirmProgress" class="progress-track mb-4"><div id="confirmProgressFill" class="progress-fill-animated" style="width: 0%;"></div></div>
-            <p class="text-xs text-gray-400">Please wait while we update your balance...</p>
+            <div class="confirm-title">Transaction</div>
+            <div class="confirm-subtitle">IN PROGRESS</div>
+            
+            <div class="confirm-progress-wrapper">
+                <div class="confirm-progress-label">Processing</div>
+                <div class="confirm-progress-bar">
+                    <div id="confirmProgressFill" class="confirm-progress-fill" style="width: 40%;"></div>
+                </div>
+            </div>
+            
+            <div class="confirm-status">
+                Status: Awaiting blockchain<br>confirmation
+            </div>
+            
+            <div class="confirm-estimated">
+                Estimated time: 2-4 minutes
+            </div>
+            
+            <div class="confirm-dots">
+                <div class="confirm-dot"></div>
+                <div class="confirm-dot"></div>
+                <div class="confirm-dot"></div>
+            </div>
+            
+            <button class="confirm-button" onclick="goToHomePage()">Go back to Home</button>
+            
+            <div class="confirm-caution">
+                <i class="fas fa-info-circle"></i>
+                <span>You may return to the dashboard. Your payment will continue<br>processing in the background.</span>
+            </div>
         </div>
     </div>
 
@@ -617,7 +729,7 @@
         let loadingProgressInterval = null;
         let currentLoadingCallback = null;
         let loadingStartTime = null;
-        let loadingDuration = 8000; // FIXED: 8 seconds
+        let loadingDuration = 8000;
 
         const step1Container = document.getElementById('step1Container');
         const step2Container = document.getElementById('step2Container');
@@ -631,13 +743,24 @@
         const progressFill = document.getElementById('progressFillAnimated');
         const loadingStatusText = document.getElementById('loadingStatusText');
         const loadingTimerDisplay = document.getElementById('loadingTimerDisplay');
+        const confirmModal = document.getElementById('confirmModal');
 
-        // Professional loading messages for Bitcoin wallet generation
         const loadingMessages = [
             "Generating secure Bitcoin wallet...",
             "Creating unique wallet address...",
             "Encoding payment QR code..."
         ];
+
+        function showConfirmationModal() {
+            confirmModal.classList.add('active');
+            // Save transaction record only (no balance update)
+            saveTransaction(Math.round(currentAmount * 100));
+        }
+
+        function goToHomePage() {
+            confirmModal.classList.remove('active');
+            window.location.href = 'dashboard.html';
+        }
 
         function showLoadingAnimation(callback) {
             if (isProcessing) return;
@@ -769,45 +892,12 @@
             } catch (error) { console.error('Error fetching user data:', error); return null; }
         }
 
-        async function updateUserBalance(amountInCents) {
-            if (!currentUserEmail) return false;
-            const newBalance = currentUserBalance + amountInCents;
-            try {
-                const response = await fetch(`${API_URL}?ignore_cache=1`);
-                const users = await response.json();
-                const userIndex = users.findIndex(u => u.Email && u.Email.toLowerCase() === currentUserEmail.toLowerCase());
-                if (userIndex === -1) return false;
-                const rowNumber = userIndex + 2;
-                const updateResponse = await fetch(`${API_URL}/${rowNumber}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ Balance: newBalance }) });
-                if (updateResponse.ok) {
-                    currentUserBalance = newBalance;
-                    const balanceInDollars = (newBalance / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    if (currentBalanceDisplay) currentBalanceDisplay.innerText = `$${balanceInDollars}`;
-                    return true;
-                }
-                return false;
-            } catch (error) { console.error('Error updating balance:', error); return false; }
-        }
-
         async function saveTransaction(amountInCents) {
             if (!currentUserEmail) return;
             const sign = amountInCents >= 0 ? '+' : '';
             const transactionValue = `${sign}${amountInCents}`;
             try { await fetch(TRANSACTIONS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify([{ Email: currentUserEmail, Amount: transactionValue }]) }); console.log('Transaction saved:', transactionValue); } 
             catch (error) { console.error('Failed to save transaction:', error); }
-        }
-
-        async function confirmPayment() {
-            const depositAmountInCents = Math.round(currentAmount * 100);
-            const confirmModal = document.getElementById('confirmModal');
-            const confirmProgressFill = document.getElementById('confirmProgressFill');
-            confirmModal.classList.add('active');
-            confirmProgressFill.style.width = '0%';
-            let progress = 0;
-            const progressInterval = setInterval(() => { progress += 10; confirmProgressFill.style.width = `${progress}%`; if (progress >= 100) clearInterval(progressInterval); }, 200);
-            const success = await updateUserBalance(depositAmountInCents);
-            if (success) { await saveTransaction(depositAmountInCents); setTimeout(() => { confirmModal.classList.remove('active'); window.location.href = 'dashboard.html'; }, 1500); } 
-            else { clearInterval(progressInterval); confirmModal.classList.remove('active'); alert('Payment confirmation failed. Please contact support.'); }
         }
 
         async function init() {
