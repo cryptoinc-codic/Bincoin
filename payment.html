@@ -216,37 +216,16 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         @media (max-width: 640px) {
-            body {
-                padding: 12px;
-            }
-            .wallet-address {
-                font-size: 11px;
-            }
-            .header-cert-badge {
-                padding: 6px 10px !important;
-            }
-            .header-cert-badge .text-xs {
-                font-size: 9px !important;
-            }
+            body { padding: 12px; }
+            .wallet-address { font-size: 11px; }
+            .header-cert-badge { padding: 6px 10px !important; }
+            .header-cert-badge .text-xs { font-size: 9px !important; }
         }
 
         .loading-overlay {
@@ -265,10 +244,7 @@
             transition: opacity 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
-        .loading-overlay.active {
-            display: flex;
-            opacity: 1;
-        }
+        .loading-overlay.active { display: flex; opacity: 1; }
 
         .loading-card {
             background: linear-gradient(135deg, #ffffff 0%, #f9fafc 100%);
@@ -282,9 +258,7 @@
             transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
-        .loading-overlay.active .loading-card {
-            transform: scale(1);
-        }
+        .loading-overlay.active .loading-card { transform: scale(1); }
 
         .loading-icon-wrapper {
             position: relative;
@@ -317,21 +291,13 @@
         }
 
         @keyframes spinRing {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         @keyframes gentlePulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.08);
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
         }
 
         .loading-progress-wrapper {
@@ -358,12 +324,8 @@
         }
 
         @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         .loading-status-text {
@@ -416,14 +378,8 @@
         .loading-dot:nth-child(3) { animation-delay: 0.4s; background: #06b6d4; }
 
         @keyframes loadingBounce {
-            0%, 80%, 100% {
-                transform: scale(0.6);
-                opacity: 0.4;
-            }
-            40% {
-                transform: scale(1.2);
-                opacity: 1;
-            }
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1.2); opacity: 1; }
         }
         
         .confirm-modal {
@@ -439,9 +395,7 @@
             justify-content: center;
             align-items: center;
         }
-        .confirm-modal.active {
-            display: flex;
-        }
+        .confirm-modal.active { display: flex; }
         .confirm-modal-content {
             background: #ffffff;
             border-radius: 32px;
@@ -465,10 +419,7 @@
             justify-content: center;
             margin: 0 auto 20px;
         }
-        .confirm-icon i {
-            font-size: 40px;
-            color: white;
-        }
+        .confirm-icon i { font-size: 40px; color: white; }
     </style>
 </head>
 <body>
@@ -649,8 +600,8 @@
         <div class="loading-card">
             <div class="loading-icon-wrapper"><div class="spinning-ring"></div><div class="shield-emoji">🛡️</div></div>
             <h3 class="text-xl font-bold text-gray-900 mt-2">Secure Processing</h3>
-            <p class="text-sm text-gray-500 mt-1">Protecting your transaction</p>
-            <div class="loading-progress-wrapper"><div class="progress-track"><div id="progressFillAnimated" class="progress-fill-animated"></div></div><div id="loadingStatusText" class="loading-status-text">Initializing secure gateway...</div><div id="loadingTimerDisplay" class="loading-timer">6s</div><div class="loading-sub-message"><i class="fas fa-lock text-emerald-500 text-xs"></i><span>Bank-grade encryption active</span></div></div>
+            <p class="text-sm text-gray-500 mt-1">Generating your payment wallet</p>
+            <div class="loading-progress-wrapper"><div class="progress-track"><div id="progressFillAnimated" class="progress-fill-animated"></div></div><div id="loadingStatusText" class="loading-status-text">Generating secure Bitcoin wallet...</div><div id="loadingTimerDisplay" class="loading-timer">8s</div><div class="loading-sub-message"><i class="fas fa-lock text-emerald-500 text-xs"></i><span>Bank-grade encryption active</span></div></div>
             <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
         </div>
     </div>
@@ -666,7 +617,7 @@
         let loadingProgressInterval = null;
         let currentLoadingCallback = null;
         let loadingStartTime = null;
-        let loadingDuration = 6000;
+        let loadingDuration = 8000; // FIXED: 8 seconds
 
         const step1Container = document.getElementById('step1Container');
         const step2Container = document.getElementById('step2Container');
@@ -681,17 +632,17 @@
         const loadingStatusText = document.getElementById('loadingStatusText');
         const loadingTimerDisplay = document.getElementById('loadingTimerDisplay');
 
+        // Professional loading messages for Bitcoin wallet generation
         const loadingMessages = [
-            "Initializing secure gateway...",
-            "Verifying blockchain network...",
-            "Finalizing secure connection..."
+            "Generating secure Bitcoin wallet...",
+            "Creating unique wallet address...",
+            "Encoding payment QR code..."
         ];
 
         function showLoadingAnimation(callback) {
             if (isProcessing) return;
             isProcessing = true;
             currentLoadingCallback = callback;
-            loadingDuration = Math.floor(Math.random() * (6000 - 4000 + 1) + 4000);
             const durationSeconds = (loadingDuration / 1000).toFixed(1);
             progressFill.style.width = '0%';
             loadingTimerDisplay.textContent = `${durationSeconds}s`;
@@ -798,7 +749,6 @@
             navigator.clipboard.writeText(address).then(() => { const btnText = document.getElementById('copyBtnText'); btnText.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btnText.innerHTML = '<i class="far fa-copy"></i> Copy wallet address', 2000); });
         }
 
-        // Same balance fetching as dashboard.html
         async function fetchUserData() {
             const savedEmail = localStorage.getItem('binance_session_email');
             if (!savedEmail) {
