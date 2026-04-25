@@ -25,11 +25,11 @@
         }
         
         body.dark-mode .glass-card,
-        body.dark-mode .network-card,
         body.dark-mode .method-card,
         body.dark-mode .balance-card,
         body.dark-mode .address-input,
-        body.dark-mode .amount-input {
+        body.dark-mode .amount-input,
+        body.dark-mode .network-dropdown-btn {
             background: #1E2329;
             border-color: #2B3139;
             color: white;
@@ -38,25 +38,8 @@
         body.dark-mode .text-gray-400 { color: #9ca3af; }
         body.dark-mode .text-gray-500 { color: #6b7280; }
         body.dark-mode .helper-text { color: #6b7280; }
-        
-        .network-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-        body.dark-mode .network-card { background: #1E2329; border-color: #2B3139; }
-        .network-card:hover { border-color: #3b82f6; transform: translateY(-2px); background: #f8fafc; }
-        body.dark-mode .network-card:hover { background: #2A2F38; border-color: #FCD535; }
-        .network-card.active { border: 2px solid #3b82f6; background: #eff6ff; }
-        body.dark-mode .network-card.active { border: 2px solid #FCD535; background: linear-gradient(135deg, #1E2329 0%, #2A2F38 100%); }
-        .network-card.active::before { content: '✓'; position: absolute; top: 10px; right: 12px; color: #3b82f6; font-weight: bold; font-size: 12px; }
-        body.dark-mode .network-card.active::before { color: #FCD535; }
-        .network-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: #f1f5f9; }
-        body.dark-mode .network-icon { background: #2B3139; }
+        body.dark-mode .dropdown-menu { background: #1E2329; border-color: #2B3139; }
+        body.dark-mode .dropdown-item:hover { background: #2A2F38; }
         
         .method-card {
             background: #ffffff;
@@ -131,6 +114,57 @@
         .warning-message { background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444; padding: 10px 12px; border-radius: 10px; font-size: 11px; color: #dc2626; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
         .warning-success { background: rgba(16,185,129,0.08); border-left: 3px solid #10b981; color: #059669; }
         
+        /* Network Dropdown Styles */
+        .network-dropdown-container { position: relative; width: 100%; }
+        .network-dropdown-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .network-dropdown-btn:hover { border-color: #3b82f6; }
+        body.dark-mode .network-dropdown-btn { background: #1E2329; border-color: #2B3139; color: white; }
+        body.dark-mode .network-dropdown-btn:hover { border-color: #FCD535; }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            margin-top: 8px;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .dropdown-menu.active { display: block; }
+        .dropdown-item {
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: #f8fafc; }
+        body.dark-mode .dropdown-item { border-bottom-color: #2B3139; }
+        body.dark-mode .dropdown-item:hover { background: #2A2F38; }
+        .dropdown-item.active { background: #eff6ff; }
+        body.dark-mode .dropdown-item.active { background: #2A2F38; border-left: 2px solid #FCD535; }
+        .network-name { font-weight: 600; font-size: 14px; }
+        .network-details { font-size: 10px; color: #6b7280; margin-top: 4px; }
+        body.dark-mode .network-details { color: #9ca3af; }
+        
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -167,13 +201,8 @@
         .loading-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.2); opacity: 1; } }
         
-        .blinking-icon {
-            animation: blinkWarning 1.2s ease-in-out infinite;
-        }
-        @keyframes blinkWarning {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.08); }
-        }
+        .blinking-icon { animation: blinkWarning 1.2s ease-in-out infinite; }
+        @keyframes blinkWarning { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.08); } }
         
         .modal {
             display: none;
@@ -228,8 +257,6 @@
         .help-section h4 { font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; color: #3b82f6; text-transform: uppercase; }
         body.dark-mode .help-section h4 { color: #FCD535; }
         .help-section p { font-size: 12px; line-height: 1.6; opacity: 0.8; }
-        .help-section ul { margin-top: 8px; padding-left: 20px; }
-        .help-section li { font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
         
         .theme-toggle {
             cursor: pointer;
@@ -242,9 +269,8 @@
         .theme-toggle:hover { transform: scale(1.05); }
         
         @media (max-width: 640px) {
-            .network-card { padding: 10px; }
-            .network-icon { width: 36px; height: 36px; font-size: 18px; }
             .amount-input { font-size: 18px; padding: 14px; }
+            .dropdown-item { padding: 12px; }
         }
     </style>
 </head>
@@ -292,14 +318,36 @@
         </div>
     </div>
 
+    <!-- Network Dropdown (replaces network cards) -->
     <div id="cryptoSection" class="mb-6">
-        <label class="text-gray-500 text-xs uppercase tracking-wider mb-3 block">Select Network</label>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div class="network-card active" data-network="BTC" data-fee="2.00" onclick="selectNetwork('BTC', 2.00)"><div class="flex flex-col items-center text-center"><div class="network-icon mb-2">₿</div><div class="font-bold text-gray-900 text-xs">Bitcoin</div><div class="text-[9px] text-gray-500 mt-1">>0.00001 BTC</div><div class="text-[8px] text-gray-400 mt-1">1 block · 1-30 min</div></div></div>
-            <div class="network-card" data-network="BSC" data-fee="0.50" onclick="selectNetwork('BSC', 0.50)"><div class="flex flex-col items-center text-center"><div class="network-icon mb-2">🟡</div><div class="font-bold text-gray-900 text-xs">BSC</div><div class="text-[9px] text-gray-500 mt-1">>0.00000002 BTC</div><div class="text-[8px] text-gray-400 mt-1">1 block · 1 min</div></div></div>
-            <div class="network-card" data-network="ETH" data-fee="1.50" onclick="selectNetwork('ETH', 1.50)"><div class="flex flex-col items-center text-center"><div class="network-icon mb-2">🔷</div><div class="font-bold text-gray-900 text-xs">Ethereum</div><div class="text-[9px] text-gray-500 mt-1">>0.00000002 BTC</div><div class="text-[8px] text-gray-400 mt-1">6 blocks · 2 min</div></div></div>
-            <div class="network-card" data-network="LIGHTNING" data-fee="0.30" onclick="selectNetwork('LIGHTNING', 0.30)"><div class="flex flex-col items-center text-center"><div class="network-icon mb-2">⚡</div><div class="font-bold text-gray-900 text-xs">Lightning</div><div class="text-[9px] text-gray-500 mt-1">>0.00001999 BTC</div><div class="text-[8px] text-gray-400 mt-1">Instant · 1 min</div></div></div>
-            <div class="network-card" data-network="SEGWIT" data-fee="1.80" onclick="selectNetwork('SEGWIT', 1.80)"><div class="flex flex-col items-center text-center"><div class="network-icon mb-2">₿</div><div class="font-bold text-gray-900 text-xs">SegWit</div><div class="text-[9px] text-gray-500 mt-1">>0.000006 BTC</div><div class="text-[8px] text-gray-400 mt-1">1 block · 1 min</div></div></div>
+        <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Select Network</label>
+        <div class="network-dropdown-container">
+            <div class="network-dropdown-btn" id="networkDropdownBtn">
+                <span id="selectedNetworkDisplay">₿ Bitcoin (BTC)</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu" id="networkDropdownMenu">
+                <div class="dropdown-item" data-network="BTC" data-fee="2.00" data-name="Bitcoin" data-icon="₿" data-details="Min. deposit >0.00001 BTC · 1 block · 1-30 min">
+                    <div class="network-name">₿ BTC - Bitcoin</div>
+                    <div class="network-details">Min. deposit >0.00001 BTC · 1 block · 1-30 min</div>
+                </div>
+                <div class="dropdown-item" data-network="BSC" data-fee="0.50" data-name="BNB Smart Chain (BEP20)" data-icon="🟡" data-details="Min. deposit >0.00000002 BTC · 1 block · 1 min">
+                    <div class="network-name">🟡 BSC - BNB Smart Chain (BEP20)</div>
+                    <div class="network-details">Min. deposit >0.00000002 BTC · 1 block · 1 min</div>
+                </div>
+                <div class="dropdown-item" data-network="ETH" data-fee="1.50" data-name="Ethereum (ERC20)" data-icon="🔷" data-details="Min. deposit >0.00000002 BTC · 6 blocks · 2 min">
+                    <div class="network-name">🔷 ETH - Ethereum (ERC20)</div>
+                    <div class="network-details">Min. deposit >0.00000002 BTC · 6 blocks · 2 min</div>
+                </div>
+                <div class="dropdown-item" data-network="LIGHTNING" data-fee="0.30" data-name="Lightning Network" data-icon="⚡" data-details="Min. deposit >0.00001999 BTC · Instant · 1 min">
+                    <div class="network-name">⚡ LIGHTNING - Lightning Network</div>
+                    <div class="network-details">Min. deposit >0.00001999 BTC · Instant · 1 min</div>
+                </div>
+                <div class="dropdown-item" data-network="SEGWIT" data-fee="1.80" data-name="BTC (SegWit)" data-icon="₿" data-details="Min. deposit >0.000006 BTC · 1 block · 1 min">
+                    <div class="network-name">₿ SEGWIT - BTC (SegWit)</div>
+                    <div class="network-details">Min. deposit >0.000006 BTC · 1 block · 1 min</div>
+                </div>
+            </div>
         </div>
         <div class="helper-text mt-2"><i class="fas fa-info-circle mr-1"></i> Only send to supported networks. Sending to other networks may result in permanent loss.</div>
     </div>
@@ -321,8 +369,6 @@
         <div class="h-[1px] bg-gray-100 my-2"></div>
         <div class="flex justify-between items-end"><div><span class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">You will receive</span><span class="text-sm font-medium text-gray-500">Final amount after fee</span></div><span class="text-3xl font-bold text-green-600" id="summaryTotal">$0.00</span></div>
     </div>
-
-    <div id="minRequirementWarning" class="warning-message mb-4" style="display: none;"><i class="fas fa-exclamation-triangle"></i><span id="minRequirementText"></span></div>
 
     <button id="withdrawBtn" class="withdraw-btn mb-6">WITHDRAW NOW</button>
 
@@ -358,7 +404,7 @@
         <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-900">Withdrawal Guide</h3><i class="fas fa-times text-gray-400 cursor-pointer hover:text-gray-600" id="closeHelpModal"></i></div>
         <div class="help-section"><h4><i class="fas fa-chart-line mr-2"></i> Minimum Balance Required</h4><p>To process any withdrawal, your withdrawal amount must meet the minimum requirement shown in the warning modal.</p></div>
         <div class="help-section"><h4><i class="fas fa-coins mr-2"></i> How fees work</h4><p><strong>Transaction Fee:</strong> $2.50 flat rate per transaction (non-refundable).</p><p><strong>Network Fee (Crypto):</strong> BTC: $2.00, BSC: $0.50, ETH: $1.50, Lightning: $0.30, SegWit: $1.80</p><p><strong>You will receive:</strong> Withdrawal Amount - Total Fees</p><p><strong>Processing Time:</strong> BTC: 10-30 min, BSC: 1-2 min, ETH: 2-5 min, Lightning: Instant, PayPal: Near-instant.</p></div>
-        <div class="help-section"><h4><i class="fab fa-bitcoin mr-2"></i> Bitcoin Address Requirements</h4><p>Accepted Bitcoin address formats:</p><ul><li><strong>Legacy:</strong> Starts with "1"</li><li><strong>SegWit:</strong> Starts with "3"</li><li><strong>Native SegWit:</strong> Starts with "bc1"</li></ul></div>
+        <div class="help-section"><h4><i class="fab fa-bitcoin mr-2"></i> Bitcoin Address Requirements</h4><p>Accepted Bitcoin address formats:</p><ul><li><strong>Legacy:</strong> Starts with "1"</li><li><strong>SegWit:</strong> Starts with "3"</li><li><strong>Native SegWit:</strong> Starts with "bc1"</li></ul><p>For Ethereum addresses, please select the ETH (ERC20) network.</p></div>
         <div class="help-section"><h4><i class="fab fa-paypal mr-2"></i> PayPal Requirements</h4><p>Enter the <strong>verified email address</strong> associated with the recipient's PayPal account.</p></div>
         <div class="help-section"><h4><i class="fas fa-clock mr-2"></i> Processing Time</h4><p><strong>Bitcoin:</strong> 1-3 confirmations (10-30 minutes).</p><p><strong>PayPal:</strong> Near-instant after verification.</p><p>All transactions are final and cannot be reversed.</p></div>
         <div class="help-section"><h4><i class="fas fa-headset mr-2"></i> 24/7 Support</h4><p><strong>Email:</strong> support@binance.com</p><p class="mt-2 text-[10px] opacity-50">Support typically responds within 15 minutes.</p></div>
@@ -394,8 +440,6 @@
     const summaryFee = document.getElementById('summaryFee');
     const summaryTotal = document.getElementById('summaryTotal');
     const withdrawBtn = document.getElementById('withdrawBtn');
-    const minRequirementWarning = document.getElementById('minRequirementWarning');
-    const minRequirementText = document.getElementById('minRequirementText');
     const addressWarning = document.getElementById('addressWarning');
     const warningText = document.getElementById('warningText');
     const loadingOverlay = document.getElementById('loadingOverlay');
@@ -410,8 +454,31 @@
     const modalWithdrawAmount = document.getElementById('modalWithdrawAmount');
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
+    const networkDropdownBtn = document.getElementById('networkDropdownBtn');
+    const networkDropdownMenu = document.getElementById('networkDropdownMenu');
+    const selectedNetworkDisplay = document.getElementById('selectedNetworkDisplay');
 
     const loadingMessages = ["Verifying blockchain network...", "Encrypting transaction data...", "Broadcasting to network...", "Confirming with nodes...", "Finalizing withdrawal..."];
+
+    // Network dropdown initialization
+    function initNetworkDropdown() {
+        networkDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            networkDropdownMenu.classList.toggle('active');
+        });
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const network = item.getAttribute('data-network');
+                const fee = parseFloat(item.getAttribute('data-fee'));
+                const name = item.getAttribute('data-name');
+                const icon = item.getAttribute('data-icon');
+                selectedNetworkDisplay.innerHTML = `${icon} ${name} (${network})`;
+                selectNetwork(network, fee);
+                networkDropdownMenu.classList.remove('active');
+            });
+        });
+        document.addEventListener('click', () => { networkDropdownMenu.classList.remove('active'); });
+    }
 
     function showToast(msg, isSuccess = true) {
         toastMessage.textContent = msg;
@@ -445,6 +512,11 @@
         if (!address) return false;
         const legacyRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
         const segwitRegex = /^bc1[a-zA-HJ-NP-Z0-9]{39,59}$/;
+        const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+        if (ethRegex.test(address.trim())) {
+            showToast('Ethereum address detected. Please select ETH network.', false);
+            return false;
+        }
         return legacyRegex.test(address.trim()) || segwitRegex.test(address.trim());
     }
 
@@ -476,21 +548,11 @@
                 displayBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 availableBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 maxAmountLabel.innerText = `Max: $${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                updateMinRequirementWarning();
             }
         } catch (error) { console.error('Error fetching balance:', error); }
     }
 
     function getMinimumWithdrawal() { return currentBalance + 130; }
-
-    function updateMinRequirementWarning() {
-        const minRequired = getMinimumWithdrawal();
-        const amount = parseFloat(withdrawAmount?.value) || 0;
-        if (amount > 0 && amount < minRequired) {
-            minRequirementWarning.style.display = 'flex';
-            minRequirementText.innerText = `Minimum withdrawal amount is $${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-        } else { minRequirementWarning.style.display = 'none'; }
-    }
 
     function calculateSummary() {
         let amount = parseFloat(withdrawAmount?.value) || 0;
@@ -499,14 +561,13 @@
         const totalReceive = Math.max(0, amount - totalFee);
         summaryFee.innerText = `$${totalFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         summaryTotal.innerText = `$${totalReceive.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        updateMinRequirementWarning();
     }
 
     function selectMethod(method) {
         currentMethod = method;
         document.getElementById('methodCrypto').classList.toggle('active', method === 'crypto');
         document.getElementById('methodPaypal').classList.toggle('active', method === 'paypal');
-        if (method === 'crypto') { cryptoSection.style.display = 'block'; paypalSection.style.display = 'none'; addressSection.style.display = 'block'; selectNetwork('BTC', 2.00); }
+        if (method === 'crypto') { cryptoSection.style.display = 'block'; paypalSection.style.display = 'none'; addressSection.style.display = 'block'; }
         else { cryptoSection.style.display = 'none'; paypalSection.style.display = 'block'; addressSection.style.display = 'none'; currentNetworkFee = 0; calculateSummary(); }
         hideWarning();
     }
@@ -514,8 +575,6 @@
     function selectNetwork(network, fee) {
         currentNetwork = network;
         currentNetworkFee = fee;
-        document.querySelectorAll('.network-card').forEach(card => card.classList.remove('active'));
-        document.querySelector(`.network-card[data-network="${network}"]`).classList.add('active');
         calculateSummary();
     }
 
@@ -540,7 +599,6 @@
         if (amount <= 0) { showToast('Please enter a valid amount', false); return; }
         if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; }
         
-        // Address validation
         if (currentMethod === 'crypto') {
             const address = cryptoAddress?.value?.trim();
             if (!address) { showToast('Please enter a wallet address', false); return; }
@@ -551,7 +609,6 @@
             if (!isValidEmail(email)) { showToast('Invalid email address', false); return; }
         }
         
-        // Start loading animation
         isLoading = true;
         const duration = Math.floor(Math.random() * (9000 - 6000 + 1) + 6000);
         const startTime = Date.now();
@@ -577,14 +634,12 @@
                 loadingOverlay.classList.remove('active');
                 isLoading = false;
                 
-                // After loading, check minimum requirement and show warning modal
                 if (amount < minRequired) {
                     modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     warningModal.classList.add('active');
                 } else {
-                    // If amount meets minimum, process withdrawal
                     const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
                     const newBalance = currentBalance - amount;
                     const newBalanceCents = Math.round(newBalance * 100);
@@ -609,6 +664,7 @@
 
     loadTheme();
     selectMethod('crypto');
+    initNetworkDropdown();
     selectNetwork('BTC', 2.00);
     fetchUserBalance();
     setInterval(fetchUserBalance, 30000);
