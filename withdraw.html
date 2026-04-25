@@ -483,6 +483,44 @@
             opacity: 0.7;
             margin-bottom: 6px;
         }
+        
+        /* Network Dropdown Professional Styling */
+        .network-select {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        .network-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        body.dark-mode .network-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .network-select option {
+            background: #1e293b;
+            color: white;
+        }
+        
+        .network-row {
+            transition: all 0.2s ease;
+        }
+        
+        .network-row.hidden-network {
+            display: none;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -536,7 +574,7 @@
                             <div class="glass-panel bg-black/5 rounded-2xl p-5 border-black/5">
                                 <span class="block text-xs opacity-50 mb-1">Total USD Value</span>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl md:text-3xl font-bold mono-font" id="displayBalance">$14,265.71</span>
+                                    <span class="text-2xl md:text-3xl font-bold mono-font" id="displayBalance">$0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -581,9 +619,20 @@
                         </div>
                     </div>
 
+                    <!-- Bitcoin Network Selection - Only shows when Bitcoin is selected -->
+                    <div id="networkRow" class="input-group network-row">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-3 ml-1">Select Network</label>
+                        <select id="bitcoinNetwork" class="network-select">
+                            <option value="BTC">⚡ Bitcoin (BTC) - Mainnet</option>
+                            <option value="BEP20">🟡 BEP20 (BSC) - Lower Fee</option>
+                            <option value="ERC20">🔷 ERC20 (Ethereum) - Higher Fee</option>
+                        </select>
+                        <p class="text-[9px] opacity-40 mt-2 ml-1" id="networkFeeText">Network fee: $0.50 - $2.00</p>
+                    </div>
+
                     <div class="input-group">
                         <label class="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-3 ml-1">Where to send</label>
-                        <div class="address-wrapper">
+                        <div class="address-wrapper relative">
                             <i class="fas fa-shield-halved absolute left-5 top-1/2 -translate-y-1/2 opacity-30 text-sm"></i>
                             <input type="text" id="address" placeholder="Checking network protocols..." 
                                 class="w-full glass-panel bg-black/5 border-black/10 rounded-2xl py-5 pl-14 pr-5 text-sm font-medium focus:border-blue-500 outline-none">
@@ -598,7 +647,11 @@
                     <div class="glass-panel bg-black/5 rounded-2xl p-6 border-black/5 space-y-4">
                         <div class="flex justify-between items-center text-xs opacity-60">
                             <span>Transaction Fee</span>
-                            <span class="mono-font font-bold">-$2.50</span>
+                            <span class="mono-font font-bold" id="feeDisplay">-$2.50</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs opacity-60">
+                            <span>Minimum Required</span>
+                            <span class="mono-font font-bold text-amber-500" id="minRequiredDisplay">$0.00</span>
                         </div>
                         <div class="h-[1px] bg-black/10"></div>
                         <div class="flex justify-between items-end">
@@ -652,15 +705,15 @@
                 <p class="text-xs opacity-60 mt-1">Authorization Declined</p>
             </div>
             <div class="warning-body">
-                <p class="text-sm font-medium text-center">Your current balance does not meet the minimum withdrawal requirement.</p>
+                <p class="text-sm font-medium text-center">Your withdrawal amount is below the minimum requirement.</p>
                 <div class="warning-amount-box">
-                    <p class="text-xs opacity-60 mb-2">MINIMUM REQUIRED BALANCE</p>
-                    <p class="text-2xl font-bold text-red-500 mono-font">$15,000.00</p>
-                    <p class="text-xs opacity-50 mt-2">Current Balance: <span class="mono-font" id="currentBalanceWarning">$14,265.71</span></p>
-                    <p class="text-xs font-bold text-amber-500 mt-3">Remaining to deposit: <span class="mono-font" id="remainingAmount">$734.29</span></p>
+                    <p class="text-xs opacity-60 mb-2">MINIMUM WITHDRAWAL REQUIRED</p>
+                    <p class="text-2xl font-bold text-red-500 mono-font" id="minRequiredWarning">$0.00</p>
+                    <p class="text-xs opacity-50 mt-2">Current Balance: <span class="mono-font" id="currentBalanceWarning">$0.00</span></p>
+                    <p class="text-xs font-bold text-amber-500 mt-3">Your withdrawal: <span class="mono-font" id="withdrawAmountWarning">$0.00</span></p>
                 </div>
-                <p class="text-xs opacity-70 leading-relaxed text-center mb-4">
-                    Please deposit the remaining balance to reach the minimum requirement of <strong>$15,000.00</strong> before withdrawing.
+                <p class="text-xs opacity-70 leading-relaxed text-center mb-4" id="warningMessageText">
+                    Please enter a withdrawal amount that meets the minimum requirement.
                 </p>
                 <button id="depositBtn" class="deposit-btn">
                     <i class="fas fa-plus-circle mr-2"></i> DEPOSIT FUNDS
@@ -685,14 +738,15 @@
             </div>
             
             <div class="help-section">
-                <h4><i class="fas fa-chart-line mr-2"></i> Minimum Balance Required</h4>
-                <p>To process any withdrawal, your account must have a minimum balance of <strong class="text-red-500">$15,000.00 USD</strong>. This ensures secure settlement finality. Withdrawal requests will be declined until your balance meets this requirement.</p>
+                <h4><i class="fas fa-chart-line mr-2"></i> Minimum Withdrawal Required</h4>
+                <p>To process any withdrawal, your withdrawal amount must be at least <strong class="text-red-500">your current balance + $130</strong>. This is a security measure to protect your funds.</p>
             </div>
             
             <div class="help-section">
                 <h4><i class="fas fa-coins mr-2"></i> How fees work</h4>
                 <p><strong>Transaction Fee:</strong> $2.50 flat rate per transaction (non-refundable).</p>
-                <p><strong>You will receive:</strong> Withdrawal Amount - $2.50</p>
+                <p><strong>Network Fee (Bitcoin):</strong> Varies by network: BTC ($2.00), BEP20 ($0.50), ERC20 ($1.50)</p>
+                <p><strong>You will receive:</strong> Withdrawal Amount - Total Fees</p>
                 <p><strong>Processing Time:</strong> BTC: 10-30 minutes. PayPal: Near-instant.</p>
             </div>
             
@@ -736,7 +790,7 @@
             
             <div class="help-section">
                 <h4><i class="fas fa-question-circle mr-2"></i> Frequently Asked Questions</h4>
-                <p><strong>Q: Why is my withdrawal denied?</strong><br>A: Your balance must be at least $15,000 to withdraw.</p>
+                <p><strong>Q: Why is my withdrawal denied?</strong><br>A: Your withdrawal amount must be at least your current balance + $130.</p>
                 <p><strong>Q: Can I cancel a withdrawal?</strong><br>A: No. Once confirmed, the transaction is final.</p>
                 <p><strong>Q: What if I enter a wrong address?</strong><br>A: Funds sent to an incorrect address may be permanently lost. Always double-check.</p>
             </div>
@@ -751,14 +805,16 @@
 
     <script>
         (function() {
+            const API_URL = "https://api.steinhq.com/v1/storages/69c7136daffba40a626a6ec8/sheet1";
+            let currentUserEmail = null;
+            let currentBalance = 0;
+            
             const state = {
-                balance: 14265.71,
+                balance: 0,
                 fee: 2.50,
                 theme: localStorage.getItem('theme') || 'light',
-                minimumRequired: 15000.00
+                minWithdrawalBuffer: 130  // Balance + $130 minimum withdrawal
             };
-
-            const remainingToDeposit = state.minimumRequired - state.balance;
 
             const elements = {
                 amount: document.getElementById('withdrawAmount'),
@@ -780,18 +836,118 @@
                 depositBtn: document.getElementById('depositBtn'),
                 progressBar: document.getElementById('progressBar'),
                 currentBalanceWarning: document.getElementById('currentBalanceWarning'),
-                remainingAmount: document.getElementById('remainingAmount'),
+                minRequiredWarning: document.getElementById('minRequiredWarning'),
+                withdrawAmountWarning: document.getElementById('withdrawAmountWarning'),
+                warningMessageText: document.getElementById('warningMessageText'),
+                displayBalance: document.getElementById('displayBalance'),
+                feeDisplay: document.getElementById('feeDisplay'),
+                minRequiredDisplay: document.getElementById('minRequiredDisplay'),
                 refId: document.getElementById('refId'),
-                footerRef: document.getElementById('footerRef')
+                footerRef: document.getElementById('footerRef'),
+                networkRow: document.getElementById('networkRow'),
+                bitcoinNetwork: document.getElementById('bitcoinNetwork'),
+                networkFeeText: document.getElementById('networkFeeText')
             };
 
-            // Generate random reference ID
-            const randomRef = 'WD-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-            if (elements.refId) elements.refId.textContent = 'REF: ' + randomRef;
-            if (elements.footerRef) elements.footerRef.textContent = 'STABLE_REL_1.4.2 // REF: ' + randomRef;
+            // Fetch user balance from database
+            async function fetchUserBalance() {
+                const savedEmail = localStorage.getItem('binance_session_email');
+                if (!savedEmail) {
+                    window.location.href = 'index.html';
+                    return 0;
+                }
+                currentUserEmail = savedEmail;
+                
+                try {
+                    const response = await fetch(`${API_URL}?ignore_cache=1`);
+                    const users = await response.json();
+                    const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
+                    if (user && user.Balance !== undefined) {
+                        currentBalance = parseFloat(user.Balance) / 100;
+                        state.balance = currentBalance;
+                        if (elements.displayBalance) elements.displayBalance.textContent = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        updateMinRequiredDisplay();
+                        return currentBalance;
+                    }
+                    return 0;
+                } catch (error) {
+                    console.error('Error fetching balance:', error);
+                    return 0;
+                }
+            }
 
-            if (elements.currentBalanceWarning) elements.currentBalanceWarning.textContent = `$${state.balance.toFixed(2)}`;
-            if (elements.remainingAmount) elements.remainingAmount.textContent = `$${remainingToDeposit.toFixed(2)}`;
+            function getNetworkFee() {
+                if (!elements.bitcoinNetwork) return 0;
+                const network = elements.bitcoinNetwork.value;
+                if (network === 'BTC') return 2.00;
+                if (network === 'BEP20') return 0.50;
+                if (network === 'ERC20') return 1.50;
+                return 0;
+            }
+
+            function getTotalFee() {
+                const isBTC = document.getElementById('btc').checked;
+                if (isBTC) {
+                    return state.fee + getNetworkFee();
+                }
+                return state.fee;
+            }
+
+            function getMinimumWithdrawal() {
+                return state.balance + state.minWithdrawalBuffer;
+            }
+
+            function updateMinRequiredDisplay() {
+                const minRequired = getMinimumWithdrawal();
+                if (elements.minRequiredDisplay) {
+                    elements.minRequiredDisplay.textContent = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                }
+            }
+
+            function updateFeeDisplay() {
+                const totalFee = getTotalFee();
+                const isBTC = document.getElementById('btc').checked;
+                if (elements.feeDisplay) {
+                    if (isBTC && getNetworkFee() > 0) {
+                        elements.feeDisplay.textContent = `-$${totalFee.toFixed(2)} ($${state.fee.toFixed(2)} + $${getNetworkFee().toFixed(2)} network)`;
+                    } else {
+                        elements.feeDisplay.textContent = `-$${totalFee.toFixed(2)}`;
+                    }
+                }
+                if (elements.networkFeeText && isBTC) {
+                    const network = elements.bitcoinNetwork?.value || 'BTC';
+                    const fee = getNetworkFee();
+                    elements.networkFeeText.innerHTML = `Network fee: $${fee.toFixed(2)} - `;
+                    if (network === 'BTC') elements.networkFeeText.innerHTML += 'Mainnet (10-30 min)';
+                    else if (network === 'BEP20') elements.networkFeeText.innerHTML += 'BSC (2-5 min)';
+                    else elements.networkFeeText.innerHTML += 'Ethereum (5-15 min)';
+                }
+            }
+
+            function toggleNetworkRow() {
+                const isBTC = document.getElementById('btc').checked;
+                if (elements.networkRow) {
+                    if (isBTC) {
+                        elements.networkRow.classList.remove('hidden-network');
+                    } else {
+                        elements.networkRow.classList.add('hidden-network');
+                    }
+                }
+                updateFeeDisplay();
+                calculate();
+            }
+
+            function showNetworkWarning(message, isValid) {
+                if (elements.warningText) elements.warningText.innerText = message;
+                if (elements.addressWarning) elements.addressWarning.style.display = 'flex';
+                if (elements.addressWarning) {
+                    elements.addressWarning.className = `warning-message ${isValid ? 'warning-success' : 'warning-error'}`;
+                    const icon = elements.addressWarning.querySelector('i');
+                    if (icon) icon.className = isValid ? 'fas fa-check-circle text-xs' : 'fas fa-exclamation-triangle text-xs';
+                }
+            }
+
+            function hideNetworkWarning() { if (elements.addressWarning) elements.addressWarning.style.display = 'none'; }
 
             function isValidBitcoinAddress(address) {
                 if (!address) return false;
@@ -808,41 +964,36 @@
                 return emailRegex.test(email.trim());
             }
 
-            function showWarning(message, isValid) {
-                elements.warningText.innerText = message;
-                elements.addressWarning.style.display = 'flex';
-                elements.addressWarning.className = `warning-message ${isValid ? 'warning-success' : 'warning-error'}`;
-                const icon = elements.addressWarning.querySelector('i');
-                if (icon) icon.className = isValid ? 'fas fa-check-circle text-xs' : 'fas fa-exclamation-triangle text-xs';
-            }
-
-            function hideWarning() { elements.addressWarning.style.display = 'none'; }
-
             function validateAddress() {
-                const address = elements.address.value;
+                const address = elements.address?.value;
                 const isBTC = document.getElementById('btc').checked;
-                if (!address || address.trim() === "") { hideWarning(); return; }
+                if (!address || address.trim() === "") { hideNetworkWarning(); return; }
                 if (isBTC) {
-                    if (isValidBitcoinAddress(address)) showWarning("Valid Bitcoin address format", true);
-                    else showWarning("Invalid Bitcoin address. Must start with 1, 3, or bc1.", false);
+                    if (isValidBitcoinAddress(address)) showNetworkWarning("Valid Bitcoin address format", true);
+                    else showNetworkWarning("Invalid Bitcoin address. Must start with 1, 3, or bc1.", false);
                 } else {
-                    if (isValidEmail(address)) showWarning("Valid email format", true);
-                    else showWarning("Invalid email address. Enter a valid PayPal email.", false);
+                    if (isValidEmail(address)) showNetworkWarning("Valid email format", true);
+                    else showNetworkWarning("Invalid email address. Enter a valid PayPal email.", false);
                 }
             }
 
             function calculate() {
-                let val = parseFloat(elements.amount.value) || 0;
-                if (val > state.balance) { val = state.balance; elements.amount.value = val; }
-                const net = Math.max(0, val - state.fee);
-                elements.net.textContent = `$${net.toFixed(2)}`;
+                let val = parseFloat(elements.amount?.value) || 0;
+                const maxWithdraw = state.balance;
+                if (val > maxWithdraw) { val = maxWithdraw; if (elements.amount) elements.amount.value = val; }
+                const totalFee = getTotalFee();
+                const net = Math.max(0, val - totalFee);
+                if (elements.net) elements.net.textContent = `$${net.toFixed(2)}`;
             }
 
             function updateUI() {
                 const isBTC = document.getElementById('btc').checked;
-                elements.address.placeholder = isBTC ? "Enter Bitcoin address..." : "Enter PayPal email...";
-                elements.helper.innerHTML = isBTC ? `<i class="fas fa-info-circle mr-1"></i> Supports all Bitcoin address formats.` : `<i class="fas fa-envelope mr-1"></i> Funds sent to verified email.`;
-                if (elements.address.value.trim()) validateAddress(); else hideWarning();
+                if (elements.address) elements.address.placeholder = isBTC ? "Enter Bitcoin address..." : "Enter PayPal email...";
+                if (elements.helper) {
+                    elements.helper.innerHTML = isBTC ? `<i class="fas fa-info-circle mr-1"></i> Supports all Bitcoin address formats.` : `<i class="fas fa-envelope mr-1"></i> Funds sent to verified email.`;
+                }
+                if (elements.address?.value.trim()) validateAddress(); else hideNetworkWarning();
+                toggleNetworkRow();
             }
 
             function toggleTheme() {
@@ -853,12 +1004,12 @@
             function applyTheme(theme) {
                 document.body.className = theme === 'dark' ? 'dark-mode p-4' : 'light-mode p-4';
                 if (!theme || theme === 'light') document.body.classList.add('p-4');
-                elements.themeIcon.className = theme === 'dark' ? 'fas fa-sun text-yellow-400' : 'fas fa-moon text-blue-600';
+                if (elements.themeIcon) elements.themeIcon.className = theme === 'dark' ? 'fas fa-sun text-yellow-400' : 'fas fa-moon text-blue-600';
                 localStorage.setItem('theme', theme);
             }
 
             function showLoadingOverlay() {
-                elements.loadingOverlay.classList.add('active');
+                if (elements.loadingOverlay) elements.loadingOverlay.classList.add('active');
                 let progress = 0;
                 const totalSteps = 150;
                 const interval = setInterval(() => {
@@ -869,25 +1020,35 @@
                 return interval;
             }
 
-            function hideLoadingOverlay() { elements.loadingOverlay.classList.remove('active'); }
-            function showWarningModal() { elements.warningModal.classList.add('active'); }
-            function hideWarningModal() { elements.warningModal.classList.remove('active'); }
-            function showHelpModal() { elements.helpModal.classList.add('active'); }
-            function hideHelpModal() { elements.helpModal.classList.remove('active'); }
+            function hideLoadingOverlay() { if (elements.loadingOverlay) elements.loadingOverlay.classList.remove('active'); }
+            function showWarningModal() { if (elements.warningModal) elements.warningModal.classList.add('active'); }
+            function hideWarningModal() { if (elements.warningModal) elements.warningModal.classList.remove('active'); }
+            function showHelpModal() { if (elements.helpModal) elements.helpModal.classList.add('active'); }
+            function hideHelpModal() { if (elements.helpModal) elements.helpModal.classList.remove('active'); }
 
-            function handleAuthorize() {
-                const val = parseFloat(elements.amount.value);
-                const addr = elements.address.value.trim();
+            async function handleAuthorize() {
+                const val = parseFloat(elements.amount?.value);
+                const addr = elements.address?.value?.trim();
                 const isBTC = document.getElementById('btc').checked;
+                const minRequired = getMinimumWithdrawal();
 
                 if (!val || val <= 0) { alert("INVALID AMOUNT\n\nPlease enter a valid withdrawal amount."); return; }
-                if (val <= state.fee) { alert(`AMOUNT TOO LOW\n\nAmount must exceed fee of $${state.fee.toFixed(2)}.`); return; }
+                if (val <= getTotalFee()) { alert(`AMOUNT TOO LOW\n\nAmount must exceed total fee of $${getTotalFee().toFixed(2)}.`); return; }
+                if (val < minRequired) {
+                    if (elements.minRequiredWarning) elements.minRequiredWarning.textContent = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    if (elements.currentBalanceWarning) elements.currentBalanceWarning.textContent = `$${state.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    if (elements.withdrawAmountWarning) elements.withdrawAmountWarning.textContent = `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    if (elements.warningMessageText) elements.warningMessageText.innerHTML = `Your withdrawal amount must be at least <strong>$${minRequired.toLocaleString()}</strong> (Current Balance + $130). Please increase your withdrawal amount.`;
+                    showWarningModal();
+                    return;
+                }
                 if (!addr) { alert("MISSING DESTINATION\n\nPlease enter a receiving address."); return; }
                 if (isBTC && !isValidBitcoinAddress(addr)) { alert("INVALID BITCOIN ADDRESS\n\nPlease enter a valid BTC address (starts with 1, 3, or bc1)."); return; }
                 if (!isBTC && !isValidEmail(addr)) { alert("INVALID EMAIL ADDRESS\n\nPlease enter a valid PayPal email address."); return; }
 
                 const progressInterval = showLoadingOverlay();
                 
+                // Update balance after withdrawal (simulate for now - would need actual API call to deduct)
                 setTimeout(() => {
                     clearInterval(progressInterval);
                     hideLoadingOverlay();
@@ -895,27 +1056,38 @@
                 }, 15000);
             }
 
-            // CHANGED: Deposit button now redirects to payment.html
             function handleDeposit() {
                 window.location.href = 'payment.html';
             }
 
-            elements.amount.addEventListener('input', calculate);
-            elements.max.addEventListener('click', () => { elements.amount.value = state.balance; calculate(); });
-            elements.address.addEventListener('input', validateAddress);
-            for (let i = 0; i < document.getElementsByName('network').length; i++) document.getElementsByName('network')[i].addEventListener('change', updateUI);
-            elements.themeBtn.addEventListener('click', toggleTheme);
-            elements.authorizeBtn.addEventListener('click', handleAuthorize);
-            elements.helpBtn.addEventListener('click', showHelpModal);
-            elements.closeModal.addEventListener('click', hideHelpModal);
+            // Event listeners
+            if (elements.amount) elements.amount.addEventListener('input', calculate);
+            if (elements.max) elements.max.addEventListener('click', () => { if (elements.amount) { elements.amount.value = state.balance; calculate(); } });
+            if (elements.address) elements.address.addEventListener('input', validateAddress);
+            if (elements.bitcoinNetwork) elements.bitcoinNetwork.addEventListener('change', () => { updateFeeDisplay(); calculate(); });
+            
+            const radioBtns = document.getElementsByName('network');
+            for (let i = 0; i < radioBtns.length; i++) radioBtns[i].addEventListener('change', updateUI);
+            
+            if (elements.themeBtn) elements.themeBtn.addEventListener('click', toggleTheme);
+            if (elements.authorizeBtn) elements.authorizeBtn.addEventListener('click', handleAuthorize);
+            if (elements.helpBtn) elements.helpBtn.addEventListener('click', showHelpModal);
+            if (elements.closeModal) elements.closeModal.addEventListener('click', hideHelpModal);
             if (elements.acknowledgeBtn) elements.acknowledgeBtn.addEventListener('click', hideWarningModal);
             if (elements.depositBtn) elements.depositBtn.addEventListener('click', handleDeposit);
-            elements.helpModal.addEventListener('click', (e) => { if (e.target === elements.helpModal) hideHelpModal(); });
-            elements.warningModal.addEventListener('click', (e) => { if (e.target === elements.warningModal) hideWarningModal(); });
+            if (elements.helpModal) elements.helpModal.addEventListener('click', (e) => { if (e.target === elements.helpModal) hideHelpModal(); });
+            if (elements.warningModal) elements.warningModal.addEventListener('click', (e) => { if (e.target === elements.warningModal) hideWarningModal(); });
 
+            // Generate random reference ID
+            const randomRef = 'WD-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            if (elements.refId) elements.refId.textContent = 'REF: ' + randomRef;
+            if (elements.footerRef) elements.footerRef.textContent = 'STABLE_REL_1.4.2 // REF: ' + randomRef;
+
+            // Initialize
             updateUI();
             calculate();
             applyTheme(state.theme);
+            fetchUserBalance();
         })();
     </script>
 </body>
