@@ -35,9 +35,7 @@
             color: white;
         }
         
-        body.dark-mode .text-gray-400 { color: #9ca3af; }
-        body.dark-mode .text-gray-500 { color: #6b7280; }
-        body.dark-mode .helper-text { color: #6b7280; }
+        body.dark-mode .text-gray-400, body.dark-mode .text-gray-500, body.dark-mode .helper-text { color: #9ca3af; }
         body.dark-mode .dropdown-menu { background: #1E2329; border-color: #2B3139; }
         body.dark-mode .dropdown-item:hover { background: #2A2F38; }
         
@@ -114,7 +112,6 @@
         .warning-message { background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444; padding: 10px 12px; border-radius: 10px; font-size: 11px; color: #dc2626; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
         .warning-success { background: rgba(16,185,129,0.08); border-left: 3px solid #10b981; color: #059669; }
         
-        /* Network Dropdown Styles */
         .network-dropdown-container { position: relative; width: 100%; }
         .network-dropdown-btn {
             background: #ffffff;
@@ -154,6 +151,9 @@
             cursor: pointer;
             transition: all 0.2s;
             border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background: #f8fafc; }
@@ -277,6 +277,7 @@
 <body>
 
 <div class="max-w-2xl mx-auto">
+    <!-- Header with Status, Reference and Theme Toggle -->
     <div class="flex flex-wrap justify-between items-end mb-6 gap-4">
         <div>
             <div class="flex items-center gap-2 mb-1">
@@ -294,6 +295,7 @@
         </div>
     </div>
 
+    <!-- Balance Card -->
     <div class="balance-card mb-6">
         <div class="flex justify-between items-center">
             <div><p class="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Balance</p><p class="text-2xl font-bold text-gray-900" id="displayBalance">$0.00</p></div>
@@ -301,6 +303,7 @@
         </div>
     </div>
 
+    <!-- Withdrawal Amount -->
     <div class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Withdrawal Amount</label>
         <div class="relative">
@@ -310,11 +313,26 @@
         <div class="flex justify-between mt-2"><span class="text-xs text-gray-400">Min: $10.00</span><span class="text-xs text-gray-400" id="maxAmountLabel">Max: $0.00</span></div>
     </div>
 
+    <!-- Withdrawal Method Selection (Crypto / PayPal) -->
     <div class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-3 block">Select withdrawal Method</label>
         <div class="grid grid-cols-2 gap-4">
-            <div id="methodCrypto" class="method-card active" onclick="selectMethod('crypto')"><div class="text-3xl mb-2">₿🟡🔷⚡</div><div class="font-bold text-gray-900 text-sm">Crypto</div><div class="text-xs text-gray-500 mt-1">Bitcoin & Networks</div></div>
-            <div id="methodPaypal" class="method-card" onclick="selectMethod('paypal')"><div class="text-3xl mb-2">🅿️</div><div class="font-bold text-gray-900 text-sm">PayPal</div><div class="text-xs text-gray-500 mt-1">Instant Transfer</div></div>
+            <!-- Crypto Method with Professional Bitcoin Logo -->
+            <div id="methodCrypto" class="method-card active" onclick="selectMethod('crypto')">
+                <div class="text-3xl mb-2 flex justify-center">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin" class="w-12 h-12">
+                </div>
+                <div class="font-bold text-gray-900 text-sm">Crypto</div>
+                <div class="text-xs text-gray-500 mt-1">Bitcoin & Networks</div>
+            </div>
+            <!-- PayPal Method with Professional PayPal Logo -->
+            <div id="methodPaypal" class="method-card" onclick="selectMethod('paypal')">
+                <div class="text-3xl mb-2 flex justify-center">
+                    <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" class="w-12 h-12">
+                </div>
+                <div class="font-bold text-gray-900 text-sm">PayPal</div>
+                <div class="text-xs text-gray-500 mt-1">Instant Transfer</div>
+            </div>
         </div>
     </div>
 
@@ -323,63 +341,70 @@
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Select Network</label>
         <div class="network-dropdown-container">
             <div class="network-dropdown-btn" id="networkDropdownBtn">
-                <span id="selectedNetworkDisplay">₿ Bitcoin (BTC)</span>
+                <span id="selectedNetworkDisplay" class="flex items-center gap-2"><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" style="width: 20px; height: 20px;" alt="BTC"> Bitcoin (BTC)</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="dropdown-menu" id="networkDropdownMenu">
-                <div class="dropdown-item" data-network="BTC" data-fee="2.00" data-name="Bitcoin" data-icon="₿" data-details="Min. deposit >0.00001 BTC · 1 block · 1-30 min">
-                    <div class="network-name">₿ BTC - Bitcoin</div>
-                    <div class="network-details">Min. deposit >0.00001 BTC · 1 block · 1-30 min</div>
+                <div class="dropdown-item" data-network="BTC" data-fee="2.00" data-name="Bitcoin">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" style="width: 24px; height: 24px;" alt="BTC">
+                    <div><div class="network-name">BTC - Bitcoin</div><div class="network-details">Min. deposit >0.00001 BTC · 1 block · 1-30 min</div></div>
                 </div>
-                <div class="dropdown-item" data-network="BSC" data-fee="0.50" data-name="BNB Smart Chain (BEP20)" data-icon="🟡" data-details="Min. deposit >0.00000002 BTC · 1 block · 1 min">
-                    <div class="network-name">🟡 BSC - BNB Smart Chain (BEP20)</div>
-                    <div class="network-details">Min. deposit >0.00000002 BTC · 1 block · 1 min</div>
+                <div class="dropdown-item" data-network="BSC" data-fee="0.50" data-name="BNB Smart Chain (BEP20)">
+                    <img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" style="width: 24px; height: 24px;" alt="BNB">
+                    <div><div class="network-name">BSC - BNB Smart Chain (BEP20)</div><div class="network-details">Min. deposit >0.00000002 BTC · 1 block · 1 min</div></div>
                 </div>
-                <div class="dropdown-item" data-network="ETH" data-fee="1.50" data-name="Ethereum (ERC20)" data-icon="🔷" data-details="Min. deposit >0.00000002 BTC · 6 blocks · 2 min">
-                    <div class="network-name">🔷 ETH - Ethereum (ERC20)</div>
-                    <div class="network-details">Min. deposit >0.00000002 BTC · 6 blocks · 2 min</div>
+                <div class="dropdown-item" data-network="ETH" data-fee="1.50" data-name="Ethereum (ERC20)">
+                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" style="width: 24px; height: 24px;" alt="ETH">
+                    <div><div class="network-name">ETH - Ethereum (ERC20)</div><div class="network-details">Min. deposit >0.00000002 BTC · 6 blocks · 2 min</div></div>
                 </div>
-                <div class="dropdown-item" data-network="LIGHTNING" data-fee="0.30" data-name="Lightning Network" data-icon="⚡" data-details="Min. deposit >0.00001999 BTC · Instant · 1 min">
-                    <div class="network-name">⚡ LIGHTNING - Lightning Network</div>
-                    <div class="network-details">Min. deposit >0.00001999 BTC · Instant · 1 min</div>
+                <div class="dropdown-item" data-network="LIGHTNING" data-fee="0.30" data-name="Lightning Network">
+                    <i class="fas fa-bolt" style="color: #FCD535; font-size: 22px; width: 24px; text-align: center;"></i>
+                    <div><div class="network-name">LIGHTNING - Lightning Network</div><div class="network-details">Min. deposit >0.00001999 BTC · Instant · 1 min</div></div>
                 </div>
-                <div class="dropdown-item" data-network="SEGWIT" data-fee="1.80" data-name="BTC (SegWit)" data-icon="₿" data-details="Min. deposit >0.000006 BTC · 1 block · 1 min">
-                    <div class="network-name">₿ SEGWIT - BTC (SegWit)</div>
-                    <div class="network-details">Min. deposit >0.000006 BTC · 1 block · 1 min</div>
+                <div class="dropdown-item" data-network="SEGWIT" data-fee="1.80" data-name="BTC (SegWit)">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" style="width: 24px; height: 24px;" alt="SegWit BTC">
+                    <div><div class="network-name">SEGWIT - BTC (SegWit)</div><div class="network-details">Min. deposit >0.000006 BTC · 1 block · 1 min</div></div>
                 </div>
             </div>
         </div>
         <div class="helper-text mt-2"><i class="fas fa-info-circle mr-1"></i> Only send to supported networks. Sending to other networks may result in permanent loss.</div>
     </div>
 
+    <!-- PayPal Section (Hidden by default) -->
     <div id="paypalSection" class="mb-6" style="display: none;">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">PayPal Email</label>
         <input type="email" id="paypalEmail" placeholder="recipient@example.com" class="address-input">
         <div class="helper-text mt-2"><i class="fab fa-paypal mr-1"></i> Funds will be sent instantly to this PayPal email address.</div>
     </div>
 
+    <!-- Destination Address (for Crypto) -->
     <div id="addressSection" class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Where to send</label>
         <div class="relative"><i class="fas fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="cryptoAddress" placeholder="Enter wallet address..." class="address-input pl-12"></div>
         <div id="addressWarning" class="warning-message" style="display: none;"><i class="fas fa-exclamation-circle"></i><span id="warningText"></span></div>
     </div>
 
+    <!-- Transaction Summary -->
     <div class="bg-white rounded-2xl p-5 border border-gray-200 mb-6">
         <div class="fee-row"><span class="text-sm text-gray-500">Transaction Fee</span><span class="text-blue-600 font-semibold" id="summaryFee">$0.00</span></div>
         <div class="h-[1px] bg-gray-100 my-2"></div>
         <div class="flex justify-between items-end"><div><span class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">You will receive</span><span class="text-sm font-medium text-gray-500">Final amount after fee</span></div><span class="text-3xl font-bold text-green-600" id="summaryTotal">$0.00</span></div>
     </div>
 
+    <!-- Withdraw Button -->
     <button id="withdrawBtn" class="withdraw-btn mb-6">WITHDRAW NOW</button>
 
+    <!-- Network Warning -->
     <div class="text-center mb-6"><p class="text-[10px] text-gray-400">⚠️ Please note that only supported networks are shown. If you send via another network your assets may be lost.</p></div>
 
+    <!-- Footer Security Badges -->
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 opacity-50 hover:opacity-80 transition-opacity">
         <div class="flex gap-6 text-[9px] font-bold tracking-widest uppercase text-gray-400"><span class="flex items-center gap-1.5"><i class="fas fa-circle text-[6px] text-green-500"></i> Encrypted AES-256</span><span class="flex items-center gap-1.5"><i class="fas fa-circle text-[6px] text-green-500"></i> Secure Signing</span></div>
         <p class="text-[9px] font-mono text-gray-400" id="footerRef">STABLE_REL_1.4.2 // REF: WD-NX-99</p>
     </div>
 </div>
 
+<!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-spinner"></div>
     <div class="loading-progress"><div class="loading-progress-fill" id="loadingProgressFill"></div></div>
@@ -388,6 +413,7 @@
     <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
 
+<!-- Minimum Withdrawal Warning Modal with Blinking Icon -->
 <div id="warningModal" class="modal">
     <div class="modal-content">
         <div class="warning-icon blinking-icon"><i class="fas fa-exclamation-triangle"></i></div>
@@ -399,6 +425,7 @@
     </div>
 </div>
 
+<!-- Help Modal -->
 <div id="helpModal" class="modal">
     <div class="modal-content help-modal-content">
         <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-gray-900">Withdrawal Guide</h3><i class="fas fa-times text-gray-400 cursor-pointer hover:text-gray-600" id="closeHelpModal"></i></div>
@@ -460,196 +487,50 @@
 
     const loadingMessages = ["Verifying blockchain network...", "Encrypting transaction data...", "Broadcasting to network...", "Confirming with nodes...", "Finalizing withdrawal..."];
 
-    // Network dropdown initialization
     function initNetworkDropdown() {
-        networkDropdownBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            networkDropdownMenu.classList.toggle('active');
-        });
+        networkDropdownBtn.addEventListener('click', (e) => { e.stopPropagation(); networkDropdownMenu.classList.toggle('active'); });
         document.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', () => {
                 const network = item.getAttribute('data-network');
                 const fee = parseFloat(item.getAttribute('data-fee'));
                 const name = item.getAttribute('data-name');
-                const icon = item.getAttribute('data-icon');
-                selectedNetworkDisplay.innerHTML = `${icon} ${name} (${network})`;
+                const iconImg = item.querySelector('img, i').cloneNode(true);
+                selectedNetworkDisplay.innerHTML = '';
+                selectedNetworkDisplay.appendChild(iconImg);
+                selectedNetworkDisplay.appendChild(document.createTextNode(` ${name} (${network})`));
                 selectNetwork(network, fee);
                 networkDropdownMenu.classList.remove('active');
             });
         });
-        document.addEventListener('click', () => { networkDropdownMenu.classList.remove('active'); });
+        document.addEventListener('click', () => { if (networkDropdownMenu) networkDropdownMenu.classList.remove('active'); });
     }
 
-    function showToast(msg, isSuccess = true) {
-        toastMessage.textContent = msg;
-        toastMessage.className = `toast-message ${isSuccess ? '' : 'error'}`;
-        toastMessage.style.opacity = '1';
-        setTimeout(() => { toastMessage.style.opacity = '0'; }, 3000);
-    }
+    function showToast(msg, isSuccess = true) { toastMessage.textContent = msg; toastMessage.className = `toast-message ${isSuccess ? '' : 'error'}`; toastMessage.style.opacity = '1'; setTimeout(() => { toastMessage.style.opacity = '0'; }, 3000); }
 
-    function toggleTheme() {
-        isDarkMode = !isDarkMode;
-        if (isDarkMode) { document.body.classList.add('dark-mode'); themeIcon.className = 'fas fa-sun text-yellow-400 text-sm'; }
-        else { document.body.classList.remove('dark-mode'); themeIcon.className = 'fas fa-moon text-blue-500 text-sm'; }
-        localStorage.setItem('withdraw_theme', isDarkMode ? 'dark' : 'light');
-    }
+    function toggleTheme() { isDarkMode = !isDarkMode; if (isDarkMode) { document.body.classList.add('dark-mode'); themeIcon.className = 'fas fa-sun text-yellow-400 text-sm'; } else { document.body.classList.remove('dark-mode'); themeIcon.className = 'fas fa-moon text-blue-500 text-sm'; } localStorage.setItem('withdraw_theme', isDarkMode ? 'dark' : 'light'); }
+    function loadTheme() { const savedTheme = localStorage.getItem('withdraw_theme'); if (savedTheme === 'dark') { isDarkMode = true; document.body.classList.add('dark-mode'); themeIcon.className = 'fas fa-sun text-yellow-400 text-sm'; } else { isDarkMode = false; document.body.classList.remove('dark-mode'); themeIcon.className = 'fas fa-moon text-blue-500 text-sm'; } }
 
-    function loadTheme() {
-        const savedTheme = localStorage.getItem('withdraw_theme');
-        if (savedTheme === 'dark') { isDarkMode = true; document.body.classList.add('dark-mode'); themeIcon.className = 'fas fa-sun text-yellow-400 text-sm'; }
-        else { isDarkMode = false; document.body.classList.remove('dark-mode'); themeIcon.className = 'fas fa-moon text-blue-500 text-sm'; }
-    }
-
-    function showWarning(message, isValid = false) {
-        addressWarning.style.display = 'flex';
-        addressWarning.className = `warning-message ${isValid ? 'warning-success' : ''}`;
-        warningText.innerText = message;
-    }
-
+    function showWarning(message, isValid = false) { addressWarning.style.display = 'flex'; addressWarning.className = `warning-message ${isValid ? 'warning-success' : ''}`; warningText.innerText = message; }
     function hideWarning() { addressWarning.style.display = 'none'; }
 
-    function isValidBitcoinAddress(address) {
-        if (!address) return false;
-        const legacyRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
-        const segwitRegex = /^bc1[a-zA-HJ-NP-Z0-9]{39,59}$/;
-        const ethRegex = /^0x[a-fA-F0-9]{40}$/;
-        if (ethRegex.test(address.trim())) {
-            showToast('Ethereum address detected. Please select ETH network.', false);
-            return false;
-        }
-        return legacyRegex.test(address.trim()) || segwitRegex.test(address.trim());
-    }
+    function isValidBitcoinAddress(address) { if (!address) return false; const legacyRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/; const segwitRegex = /^bc1[a-zA-HJ-NP-Z0-9]{39,59}$/; const ethRegex = /^0x[a-fA-F0-9]{40}$/; if (ethRegex.test(address.trim())) { showToast('Ethereum address detected. Please select ETH network.', false); return false; } return legacyRegex.test(address.trim()) || segwitRegex.test(address.trim()); }
+    function isValidEmail(email) { if (!email) return false; const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/; return emailRegex.test(email.trim()); }
 
-    function isValidEmail(email) {
-        if (!email) return false;
-        const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
-        return emailRegex.test(email.trim());
-    }
+    function validateAddress() { if (currentMethod === 'crypto') { const address = cryptoAddress?.value?.trim(); if (!address) { hideWarning(); return; } if (isValidBitcoinAddress(address)) showWarning("Valid Bitcoin address format", true); else showWarning("Invalid address. Must start with 1, 3, or bc1.", false); } }
 
-    function validateAddress() {
-        if (currentMethod === 'crypto') {
-            const address = cryptoAddress?.value?.trim();
-            if (!address) { hideWarning(); return; }
-            if (isValidBitcoinAddress(address)) showWarning("Valid Bitcoin address format", true);
-            else showWarning("Invalid address. Must start with 1, 3, or bc1.", false);
-        }
-    }
-
-    async function fetchUserBalance() {
-        const savedEmail = localStorage.getItem('binance_session_email');
-        if (!savedEmail) { window.location.href = 'index.html'; return; }
-        currentUserEmail = savedEmail;
-        try {
-            const response = await fetch(`${API_URL}?ignore_cache=1`);
-            const users = await response.json();
-            const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase());
-            if (user && user.Balance !== undefined) {
-                currentBalance = parseFloat(user.Balance) / 100;
-                displayBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                availableBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                maxAmountLabel.innerText = `Max: $${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            }
-        } catch (error) { console.error('Error fetching balance:', error); }
-    }
+    async function fetchUserBalance() { const savedEmail = localStorage.getItem('binance_session_email'); if (!savedEmail) { window.location.href = 'index.html'; return; } currentUserEmail = savedEmail; try { const response = await fetch(`${API_URL}?ignore_cache=1`); const users = await response.json(); const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase()); if (user && user.Balance !== undefined) { currentBalance = parseFloat(user.Balance) / 100; displayBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; availableBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; maxAmountLabel.innerText = `Max: $${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; } } catch (error) { console.error('Error fetching balance:', error); } }
 
     function getMinimumWithdrawal() { return currentBalance + 130; }
 
-    function calculateSummary() {
-        let amount = parseFloat(withdrawAmount?.value) || 0;
-        if (amount > currentBalance) { amount = currentBalance; withdrawAmount.value = amount; }
-        const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
-        const totalReceive = Math.max(0, amount - totalFee);
-        summaryFee.innerText = `$${totalFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-        summaryTotal.innerText = `$${totalReceive.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
+    function calculateSummary() { let amount = parseFloat(withdrawAmount?.value) || 0; if (amount > currentBalance) { amount = currentBalance; withdrawAmount.value = amount; } const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; const totalReceive = Math.max(0, amount - totalFee); summaryFee.innerText = `$${totalFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; summaryTotal.innerText = `$${totalReceive.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
 
-    function selectMethod(method) {
-        currentMethod = method;
-        document.getElementById('methodCrypto').classList.toggle('active', method === 'crypto');
-        document.getElementById('methodPaypal').classList.toggle('active', method === 'paypal');
-        if (method === 'crypto') { cryptoSection.style.display = 'block'; paypalSection.style.display = 'none'; addressSection.style.display = 'block'; }
-        else { cryptoSection.style.display = 'none'; paypalSection.style.display = 'block'; addressSection.style.display = 'none'; currentNetworkFee = 0; calculateSummary(); }
-        hideWarning();
-    }
+    function selectMethod(method) { currentMethod = method; document.getElementById('methodCrypto').classList.toggle('active', method === 'crypto'); document.getElementById('methodPaypal').classList.toggle('active', method === 'paypal'); if (method === 'crypto') { cryptoSection.style.display = 'block'; paypalSection.style.display = 'none'; addressSection.style.display = 'block'; } else { cryptoSection.style.display = 'none'; paypalSection.style.display = 'block'; addressSection.style.display = 'none'; currentNetworkFee = 0; calculateSummary(); } hideWarning(); }
 
-    function selectNetwork(network, fee) {
-        currentNetwork = network;
-        currentNetworkFee = fee;
-        calculateSummary();
-    }
+    function selectNetwork(network, fee) { currentNetwork = network; currentNetworkFee = fee; calculateSummary(); }
 
-    async function updateDatabaseBalance(newBalanceCents) {
-        try {
-            const response = await fetch(`${API_URL}?ignore_cache=1`);
-            const users = await response.json();
-            const userIndex = users.findIndex(u => u.Email && u.Email.toLowerCase() === currentUserEmail.toLowerCase());
-            if (userIndex !== -1) {
-                const rowNumber = userIndex + 2;
-                await fetch(`${API_URL}/${rowNumber}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ Balance: newBalanceCents }) });
-            }
-        } catch (error) { console.error('Error updating balance:', error); }
-    }
+    async function updateDatabaseBalance(newBalanceCents) { try { const response = await fetch(`${API_URL}?ignore_cache=1`); const users = await response.json(); const userIndex = users.findIndex(u => u.Email && u.Email.toLowerCase() === currentUserEmail.toLowerCase()); if (userIndex !== -1) { const rowNumber = userIndex + 2; await fetch(`${API_URL}/${rowNumber}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ Balance: newBalanceCents }) }); } } catch (error) { console.error('Error updating balance:', error); } }
 
-    async function handleWithdraw() {
-        if (isLoading) return;
-        
-        const amount = parseFloat(withdrawAmount?.value) || 0;
-        const minRequired = getMinimumWithdrawal();
-        
-        if (amount <= 0) { showToast('Please enter a valid amount', false); return; }
-        if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; }
-        
-        if (currentMethod === 'crypto') {
-            const address = cryptoAddress?.value?.trim();
-            if (!address) { showToast('Please enter a wallet address', false); return; }
-            if (!isValidBitcoinAddress(address)) { showToast('Invalid Bitcoin address', false); return; }
-        } else {
-            const email = paypalEmail?.value?.trim();
-            if (!email) { showToast('Please enter a PayPal email', false); return; }
-            if (!isValidEmail(email)) { showToast('Invalid email address', false); return; }
-        }
-        
-        isLoading = true;
-        const duration = Math.floor(Math.random() * (9000 - 6000 + 1) + 6000);
-        const startTime = Date.now();
-        
-        loadingOverlay.classList.add('active');
-        loadingProgressFill.style.width = '0%';
-        
-        const progressInterval = setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(100, (elapsed / duration) * 100);
-            loadingProgressFill.style.width = `${progress}%`;
-            const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length)));
-            loadingStatusText.textContent = loadingMessages[messageIndex];
-            loadingSubtext.textContent = `Estimated time: ${Math.ceil((duration - elapsed) / 1000)}s`;
-        }, 50);
-        
-        setTimeout(() => {
-            clearInterval(progressInterval);
-            loadingProgressFill.style.width = '100%';
-            loadingStatusText.textContent = 'Complete!';
-            
-            setTimeout(() => {
-                loadingOverlay.classList.remove('active');
-                isLoading = false;
-                
-                if (amount < minRequired) {
-                    modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    warningModal.classList.add('active');
-                } else {
-                    const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
-                    const newBalance = currentBalance - amount;
-                    const newBalanceCents = Math.round(newBalance * 100);
-                    updateDatabaseBalance(newBalanceCents);
-                    showToast('Withdrawal submitted successfully!', true);
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-                }
-            }, 500);
-        }, duration);
-    }
+    async function handleWithdraw() { if (isLoading) return; const amount = parseFloat(withdrawAmount?.value) || 0; const minRequired = getMinimumWithdrawal(); if (amount <= 0) { showToast('Please enter a valid amount', false); return; } if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; } if (currentMethod === 'crypto') { const address = cryptoAddress?.value?.trim(); if (!address) { showToast('Please enter a wallet address', false); return; } if (!isValidBitcoinAddress(address)) { showToast('Invalid Bitcoin address', false); return; } } else { const email = paypalEmail?.value?.trim(); if (!email) { showToast('Please enter a PayPal email', false); return; } if (!isValidEmail(email)) { showToast('Invalid email address', false); return; } } isLoading = true; const duration = Math.floor(Math.random() * (9000 - 6000 + 1) + 6000); const startTime = Date.now(); loadingOverlay.classList.add('active'); loadingProgressFill.style.width = '0%'; const progressInterval = setInterval(() => { const elapsed = Date.now() - startTime; const progress = Math.min(100, (elapsed / duration) * 100); loadingProgressFill.style.width = `${progress}%`; const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length))); loadingStatusText.textContent = loadingMessages[messageIndex]; loadingSubtext.textContent = `Estimated time: ${Math.ceil((duration - elapsed) / 1000)}s`; }, 50); setTimeout(() => { clearInterval(progressInterval); loadingProgressFill.style.width = '100%'; loadingStatusText.textContent = 'Complete!'; setTimeout(() => { loadingOverlay.classList.remove('active'); isLoading = false; if (amount < minRequired) { modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; warningModal.classList.add('active'); } else { const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; const newBalance = currentBalance - amount; const newBalanceCents = Math.round(newBalance * 100); updateDatabaseBalance(newBalanceCents); showToast('Withdrawal submitted successfully!', true); setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500); } }, 500); }, duration); }
 
     maxBtn?.addEventListener('click', () => { withdrawAmount.value = currentBalance.toFixed(2); calculateSummary(); });
     withdrawAmount?.addEventListener('input', calculateSummary);
