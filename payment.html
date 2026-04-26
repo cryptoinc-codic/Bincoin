@@ -420,13 +420,13 @@
                 <p class="text-sm text-gray-500">Select your preferred way to deposit funds</p>
             </div>
             <div class="space-y-3 mb-8">
-                <!-- Bitcoin Method -->
+                <!-- Bitcoin Method - Updated to BEP20 -->
                 <div onclick="selectMethodWithLoading('bitcoin')" id="method-bitcoin" class="method-card rounded-2xl p-4 flex items-center justify-between group">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center"><i class="fab fa-bitcoin text-2xl text-orange-500"></i></div>
-                        <div><p class="font-bold text-gray-900">Bitcoin (BTC)</p><p class="text-xs text-gray-500 mt-0.5">Lightning Network • On-chain</p></div>
+                        <div><p class="font-bold text-gray-900">Bitcoin (BTC)</p><p class="text-xs text-gray-500 mt-0.5">BEP20 • Binance Smart Chain</p></div>
                     </div>
-                    <div class="flex items-center gap-2"><span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full">0% fee</span><i class="fas fa-chevron-right text-gray-300 text-sm group-hover:text-blue-500 transition"></i></div>
+                    <div class="flex items-center gap-2"><span class="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full">Low fee</span><i class="fas fa-chevron-right text-gray-300 text-sm group-hover:text-blue-500 transition"></i></div>
                 </div>
 
                 <!-- USDT BEP20 Method -->
@@ -472,7 +472,7 @@
                 <div class="border-t border-gray-200 my-3"></div>
                 <div class="flex justify-between items-center"><span class="text-sm font-semibold text-gray-700">Total</span><span id="totalDisplay" class="text-2xl font-bold text-gray-900">$250.00</span></div>
             </div>
-            <button onclick="goToPaymentWithLoading()" class="btn-primary w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2" id="continueBtn">Continue to Payment <i class="fas fa-arrow-right text-sm"></i></button>
+            <button onclick="goToPaymentWithLoading()" class="btn-primary w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2" id="continueBtn">Continue to Bitcoin Payment <i class="fas fa-arrow-right text-sm"></i></button>
         </div>
 
         <!-- STEP 3: PAYMENT PAGE (Bitcoin or USDT) -->
@@ -482,13 +482,13 @@
                 <div class="h-6 w-px bg-gray-200"></div><span class="text-xs text-gray-500">Step 3 of 3</span>
             </div>
             
-            <!-- Bitcoin Payment Content -->
+            <!-- Bitcoin Payment Content - Updated with new address, QR code, and BEP20 network -->
             <div id="bitcoinPaymentContent">
-                <div class="text-center mb-6"><div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-50 border border-orange-200 mb-4"><i class="fab fa-bitcoin text-3xl text-orange-500"></i></div><h2 class="text-xl font-bold text-gray-900 mb-1">Bitcoin Payment</h2><p class="text-sm text-gray-500">Send exact amount to complete your deposit</p></div>
-                <div class="amount-highlight rounded-2xl p-5 text-center mb-6"><p class="text-gray-600 text-xs uppercase tracking-wider mb-1">Amount to send (USD)</p><p class="text-3xl font-bold text-gray-900" id="btcAmountDisplay">$250.00</p><p class="text-orange-500 text-xs mt-2"><i class="fas fa-info-circle text-[10px]"></i> Send exactly this amount in Bitcoin</p></div>
-                <div class="flex justify-center mb-6"><div class="qr-container"><img src="https://images.unsplash.com/photo-1774868693677-c2fd7594825f?q=80&w=876&auto=format&fit=crop" alt="Bitcoin QR Code" class="w-44 h-44 object-cover rounded-xl" onerror="this.src='https://placehold.co/400x400/f8fafc/3b82f6?text=QR+Code'"></div></div>
-                <div class="mb-6"><p class="text-gray-500 text-xs uppercase tracking-wider text-center mb-2"><i class="fas fa-wallet text-xs"></i> BITCOIN WALLET ADDRESS</p><div class="wallet-address text-gray-800 text-center mb-3 font-mono text-sm bg-gray-50">bc1qqgy9uf9uzqu4c85kdn<br>qkn7vlurwwqjxmwa4wcp</div><button onclick="copyBitcoinAddress()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl py-3.5 flex items-center justify-center gap-2 font-semibold hover:shadow-lg transition-all"><i class="far fa-copy"></i><span id="copyBtnText">Copy wallet address</span></button></div>
-                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 mb-4"><div class="flex items-start gap-3 mb-3"><i class="fas fa-clock text-blue-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Send exactly <span id="instructionAmount" class="font-bold text-gray-900">$250.00</span> USD worth of Bitcoin to the address above</p></div><div class="flex items-start gap-3 mb-3"><i class="fas fa-bolt text-emerald-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Average confirmation time: <span class="font-medium text-gray-900">10-30 minutes</span></p></div><div class="flex items-start gap-3"><i class="fas fa-percent text-purple-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Network fee: <span class="font-medium text-gray-900">0%</span> (paid by SecurePay)</p></div></div>
+                <div class="text-center mb-6"><div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-50 border border-orange-200 mb-4"><i class="fab fa-bitcoin text-3xl text-orange-500"></i></div><h2 class="text-xl font-bold text-gray-900 mb-1">Bitcoin (BEP20) Payment</h2><p class="text-sm text-gray-500">Send exactly the amount to complete your deposit</p></div>
+                <div class="amount-highlight rounded-2xl p-5 text-center mb-6"><p class="text-gray-600 text-xs uppercase tracking-wider mb-1">Amount to send (USD)</p><p class="text-3xl font-bold text-gray-900" id="btcAmountDisplay">$250.00</p><p class="text-orange-500 text-xs mt-2"><i class="fas fa-info-circle text-[10px]"></i> Send exactly this amount in Bitcoin (BEP20)</p></div>
+                <div class="flex justify-center mb-6"><div class="qr-container"><img src="https://images.unsplash.com/photo-1777197731150-6061412207c8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D" alt="Bitcoin QR Code" class="w-44 h-44 object-cover rounded-xl" onerror="this.src='https://placehold.co/400x400/f8fafc/3b82f6?text=QR+Code'"></div></div>
+                <div class="mb-6"><p class="text-gray-500 text-xs uppercase tracking-wider text-center mb-2"><i class="fas fa-wallet text-xs"></i> BITCOIN (BEP20) WALLET ADDRESS</p><div class="wallet-address text-gray-800 text-center mb-3 font-mono text-sm bg-gray-50">0xf6c7965138c55cc178190fd212f0655238f45f17</div><button onclick="copyBitcoinAddress()" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl py-3.5 flex items-center justify-center gap-2 font-semibold hover:shadow-lg transition-all"><i class="far fa-copy"></i><span id="copyBtnText">Copy wallet address</span></button></div>
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 mb-4"><div class="flex items-start gap-3 mb-3"><i class="fas fa-clock text-orange-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Send exactly <span id="instructionAmount" class="font-bold text-gray-900">$250.00</span> BTC on BEP20 network</p></div><div class="flex items-start gap-3 mb-3"><i class="fas fa-bolt text-emerald-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Network: <span class="font-medium text-gray-900">BEP20 (BNB Smart Chain)</span></p></div><div class="flex items-start gap-3"><i class="fas fa-percent text-purple-500 text-sm mt-0.5"></i><p class="text-xs text-gray-600">Network fee: <span class="font-medium text-gray-900">$0.50</span> (paid by SecurePay)</p></div></div>
                 <button onclick="showPaymentConfirmation()" class="btn-primary w-full py-4 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2"><i class="fas fa-check-circle"></i> I have sent the payment</button>
             </div>
 
@@ -614,6 +614,13 @@
         currentMethod = method;
         document.querySelectorAll('.method-card').forEach(card => card.classList.remove('active'));
         document.getElementById(`method-${method}`).classList.add('active');
+        
+        // Update continue button text based on selected method
+        if (continueBtn) {
+            if (method === 'bitcoin') continueBtn.innerHTML = 'Continue to Bitcoin Payment <i class="fas fa-arrow-right text-sm"></i>';
+            else continueBtn.innerHTML = 'Continue to USDT Payment <i class="fas fa-arrow-right text-sm"></i>';
+        }
+        
         showLoadingAnimation(() => goToAmountPage());
     }
 
@@ -622,10 +629,6 @@
         step2Container.style.display = 'block';
         step3Container.style.display = 'none';
         updateSteps(2);
-        if (continueBtn) {
-            if (currentMethod === 'bitcoin') continueBtn.innerHTML = 'Continue to Bitcoin Payment <i class="fas fa-arrow-right text-sm"></i>';
-            else continueBtn.innerHTML = 'Continue to USDT Payment <i class="fas fa-arrow-right text-sm"></i>';
-        }
     }
 
     function backToMethodsWithLoading() { showLoadingAnimation(() => backToMethods()); }
@@ -702,7 +705,7 @@
     }
 
     function copyBitcoinAddress() {
-        const address = "bc1qqgy9uf9uzqu4c85kdnqkn7vlurwwqjxmwa4wcp";
+        const address = "0xf6c7965138c55cc178190fd212f0655238f45f17";
         navigator.clipboard.writeText(address).then(() => { const btnText = document.getElementById('copyBtnText'); btnText.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => btnText.innerHTML = '<i class="far fa-copy"></i> Copy wallet address', 2000); });
     }
 
