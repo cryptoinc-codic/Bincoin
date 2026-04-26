@@ -669,6 +669,48 @@
     </div>
 </div>
 
+<!-- Help Modal (for ? icon) -->
+<div id="helpModal" class="modal">
+    <div class="modal-content help-modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Withdrawal Guide</h3>
+            <i class="fas fa-times text-gray-400 cursor-pointer hover:text-gray-600" id="closeHelpModal"></i>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-chart-line mr-2"></i> Minimum Balance Required</h4>
+            <p>To process any withdrawal, your withdrawal amount must meet the minimum requirement shown in the warning modal.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-coins mr-2"></i> How fees work</h4>
+            <p><strong>Transaction Fee:</strong> $2.50 flat rate per transaction (non-refundable).</p>
+            <p><strong>Network Fee (Crypto):</strong> BTC: $2.00, BSC: $0.50, ETH: $1.50, Lightning: $0.30, SegWit: $1.80</p>
+            <p><strong>You will receive:</strong> Withdrawal Amount - Total Fees</p>
+            <p><strong>Processing Time:</strong> BTC: 10-30 min, BSC: 1-2 min, ETH: 2-5 min, Lightning: Instant, PayPal: Near-instant.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fab fa-bitcoin mr-2"></i> Bitcoin Address Requirements</h4>
+            <p>Accepted Bitcoin address formats:</p>
+            <ul><li><strong>Legacy:</strong> Starts with "1"</li><li><strong>SegWit:</strong> Starts with "3"</li><li><strong>Native SegWit:</strong> Starts with "bc1"</li></ul>
+            <p>For Ethereum addresses, please select the ETH (ERC20) network.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fab fa-paypal mr-2"></i> PayPal Requirements</h4>
+            <p>Enter the <strong>verified email address</strong> associated with the recipient's PayPal account.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-clock mr-2"></i> Processing Time</h4>
+            <p><strong>Bitcoin:</strong> 1-3 confirmations (10-30 minutes).</p>
+            <p><strong>PayPal:</strong> Near-instant after verification.</p>
+            <p>All transactions are final and cannot be reversed.</p>
+        </div>
+        <div class="help-section">
+            <h4><i class="fas fa-headset mr-2"></i> 24/7 Support</h4>
+            <p><strong>Email:</strong> support@binance.com</p>
+            <p class="mt-2 text-[10px] opacity-50">Support typically responds within 15 minutes.</p>
+        </div>
+    </div>
+</div>
+
 <div id="toastMessage" class="toast-message"></div>
 
 <script>
@@ -719,13 +761,23 @@
     const guidePopup = document.getElementById('guidePopup');
     const closeGuidePopup = document.getElementById('closeGuidePopup');
     const guideGotItBtn = document.getElementById('guideGotItBtn');
+    const closeHelpModal = document.getElementById('closeHelpModal');
 
-    // Only 3 loading messages (step 1, 4, 5)
-    const loadingMessages = [
-        "Verifying blockchain network...",
-        "Confirming with nodes...",
-        "Finalizing withdrawal..."
-    ];
+    // Method-specific loading messages
+    function getLoadingMessages() {
+        if (currentMethod === 'paypal') {
+            return [
+                "Connecting to PayPal secure gateway...",
+                "Verifying recipient email...",
+                "Processing instant transfer..."
+            ];
+        }
+        return [
+            "Verifying blockchain network...",
+            "Confirming with nodes...",
+            "Finalizing withdrawal..."
+        ];
+    }
 
     function initNetworkDropdown() {
         networkDropdownBtn.addEventListener('click', (e) => { e.stopPropagation(); networkDropdownMenu.classList.toggle('active'); });
@@ -781,7 +833,7 @@
         if (amount <= 0) { showToast('Please enter a valid amount', false); return; } 
         if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; }
         
-        // Network validation - ADDED
+        // Network validation
         if (currentMethod === 'crypto') {
             if (!currentNetwork) {
                 showToast('Please select a network', false);
@@ -800,18 +852,27 @@
         } 
         
         isLoading = true; 
-        // CHANGED: 9-12 seconds random duration
-        const duration = Math.floor(Math.random() * (12000 - 9000 + 1) + 9000); 
+        
+        // Method-specific duration: Crypto 11-14s, PayPal 9-12s
+        let duration;
+        if (currentMethod === 'paypal') {
+            duration = Math.floor(Math.random() * (12000 - 9000 + 1) + 9000); // 9-12 seconds
+        } else {
+            duration = Math.floor(Math.random() * (14000 - 11000 + 1) + 11000); // 11-14 seconds
+        }
+        
         const startTime = Date.now(); 
         loadingOverlay.classList.add('active'); 
         loadingProgressFill.style.width = '0%'; 
+        
+        const loadingMessagesArray = getLoadingMessages();
         
         const progressInterval = setInterval(() => { 
             const elapsed = Date.now() - startTime; 
             const progress = Math.min(100, (elapsed / duration) * 100); 
             loadingProgressFill.style.width = `${progress}%`; 
-            const messageIndex = Math.min(loadingMessages.length - 1, Math.floor(progress / (100 / loadingMessages.length))); 
-            loadingStatusText.textContent = loadingMessages[messageIndex]; 
+            const messageIndex = Math.min(loadingMessagesArray.length - 1, Math.floor(progress / (100 / loadingMessagesArray.length))); 
+            loadingStatusText.textContent = loadingMessagesArray[messageIndex]; 
         }, 50); 
         
         setTimeout(() => { 
@@ -843,11 +904,14 @@
     cryptoAddress?.addEventListener('input', validateAddress);
     withdrawBtn?.addEventListener('click', handleWithdraw);
     themeToggle?.addEventListener('click', toggleTheme);
+    
+    // Help icon (?) event listener
     document.getElementById('helpBtn')?.addEventListener('click', () => helpModal.classList.add('active'));
-    document.getElementById('closeHelpModal')?.addEventListener('click', () => helpModal.classList.remove('active'));
+    closeHelpModal?.addEventListener('click', () => helpModal.classList.remove('active'));
+    helpModal?.addEventListener('click', (e) => { if (e.target === helpModal) helpModal.classList.remove('active'); });
+    
     document.getElementById('modalDepositBtn')?.addEventListener('click', () => { warningModal.classList.remove('active'); window.location.href = 'payment.html'; });
     document.getElementById('modalAcknowledgeBtn')?.addEventListener('click', () => warningModal.classList.remove('active'));
-    helpModal?.addEventListener('click', (e) => { if (e.target === helpModal) helpModal.classList.remove('active'); });
     
     // Help guide event listeners
     modalHelpBtn?.addEventListener('click', showGuidePopup);
