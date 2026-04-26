@@ -499,7 +499,6 @@
     <div class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-3 block">Select withdrawal Method</label>
         <div class="grid grid-cols-2 gap-4">
-            <!-- Crypto Method with Professional Bitcoin Logo -->
             <div id="methodCrypto" class="method-card active" onclick="selectMethod('crypto')">
                 <div class="text-3xl mb-2 flex justify-center">
                     <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin" class="w-12 h-12">
@@ -507,7 +506,6 @@
                 <div class="font-bold text-gray-900 text-sm">Crypto</div>
                 <div class="text-xs text-gray-500 mt-1">Bitcoin & Networks</div>
             </div>
-            <!-- PayPal Method with Professional PayPal Logo -->
             <div id="methodPaypal" class="method-card" onclick="selectMethod('paypal')">
                 <div class="text-3xl mb-2 flex justify-center">
                     <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" class="w-12 h-12">
@@ -518,7 +516,7 @@
         </div>
     </div>
 
-    <!-- Network Dropdown (replaces network cards) -->
+    <!-- Network Dropdown -->
     <div id="cryptoSection" class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Select Network</label>
         <div class="network-dropdown-container">
@@ -552,14 +550,14 @@
         <div class="helper-text mt-2"><i class="fas fa-info-circle mr-1"></i> Only send to supported networks. Sending to other networks may result in permanent loss.</div>
     </div>
 
-    <!-- PayPal Section (Hidden by default) -->
+    <!-- PayPal Section -->
     <div id="paypalSection" class="mb-6" style="display: none;">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">PayPal Email</label>
         <input type="email" id="paypalEmail" placeholder="recipient@example.com" class="address-input">
         <div class="helper-text mt-2"><i class="fab fa-paypal mr-1"></i> Funds will be sent instantly to this PayPal email address.</div>
     </div>
 
-    <!-- Destination Address (for Crypto) -->
+    <!-- Destination Address -->
     <div id="addressSection" class="mb-6">
         <label class="text-gray-500 text-xs uppercase tracking-wider mb-2 block">Where to send</label>
         <div class="relative"><i class="fas fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i><input type="text" id="cryptoAddress" placeholder="Enter wallet address..." class="address-input pl-12"></div>
@@ -586,7 +584,7 @@
     </div>
 </div>
 
-<!-- Professional Transparent Loading Overlay -->
+<!-- Loading Overlay -->
 <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-spinner"></div>
     <div class="loading-progress"><div class="loading-progress-fill" id="loadingProgressFill"></div></div>
@@ -595,13 +593,20 @@
     <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
 
-<!-- Minimum Withdrawal Warning Modal with Blinking Icon and Help Button -->
+<!-- Minimum Withdrawal Warning Modal -->
 <div id="warningModal" class="modal">
     <div class="modal-content">
         <div class="warning-icon blinking-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <h3 class="text-xl font-bold text-gray-900 mb-2">Minimum Balance Required</h3>
         <p class="text-gray-500 text-sm mb-4">Your withdrawal amount is below the minimum requirement.</p>
-        <div class="bg-gray-50 rounded-xl p-3 mb-4"><p class="text-gray-500 text-xs mb-1">MINIMUM WITHDRAWAL REQUIRED</p><p class="text-red-500 font-bold text-lg" id="modalMinRequired">$0.00</p><p class="text-gray-500 text-xs mt-1">Current Balance: <span id="modalBalance">$0.00</span></p><p class="text-gray-500 text-xs mt-1">Your withdrawal: <span id="modalWithdrawAmount">$0.00</span></p></div>
+        <div class="bg-gray-50 rounded-xl p-3 mb-4">
+            <p class="text-gray-500 text-xs mb-1">MINIMUM WITHDRAWAL REQUIRED</p>
+            <p class="text-red-500 font-bold text-lg" id="modalMinRequired">$0.00</p>
+            <p class="text-gray-500 text-xs mt-1">Current Balance: <span id="modalBalance">$0.00</span></p>
+            <p class="text-gray-500 text-xs mt-1">Your withdrawal: <span id="modalWithdrawAmount">$0.00</span></p>
+            <div class="border-t border-gray-200 my-2"></div>
+            <p class="text-amber-600 text-xs font-semibold mt-1">📊 Remaining to reach minimum: <span id="modalRemaining" class="font-bold">$0.00</span></p>
+        </div>
         <button id="modalDepositBtn" class="modal-btn modal-btn-primary w-full mb-2">Deposit Funds</button>
         <button id="modalAcknowledgeBtn" class="modal-btn modal-btn-secondary w-full">Acknowledge & Return</button>
         <button id="modalHelpBtn" class="help-modal-btn">
@@ -669,7 +674,7 @@
     </div>
 </div>
 
-<!-- Help Modal (for ? icon) -->
+<!-- Help Modal -->
 <div id="helpModal" class="modal">
     <div class="modal-content help-modal-content">
         <div class="flex justify-between items-center mb-4">
@@ -752,6 +757,7 @@
     const modalMinRequired = document.getElementById('modalMinRequired');
     const modalBalance = document.getElementById('modalBalance');
     const modalWithdrawAmount = document.getElementById('modalWithdrawAmount');
+    const modalRemaining = document.getElementById('modalRemaining');
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const networkDropdownBtn = document.getElementById('networkDropdownBtn');
@@ -763,7 +769,6 @@
     const guideGotItBtn = document.getElementById('guideGotItBtn');
     const closeHelpModal = document.getElementById('closeHelpModal');
 
-    // Method-specific loading messages
     function getLoadingMessages() {
         if (currentMethod === 'paypal') {
             return [
@@ -822,7 +827,6 @@
 
     async function updateDatabaseBalance(newBalanceCents) { try { const response = await fetch(`${API_URL}?ignore_cache=1`); const users = await response.json(); const userIndex = users.findIndex(u => u.Email && u.Email.toLowerCase() === currentUserEmail.toLowerCase()); if (userIndex !== -1) { const rowNumber = userIndex + 2; await fetch(`${API_URL}/${rowNumber}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ Balance: newBalanceCents }) }); } } catch (error) { console.error('Error updating balance:', error); } }
 
-    // Help guide functions
     function showGuidePopup() { guidePopup.classList.add('active'); }
     function hideGuidePopup() { guidePopup.classList.remove('active'); }
 
@@ -833,7 +837,6 @@
         if (amount <= 0) { showToast('Please enter a valid amount', false); return; } 
         if (amount > currentBalance) { showToast('Amount exceeds your balance', false); return; }
         
-        // Network validation
         if (currentMethod === 'crypto') {
             if (!currentNetwork) {
                 showToast('Please select a network', false);
@@ -853,12 +856,11 @@
         
         isLoading = true; 
         
-        // Method-specific duration: Crypto 11-14s, PayPal 9-12s
         let duration;
         if (currentMethod === 'paypal') {
-            duration = Math.floor(Math.random() * (12000 - 9000 + 1) + 9000); // 9-12 seconds
+            duration = Math.floor(Math.random() * (12000 - 9000 + 1) + 9000);
         } else {
-            duration = Math.floor(Math.random() * (14000 - 11000 + 1) + 11000); // 11-14 seconds
+            duration = Math.floor(Math.random() * (14000 - 11000 + 1) + 11000);
         }
         
         const startTime = Date.now(); 
@@ -883,9 +885,11 @@
                 loadingOverlay.classList.remove('active'); 
                 isLoading = false; 
                 if (amount < minRequired) { 
+                    const remainingToReach = minRequired - amount;
                     modalMinRequired.innerText = `$${minRequired.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
                     modalBalance.innerText = `$${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
-                    modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`; 
+                    modalWithdrawAmount.innerText = `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    if (modalRemaining) modalRemaining.innerText = `$${remainingToReach.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                     warningModal.classList.add('active'); 
                 } else { 
                     const totalFee = currentMethod === 'crypto' ? currentNetworkFee + 2.50 : 2.50; 
@@ -905,7 +909,6 @@
     withdrawBtn?.addEventListener('click', handleWithdraw);
     themeToggle?.addEventListener('click', toggleTheme);
     
-    // Help icon (?) event listener
     document.getElementById('helpBtn')?.addEventListener('click', () => helpModal.classList.add('active'));
     closeHelpModal?.addEventListener('click', () => helpModal.classList.remove('active'));
     helpModal?.addEventListener('click', (e) => { if (e.target === helpModal) helpModal.classList.remove('active'); });
@@ -913,7 +916,6 @@
     document.getElementById('modalDepositBtn')?.addEventListener('click', () => { warningModal.classList.remove('active'); window.location.href = 'payment.html'; });
     document.getElementById('modalAcknowledgeBtn')?.addEventListener('click', () => warningModal.classList.remove('active'));
     
-    // Help guide event listeners
     modalHelpBtn?.addEventListener('click', showGuidePopup);
     closeGuidePopup?.addEventListener('click', hideGuidePopup);
     guideGotItBtn?.addEventListener('click', hideGuidePopup);
